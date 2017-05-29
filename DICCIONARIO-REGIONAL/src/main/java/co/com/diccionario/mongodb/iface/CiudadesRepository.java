@@ -1,0 +1,9 @@
+package co.com.diccionario.mongodb.iface;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import co.com.diccionario.document.Ciudad;
+
+public interface CiudadesRepository extends MongoRepository<Ciudad, Integer>{
+
+}
