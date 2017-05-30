@@ -1,0 +1,193 @@
+.btnImageGuardar {
+	background-image: url("../../resources/img/guardar.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageBuscar {
+	background-image: url("../../resources/img/search.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageNuevo {
+	background-image: url("../../resources/img/table_add.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageActualizar {
+	background-image: url("../../resources/img/table_edit.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageEliminar {
+	background-image: url("../../resources/img/delete.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageVolver {
+	background-image: url("../../resources/img/return.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageGenerarReporte {
+	background-image: url("../../resources/img/report.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageGenerarPDF {
+	background-image: url("../../resources/img/report_pdf.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageGenerarXLS {
+	background-image: url("../../resources/img/report_excel.png") !important;
+	background-size: 16px !important;
+}
+
+.btnVerDetalle {
+	background-image: url("../../resources/img/verDetalle.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageAdicionar {
+	background-image: url("../../resources/img/add.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImageRefPago {
+	background-image: url("../../resources/img/ref_pago.png") !important;
+	background-size: 16px !important;
+}
+
+.btnImagePagoElectronico {
+	background-image: url("../../resources/img/pago_elec_tarj.png")
+		!important;
+	background-size: 16px !important;
+}
+
+.btnConfirmYes {
+	background-image: url("../../resources/img/yes.png") !important;
+	background-size: 16px !important;
+}
+
+.btnConfirmNo {
+	background-image: url("../../resources/img/no.png") !important;
+	background-size: 16px !important;
+}
+
+.btnActive {
+	background-image: url("../../resources/img/active.png") !important;
+	background-size: 16px !important;
+}
+
+.btnInactive {
+	background-image: url("../../resources/img/inactive.png") !important;
+	background-size: 16px !important;
+}
+
+.mnButton button {
+	width: 78px;
+	height: 65px;
+	background-repeat: no-repeat !important;
+	background-color: white !important;
+	background-position: center !important;
+	background-size: 36px !important;
+	margin: 1px 2px !important;
+}
+
+.mnButton button .ui-button-text {
+	top: 88% !important;
+	padding-top: 48px !important;
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+.mnInfracciones button {
+	background-image: url("../../resources/img/menu/infraccion.png")
+		!important;
+}
+
+.mnDescuentos button {
+	background-image: url("../../resources/img/menu/descuentos.png")
+		!important;
+}
+
+.mnPersonas button {
+	background-image: url("../../resources/img/menu/personas.png")
+		!important;
+}
+
+.mnIntereses button {
+	background-image: url("../../resources/img/menu/intereses.png")
+		!important;
+}
+
+.mnConsComparendo button {
+	background-image:
+		url("../../resources/img/menu/consultarComparendos.png") !important;
+}
+
+.mnCfgTarifa button {
+	background-image: url("../../resources/img/menu/tarifas.png") !important;
+}
+
+.mnSeguimientoComp button {
+	background-image: url("../../resources/img/menu/search.png") !important;
+}
+
+.mnCiudadano button {
+	background-image: url("../../resources/img/menu/ciudadano.png")
+		!important;
+}
+
+.mnEntidadCursoPedagogico button {
+	background-image: url("../../resources/img/menu/cia.png") !important;
+}
+
+.mnDireccion button {
+	background-image: url("../../resources/img/menu/direccion.png")
+		!important;
+}
+
+.mnFuncionarios button {
+	background-image: url("../../resources/img/menu/funcionarios.png")
+		!important;
+}
+
+.mnInraccion button {
+	background-image: url("../../resources/img/menu/intereses.png")
+		!important;
+}
+
+.mnCalendario button {
+	background-image: url("../../resources/img/menu/calendar.png")
+		!important;
+}
+
+.mnArchivos button {
+	background-image: url("../../resources/img/menu/ArchRecaudo.png")
+		!important;
+}
+
+.mnAmnistias button {
+	background-image: url("../../resources/img/menu/coupon.png") !important;
+}
+
+.mnResolucion button {
+	background-image: url("../../resources/img/menu/resolucion.png")
+		!important;
+}
+
+.mnConceptoCartera button {
+	background-image: url("../../resources/img/menu/briefcase.png")
+		!important;
+}
+
+.mnFinanciacion button {
+	background-image: url("../../resources/img/menu/financiacion.png")
+		!important;
+}
+
+.mnConfFinanciacion button {
+	background-image: url("../../resources/img/menu/configure.png")
+		!important;
+}

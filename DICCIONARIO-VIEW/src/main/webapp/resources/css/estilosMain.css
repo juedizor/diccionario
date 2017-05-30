@@ -1,0 +1,58 @@
+@CHARSET "ISO-8859-1";
+
+@IMPORT url("../resources/css/botones.css");
+
+html {
+	font-size: 12px;
+	height: 100%;
+}
+
+body {
+	height: 100%;
+}
+
+.pnlForm {
+	border: 1px solid rgba(255, 255, 255, 0) !important;
+}
+
+.fieForm {
+	margin-top: 1%;
+	margin-bottom: 1%;
+}
+
+.gridFormularios {
+	margin-top: 0%;
+	margin-bottom: 0%;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.pnlLabObligatorio {
+	margin-right: auto;
+}
+
+.pnlLabObligatorio td {
+	padding: 0px !important;
+}
+
+.obligatorio {
+	width: 16px !important;
+	height: 16px !important;
+	background-repeat: no-repeat !important;
+	background-image: url(../resources/img/requiredIcon.png) !important;
+}
+
+.columnas1 {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: rgba(255, 255, 255, 1);
+	max-width: 200px;
+}
+
+.columnas2 {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: rgba(255, 255, 255, 1);
+	min-width: 190px;
+	max-width: auto;
+}

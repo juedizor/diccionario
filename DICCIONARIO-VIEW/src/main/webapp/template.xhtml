@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+
+
+
+<h:head>
+	<title><ui:insert name="titulo">.:: Patios ::.</ui:insert></title>
+
+</h:head>
+
+<f:view>
+	<h:body>
+		<h:outputStylesheet library="css" name="styleIcon.css" />
+		<h:outputStylesheet library="css" name="estilosMain.css" />
+
+		<p:messages id="messages" showDetail="true" life="5000"
+			globalOnly="true" />
+
+		<p:growl id="msg" widgetVar="msg" showDetail="true" life="3000"
+			globalOnly="true" />
+
+		<p:dialog id="dlgMensaje" styleClass="dglStatus" modal="true"
+			widgetVar="statusDialog" header="Procesando..." draggable="false"
+			closable="false" resizable="false" appendToBody="true">
+			<p:graphicImage name="/img/ajaxloadingbar.gif" />
+		</p:dialog>
+
+		<p:layout style="height:100% !important;">
+
+			<p:layoutUnit position="north" style="width:100% !important;">
+
+			</p:layoutUnit>
+
+
+			<p:layoutUnit position="center" style="width:100% !important;">
+				<ui:insert name="contenido" />
+			</p:layoutUnit>
+
+		</p:layout>
+	</h:body>
+</f:view>
+</html>

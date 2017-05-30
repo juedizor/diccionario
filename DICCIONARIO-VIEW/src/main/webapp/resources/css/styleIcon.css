@@ -1,0 +1,27 @@
+.ui-icon-myUser{
+    background-image: url("#{resource['img/user.png']}") !important;
+}
+
+.ui-icon-cerrarSession{
+    background-image: url("#{resource['img/cerrarSesion.png']}") !important;
+}
+
+.ui-icon-guardar{
+    background-image: url("#{resource['img/save.png']}") !important;
+}
+
+.ui-icon-inform{
+    background-image: url("#{resource['img/information.png']}") !important;
+}
+
+.ui-icon-registrar{
+    background-image: url("#{resource['img/registrar.png']}") !important;
+}
+
+.ui-icon-generar{
+    background-image: url("#{resource['img/generar.png']}") !important;
+}
+
+.ui-icon-listar{
+    background-image: url("#{resource['img/listar.png']}") !important;
+}
