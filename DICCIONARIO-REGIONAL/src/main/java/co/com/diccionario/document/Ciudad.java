@@ -9,6 +9,7 @@ public class Ciudad {
 	@Id
 	private Integer id;
 	private String nombre;
+	private Integer departamento;
 
 	/**
 	 * @return the id
@@ -38,6 +39,14 @@ public class Ciudad {
 	 */
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public Integer getDepartamento() {
+		return departamento;
+	}
+
+	public void setDepartamento(Integer departamento) {
+		this.departamento = departamento;
 	}
 
 }

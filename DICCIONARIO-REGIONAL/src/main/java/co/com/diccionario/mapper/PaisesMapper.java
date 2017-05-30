@@ -16,5 +16,7 @@ public interface PaisesMapper {
 	PaisesDTO paisesToPaisesDTO(Paises paises);
 
 	List<PaisesDTO> paisesToPaisesDTOs(List<Paises> listPaises);
+	
+	Paises paisDTOToPaises(PaisesDTO paisesDTO);
 
 }

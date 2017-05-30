@@ -9,6 +9,7 @@ public class Departamento {
 	@Id
 	private Integer id;
 	private String nombre;
+	private Integer pais;
 
 	/**
 	 * @return the id
@@ -39,5 +40,15 @@ public class Departamento {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
+	public Integer getPais() {
+		return pais;
+	}
+
+	public void setPais(Integer pais) {
+		this.pais = pais;
+	}
+	
+	
 
 }
