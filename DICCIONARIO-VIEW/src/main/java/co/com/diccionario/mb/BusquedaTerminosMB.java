@@ -9,8 +9,12 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
+
+import org.primefaces.context.RequestContext;
 
 import co.com.diccionario.client.catalogos.CatalogosServiceClient;
+import co.com.diccionario.dto.CategoriaDTO;
 import co.com.diccionario.dto.CiudadDTO;
 import co.com.diccionario.dto.DepartamentoDTO;
 import co.com.diccionario.dto.PaisesDTO;
@@ -39,6 +43,18 @@ public class BusquedaTerminosMB {
 	private String idCiudadDestino;
 	private Map<String, String> mapCiudadDestino;
 
+	private String idCategoria;
+	private Map<String, String> mapCategorias;
+
+	private String pais;
+	private String departamento;
+	private String ciudad;
+
+	private String idPaisAdd;
+	private boolean paisOrigen;
+
+	private String palabra;
+
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
 		ParamsBundle.getInstance().getEtiquetas(ParamsBundle.MSG);
@@ -47,12 +63,39 @@ public class BusquedaTerminosMB {
 	@PostConstruct
 	public void cargarPaises() {
 		obtenerPaises();
+		obtenerCategorias();
+	}
+
+	public void obtenerCategorias() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		List<CategoriaDTO> listCategoriaDTO;
+		try {
+			listCategoriaDTO = CatalogosServiceClient.getInstance().getCategorias();
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+
+			return;
+		}
+
+		if (listCategoriaDTO == null || listCategoriaDTO.isEmpty()) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
+					ParamsBundle.getInstance().getMapMensajes().get("msg_no_categoria"),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+			return;
+		}
+
+		mapCategorias = new LinkedHashMap<>();
+		for (CategoriaDTO categoriaDTO : listCategoriaDTO) {
+			mapCategorias.put(categoriaDTO.getNombre(), "" + categoriaDTO.getId());
+		}
 	}
 
 	public void obtenerPaises() {
-		List<PaisesDTO> listPaisesDTO;
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
+		List<PaisesDTO> listPaisesDTO;
 		try {
 			listPaisesDTO = CatalogosServiceClient.getInstance().getPaises();
 		} catch (Exception e) {
@@ -78,15 +121,47 @@ public class BusquedaTerminosMB {
 
 	}
 
-	public void cargarDepartamentosDestino() {
+	public void reloadDepartamentos(String idPaisCargue) {
+		cargarDepartamentosDestino(idPaisCargue);
+		cargarDepartamentosOrigen(idPaisCargue);
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		if (paisOrigen) {
+			requestContext.update("busqueda:cmbDepartamento");
+			if (idPaisCargue.equals(idPaisDestino)) {
+				requestContext.update("busqueda:cmbDepartamentoDestino");
+			}
+		} else {
+			requestContext.update("busqueda:cmbDepartamentoDestino");
+			if (idPaisCargue.equals(idPais)) {
+				requestContext.update("busqueda:cmbDepartamento");
+			}
+		}
+
+	}
+
+	public void cerrarDlgDepartamento() {
+		departamento = "";
+	}
+
+	public void cerrarDlgPais() {
+		pais = "";
+	}
+
+	public void cerrarDlgCiudad() {
+		ciudad = "";
+	}
+
+	public void cargarDepartamentosDestino(String idPaisDestino) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
 		if (idPaisDestino == null || idPaisDestino.trim().isEmpty()) {
 			mapDepartamentoDestino = new LinkedHashMap<>();
+			mapCiudadDestino = new LinkedHashMap<>();
 			idDepartamentoDestino = "-1";
+			idCiudadDestino = "-1";
 			return;
 		}
 		List<DepartamentoDTO> listDepartamentoDTO;
-		FacesContext context = FacesContext.getCurrentInstance();
-		FacesMessage message = new FacesMessage();
 		try {
 			listDepartamentoDTO = CatalogosServiceClient.getInstance().getDepartamentos(idPaisDestino);
 		} catch (Exception e) {
@@ -110,17 +185,19 @@ public class BusquedaTerminosMB {
 		}
 	}
 
-	public void cargarDepartamentosOrigen() {
-		if (idPais == null || idPais.trim().isEmpty()) {
+	public void cargarDepartamentosOrigen(String idPaisCargar) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		if (idPaisCargar == null || idPaisCargar.trim().isEmpty()) {
 			mapDepartamento = new LinkedHashMap<>();
+			mapCiudad = new LinkedHashMap<>();
 			idDepartamento = "-1";
+			idCiudad = "-1";
 			return;
 		}
 		List<DepartamentoDTO> listDepartamentoDTO;
-		FacesContext context = FacesContext.getCurrentInstance();
-		FacesMessage message = new FacesMessage();
 		try {
-			listDepartamentoDTO = CatalogosServiceClient.getInstance().getDepartamentos(idPais);
+			listDepartamentoDTO = CatalogosServiceClient.getInstance().getDepartamentos(idPaisCargar);
 		} catch (Exception e) {
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
@@ -142,15 +219,25 @@ public class BusquedaTerminosMB {
 		}
 	}
 
+	public void cargarDepartamentosOrigen(AjaxBehaviorEvent event) {
+		String idPaisCargar = (String) event.getComponent().getAttributes().get("idPais");
+		cargarDepartamentosOrigen(idPaisCargar);
+	}
+
+	public void cargarDepartamentosDestino(AjaxBehaviorEvent event) {
+		String idPaisCargar = (String) event.getComponent().getAttributes().get("idPaisDestino");
+		cargarDepartamentosDestino(idPaisCargar);
+	}
+
 	public void cargarCiudadOrigen() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
 		if (idDepartamento == null || idDepartamento.trim().isEmpty()) {
 			mapCiudad = new LinkedHashMap<>();
 			idCiudad = "-1";
 			return;
 		}
 		List<CiudadDTO> listCiudadDTO;
-		FacesContext context = FacesContext.getCurrentInstance();
-		FacesMessage message = new FacesMessage();
 		try {
 			listCiudadDTO = CatalogosServiceClient.getInstance().getCiudades(idDepartamento);
 		} catch (Exception e) {
@@ -175,14 +262,14 @@ public class BusquedaTerminosMB {
 	}
 
 	public void cargarCiudadDestino() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
 		if (idDepartamentoDestino == null || idDepartamentoDestino.trim().isEmpty()) {
 			mapCiudadDestino = new LinkedHashMap<>();
 			idCiudadDestino = "-1";
 			return;
 		}
 		List<CiudadDTO> listCiudadDTO;
-		FacesContext context = FacesContext.getCurrentInstance();
-		FacesMessage message = new FacesMessage();
 		try {
 			listCiudadDTO = CatalogosServiceClient.getInstance().getCiudades(idDepartamentoDestino);
 		} catch (Exception e) {
@@ -206,8 +293,172 @@ public class BusquedaTerminosMB {
 		}
 	}
 
-	public void addNuevoPais() {
+	public void paisMayuscula() {
+		if (pais != null && !pais.trim().isEmpty()) {
+			pais = pais.trim().replaceAll(" +", " ");
+			pais = pais.toUpperCase();
+		}
+	}
 
+	public void departamentoMayuscula() {
+		if (departamento != null && !departamento.trim().isEmpty()) {
+			departamento = departamento.trim().replaceAll(" +", " ");
+			departamento = departamento.toUpperCase();
+		}
+	}
+
+	public void ciudadMayuscula() {
+		if (ciudad != null && !ciudad.trim().isEmpty()) {
+			ciudad = ciudad.trim().replaceAll(" +", " ");
+			ciudad = ciudad.toUpperCase();
+		}
+	}
+
+	public void palabraMayuscula() {
+		if (palabra != null && !palabra.trim().isEmpty()) {
+			palabra = palabra.trim().replaceAll(" +", " ");
+			palabra = palabra.toUpperCase();
+		}
+	}
+
+	public void addNuevoPais() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		if (pais == null || pais.trim().isEmpty()) {
+			String msg = "El pais es obligatorio";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		/*
+		 * se realiza consulta para saber si el nombre digitado ya existe
+		 */
+		List<PaisesDTO> listPais;
+		try {
+			listPais = CatalogosServiceClient.getInstance().getPaises(pais);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		if (listPais != null && !listPais.isEmpty()) {
+			String mensaje = "El pais con nombre " + pais + " existe";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, mensaje,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		/*
+		 * despues de verificar pais, lo registra
+		 */
+		PaisesDTO paisDTO = new PaisesDTO();
+		paisDTO.setNombre(pais);
+
+		try {
+			boolean creado = CatalogosServiceClient.getInstance().crearPais(paisDTO);
+			if (creado) {
+				obtenerPaises();
+				String mensaje = "El pais con nombre " + pais + " ha sido creado";
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null, mensaje,
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+				setPais("");
+
+			}
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+	}
+
+	public void addNuevoDepartamento() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		if (departamento != null && !departamento.trim().isEmpty()) {
+			List<DepartamentoDTO> listDepartamento;
+			try {
+				listDepartamento = CatalogosServiceClient.getInstance().getDepartamentos(idPaisAdd, departamento);
+			} catch (Exception e) {
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, e.getMessage(),
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+				setDepartamento("");
+				return;
+			}
+
+			if (listDepartamento != null && !listDepartamento.isEmpty()) {
+				String namePais = "";
+				if (mapPaises != null && !mapPaises.isEmpty()) {
+					namePais = Utils.foundValueMap(mapPaises, idPaisAdd);
+				}
+				String mensaje = "El departamento con nombre " + departamento + " existe para el pais " + namePais;
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, mensaje,
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+				setDepartamento("");
+				return;
+			}
+
+			DepartamentoDTO departamentoDTO = new DepartamentoDTO();
+			departamentoDTO.setPais(Integer.parseInt(idPaisAdd));
+			departamentoDTO.setNombre(departamento);
+			try {
+				boolean creado = CatalogosServiceClient.getInstance().crearDepartamento(departamentoDTO);
+				if (creado) {
+					reloadDepartamentos(idPaisAdd);
+					String namePais = "";
+					if (mapPaises != null && !mapPaises.isEmpty()) {
+						namePais = Utils.foundValueMap(mapPaises, idPaisAdd);
+					}
+					String mensaje = "El departamento o provincia con nombre " + departamento
+							+ " ha sido creado para el pais " + namePais + "";
+					Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null, mensaje,
+							ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+					setDepartamento("");
+
+				}
+			} catch (Exception e) {
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, e.getMessage(),
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+				setDepartamento("");
+				return;
+			}
+
+		}
+	}
+
+	public void addNuevaCiudad() {
+		if (ciudad == null && !ciudad.trim().isEmpty()) {
+
+		}
+	}
+
+	public void changeAddPais(boolean origen) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		if (origen) {
+			if (idPais == null || idPais.trim().isEmpty()) {
+				String msg = "Selecciona el pais de donde eres, para asi agregar un nuevo departamento o provincia";
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+				return;
+			}
+			idPaisAdd = idPais;
+			paisOrigen = true;
+			requestContext.execute("PF('dlgDepartamento').show();");
+		} else {
+			if (idPaisDestino == null || idPaisDestino.trim().isEmpty()) {
+				String msg = "Selecciona el pais donde te encuentras, para asi agregar un nuevo departamento o provincia";
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+				return;
+			}
+			idPaisAdd = idPaisDestino;
+			paisOrigen = false;
+			requestContext.execute("PF('dlgDepartamento').show();");
+		}
 	}
 
 	/**
@@ -389,5 +640,126 @@ public class BusquedaTerminosMB {
 	public void setMapCiudadDestino(Map<String, String> mapCiudadDestino) {
 		this.mapCiudadDestino = mapCiudadDestino;
 	}
+
+	/**
+	 * @return the pais
+	 */
+	public String getPais() {
+		return pais;
+	}
+
+	/**
+	 * @param pais
+	 *            the pais to set
+	 */
+	public void setPais(String pais) {
+		this.pais = pais;
+	}
+
+	/**
+	 * @return the departamento
+	 */
+	public String getDepartamento() {
+		return departamento;
+	}
+
+	/**
+	 * @param departamento
+	 *            the departamento to set
+	 */
+	public void setDepartamento(String departamento) {
+		this.departamento = departamento;
+	}
+
+	/**
+	 * @return the ciudad
+	 */
+	public String getCiudad() {
+		return ciudad;
+	}
+
+	/**
+	 * @param ciudad
+	 *            the ciudad to set
+	 */
+	public void setCiudad(String ciudad) {
+		this.ciudad = ciudad;
+	}
+
+	/**
+	 * @return the idPaisAdd
+	 */
+	public String getIdPaisAdd() {
+		return idPaisAdd;
+	}
+
+	/**
+	 * @param idPaisAdd
+	 *            the idPaisAdd to set
+	 */
+	public void setIdPaisAdd(String idPaisAdd) {
+		this.idPaisAdd = idPaisAdd;
+	}
+
+	/**
+	 * @return the paisOrigen
+	 */
+	public boolean isPaisOrigen() {
+		return paisOrigen;
+	}
+
+	/**
+	 * @param paisOrigen
+	 *            the paisOrigen to set
+	 */
+	public void setPaisOrigen(boolean paisOrigen) {
+		this.paisOrigen = paisOrigen;
+	}
+
+	/**
+	 * @return the idCategoria
+	 */
+	public String getIdCategoria() {
+		return idCategoria;
+	}
+
+	/**
+	 * @param idCategoria
+	 *            the idCategoria to set
+	 */
+	public void setIdCategoria(String idCategoria) {
+		this.idCategoria = idCategoria;
+	}
+
+	/**
+	 * @return the mapCategorias
+	 */
+	public Map<String, String> getMapCategorias() {
+		return mapCategorias;
+	}
+
+	/**
+	 * @param mapCategorias
+	 *            the mapCategorias to set
+	 */
+	public void setMapCategorias(Map<String, String> mapCategorias) {
+		this.mapCategorias = mapCategorias;
+	}
+
+	/**
+	 * @return the palabra
+	 */
+	public String getPalabra() {
+		return palabra;
+	}
+
+	/**
+	 * @param palabra the palabra to set
+	 */
+	public void setPalabra(String palabra) {
+		this.palabra = palabra;
+	}
+	
+	
 
 }

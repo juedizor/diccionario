@@ -87,11 +87,34 @@ db.ciudad.insert(ciudad);
 
 
 var categoria = {
-	nombre: ['ROPA', 'COMIDAS', 'TRANSPORTE', 'ANIMALES']
+	nombre: 'ROPA'
 }
 
 db.categoria.insert(categoria);
 
+var categoria = {
+	nombre: 'COMIDAS'
+}
+
+db.categoria.insert(categoria);
+
+var categoria = {
+	nombre: 'TRANSPORTE'
+}
+
+db.categoria.insert(categoria);
+
+var categoria = {
+	nombre: 'ANIMALES'
+}
+
+db.categoria.insert(categoria);
+
+var categoria = {
+	nombre: 'FRUTA'
+}
+
+db.categoria.insert(categoria);
 
 var palabra = {
 	pais_origen: 'ARGENTINA', 

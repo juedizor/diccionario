@@ -50,5 +50,23 @@ public class Utils {
 
 		return value;
 	}
+	
+	public static String foundValueMap(Map<String, String> map, String id) {
+		if (map == null) {
+			return "";
+		}
+		Iterator<String> it = map.keySet().iterator();
+		String key = "";
+		String value = "";
+		while (it.hasNext()) {
+			key = "" + it.next();
+			value = map.get(key);
+			if(value.equals(id)){
+				return key;
+			}
+		}
+
+		return value;
+	}
 
 }

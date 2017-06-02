@@ -3,18 +3,22 @@ package co.com.diccionario.negocio.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.com.diccionario.document.Categoria;
 import co.com.diccionario.document.Ciudad;
 import co.com.diccionario.document.Departamento;
 import co.com.diccionario.document.Paises;
+import co.com.diccionario.dto.CategoriaDTO;
 import co.com.diccionario.dto.CiudadDTO;
 import co.com.diccionario.dto.DepartamentoDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.mapper.CategoriaMapper;
 import co.com.diccionario.mapper.CiudadMapper;
 import co.com.diccionario.mapper.DepartamentoMapper;
 import co.com.diccionario.mapper.PaisesMapper;
 import co.com.diccionario.mongodb.iface.CiudadIface;
 import co.com.diccionario.mongodb.iface.DepartamentoIface;
 import co.com.diccionario.mongodb.iface.PaisesIface;
+import co.com.diccionario.mongodb.repository.iface.CategoriaRepository;
 import co.com.diccionario.mongodb.repository.iface.CiudadesRepository;
 import co.com.diccionario.mongodb.repository.iface.DepartamentosRepository;
 import co.com.diccionario.mongodb.repository.iface.PaisesRepository;
@@ -29,6 +33,8 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 	DepartamentosRepository departamentosRepository;
 	@Autowired
 	CiudadesRepository ciudadesRepository;
+	@Autowired
+	CategoriaRepository categoriaRepository;
 
 	@Autowired
 	PaisesIface paisesIface;
@@ -55,7 +61,12 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 		 * se busca el maximo id del documento
 		 */
 		Departamento lastDepa = departamentoIface.findLastId();
-		departamento.setId(lastDepa.getId() + 1);
+		if (lastDepa == null) {
+			departamento.setId(1);
+		} else {
+			departamento.setId(lastDepa.getId() + 1);
+
+		}
 		departamentosRepository.save(departamento);
 	}
 
@@ -69,6 +80,12 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 		ciudad.setId(lastCiudad.getId() + 1);
 		ciudadesRepository.save(ciudad);
 
+	}
+
+	@Override
+	public void registrarCategoria(CategoriaDTO categoriaDTO) {
+		Categoria categoria = CategoriaMapper.INSTANCE.categoriDTOToCategoria(categoriaDTO);
+		categoriaRepository.save(categoria);
 	}
 
 }

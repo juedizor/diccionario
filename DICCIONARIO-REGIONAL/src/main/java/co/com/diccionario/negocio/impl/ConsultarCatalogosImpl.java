@@ -5,15 +5,19 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.com.diccionario.document.Categoria;
 import co.com.diccionario.document.Ciudad;
 import co.com.diccionario.document.Departamento;
 import co.com.diccionario.document.Paises;
+import co.com.diccionario.dto.CategoriaDTO;
 import co.com.diccionario.dto.CiudadDTO;
 import co.com.diccionario.dto.DepartamentoDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.mapper.CategoriaMapper;
 import co.com.diccionario.mapper.CiudadMapper;
 import co.com.diccionario.mapper.DepartamentoMapper;
 import co.com.diccionario.mapper.PaisesMapper;
+import co.com.diccionario.mongodb.repository.iface.CategoriaRepository;
 import co.com.diccionario.mongodb.repository.iface.CiudadesRepository;
 import co.com.diccionario.mongodb.repository.iface.DepartamentosRepository;
 import co.com.diccionario.mongodb.repository.iface.PaisesRepository;
@@ -28,6 +32,8 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 	DepartamentosRepository departamentosRepository;
 	@Autowired
 	CiudadesRepository ciudadesRepository;
+	@Autowired
+	CategoriaRepository categoriaRepository;
 
 	@Override
 	public List<PaisesDTO> obtenerPaises() {
@@ -88,6 +94,26 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 			return listCiudadDTO;
 		}
 
+		return null;
+	}
+
+	@Override
+	public List<CategoriaDTO> obtenerCategorias() {
+		List<Categoria> listCategoria = categoriaRepository.findAll();
+		if (listCategoria != null && !listCategoria.isEmpty()) {
+			List<CategoriaDTO> listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
+			return listCatDto;
+		}
+		return null;
+	}
+
+	@Override
+	public List<CategoriaDTO> obtenerCategorias(String nombre) {
+		List<Categoria> listCategoria = categoriaRepository.findByNombreIgnoreCase(nombre);
+		if (listCategoria != null && !listCategoria.isEmpty()) {
+			List<CategoriaDTO> listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
+			return listCatDto;
+		}
 		return null;
 	}
 

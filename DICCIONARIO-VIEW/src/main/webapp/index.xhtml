@@ -32,7 +32,8 @@
 								value="#{busquedaMB.idPais}">
 								<f:selectItem itemLabel="Seleccione..." itemValue="" />
 								<f:selectItems value="#{busquedaMB.mapPaises}" />
-								<p:ajax event="change" update="cmbDepartamento :msg"
+								<f:attribute name="idPais" value="#{busquedaMB.idPais}"></f:attribute>
+								<p:ajax event="change" update="cmbDepartamento cmbCiudad :msg"
 									listener="#{busquedaMB.cargarDepartamentosOrigen}" />
 							</p:selectOneMenu>
 
@@ -40,8 +41,8 @@
 						</h:panelGroup>
 
 						<h:panelGrid>
-							<p:commandButton type="button" id="btnAgregarPais"
-								icon="btnImageAdicionar" onclick="PF('dlgPais').show();">
+							<p:commandButton id="btnAgregarPais" icon="btnImageAdicionar"
+								onclick="PF('dlgPais').show();">
 								<p:tooltip for="btnAgregarPais" value="Agregar mi pais"
 									showEffect="fade" hideEffect="fade" />
 							</p:commandButton>
@@ -63,10 +64,10 @@
 						</h:panelGroup>
 
 						<h:panelGrid>
-							<p:commandButton type="button"
-								onclick="PF('dlgDepartamento').show();"
-								id="btnAgregarDepartamento" icon="btnImageAdicionar"
-								immediate="true">
+							<p:commandButton id="btnAgregarDepartamento"
+								icon="btnImageAdicionar"
+								actionListener="#{busquedaMB.changeAddPais('true')}"
+								update=":formAddDepartamento:outPais :msg" immediate="true">
 								<p:tooltip for="btnAgregarDepartamento"
 									value="Agregar mi departamento" showEffect="fade"
 									hideEffect="fade" />
@@ -101,7 +102,7 @@
 
 				<p:fieldset legend="¿EN QUE LUGAR ME ENCUENTRO?"
 					styleClass="fieForm">
-					<h:panelGrid id="pnlPaisDestino" columns="3"
+					<h:panelGrid id="pnlUbicacion" columns="3"
 						columnClasses="columnas1, columnas1, columnas1">
 
 						<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
@@ -114,7 +115,10 @@
 								value="#{busquedaMB.idPaisDestino}">
 								<f:selectItem itemLabel="Seleccione..." itemValue="" />
 								<f:selectItems value="#{busquedaMB.mapPaisesDestino}" />
-								<p:ajax event="change" update="cmbDepartamentoDestino :msg"
+								<f:attribute name="idPaisDestino"
+									value="#{busquedaMB.idPaisDestino}"></f:attribute>
+								<p:ajax event="change"
+									update="cmbDepartamentoDestino cmbCiudadDestino :msg"
 									listener="#{busquedaMB.cargarDepartamentosDestino}" />
 							</p:selectOneMenu>
 							<p:message for="cmbPaisDestino" display="default" />
@@ -145,9 +149,10 @@
 						</h:panelGroup>
 
 						<h:panelGrid>
-							<p:commandButton type="button"
-								onclick="PF('dlgDepartamento').show();"
-								id="btnAgregarDepartamentoDestino" icon="btnImageAdicionar">
+							<p:commandButton id="btnAgregarDepartamentoDestino"
+								icon="btnImageAdicionar"
+								actionListener="#{busquedaMB.changeAddPais('false')}"
+								update=":formAddDepartamento:outPais :msg" immediate="true">
 								<p:tooltip for="btnAgregarDepartamentoDestino"
 									value="Agregar departamento donde estoy" showEffect="fade"
 									hideEffect="fade" />
@@ -159,7 +164,8 @@
 						</h:panelGrid>
 
 						<h:panelGroup>
-							<p:selectOneMenu id="cmbCiudadDestino" value="" filter="true">
+							<p:selectOneMenu id="cmbCiudadDestino"
+								value="#{busquedaMB.idCiudadDestino}" filter="true">
 								<f:selectItem itemLabel="Seleccione..." itemValue="" />
 								<f:selectItems value="#{busquedaMB.mapCiudadDestino}" />
 							</p:selectOneMenu>
@@ -176,14 +182,71 @@
 						</h:panelGrid>
 					</h:panelGrid>
 				</p:fieldset>
+
+				<p:fieldset styleClass="fieForm">
+					<h:panelGrid id="pnlTerminos" columns="6">
+						<h:panelGrid columns="2">
+							<p:outputLabel value="Categoria" />
+						</h:panelGrid>
+
+						<p:selectOneMenu id="cmbCategoria"
+							value="#{busquedaMB.idCategoria}" filter="true">
+							<f:selectItem itemLabel="Seleccione..." itemValue="" />
+							<f:selectItems value="#{busquedaMB.mapCategorias}" />
+						</p:selectOneMenu>
+
+						<p:commandButton id="btnAgregarCategoria" type="button"
+							onclick="PF('dlgCategoria').show();" icon="btnImageAdicionar">
+							<p:tooltip for="btnAgregarCategoria"
+								value="Agregar una nueva categoria" showEffect="fade"
+								hideEffect="fade" />
+						</p:commandButton>
+
+						<h:panelGrid>
+							<p:outputLabel value="Palabra" />
+						</h:panelGrid>
+
+						<p:inputText id="txtPalabra" value="#{busquedaMB.palabra}">
+							<p:ajax event="blur" update="txtPalabra" listener="#{busquedaMB.palabraMayuscula()}" />
+						</p:inputText>
+
+						<p:commandButton id="btnBuscarPalabra" icon="btnImageGuardar">
+							<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
+								showEffect="fade" hideEffect="fade" />
+						</p:commandButton>
+
+					</h:panelGrid>
+
+				</p:fieldset>
 			</p:panel>
 
 			<p:growl id="msgGeneral" widgetVar="msgGeneral" showDetail="true"
 				life="3000" globalOnly="true" />
 		</h:form>
 
+		<p:dialog id="dlgCategoria" widgetVar="dlgCategoria" modal="true"
+			appendTo="@(body)" resizable="false">
+			<h:form id="formAddCategoria">
+				<h:panelGrid columns="2" columnClasses="columna1, columna1">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Categoria" />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtCategoria" value="" required="true"
+							requiredMessage="Requerido" />
+						<p:commandButton id="btnAddCategoria" icon="btnImageGuardar">
+						</p:commandButton>
+						<p:message for="txtCategoria" display="default" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
 		<p:dialog id="dlgPais" widgetVar="dlgPais" modal="true"
 			appendTo="@(body)" resizable="false">
+			<p:ajax event="close" update="formAddPais"
+				listener="#{busquedaMB.cerrarDlgPais()}" />
 			<h:form id="formAddPais">
 				<h:panelGrid columns="2" columnClasses="columna1, columna1">
 					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
@@ -191,9 +254,13 @@
 						<p:outputLabel value="Pais" />
 					</h:panelGrid>
 					<h:panelGroup>
-						<h:inputText id="txtPais" value="" required="true"
-							requiredMessage="Requerido" />
-						<p:commandButton id="btnAddPais" icon="btnImageGuardar">
+						<h:inputText id="txtPais" value="#{busquedaMB.pais}">
+							<p:ajax event="blur" update="txtPais"
+								listener="#{busquedaMB.paisMayuscula()}" />
+						</h:inputText>
+						<p:commandButton id="btnAddPais" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevoPais}"
+							update=":busqueda:cmbPais :busqueda:cmbPaisDestino :msg formAddPais">
 						</p:commandButton>
 						<p:message for="txtPais" display="default" />
 					</h:panelGroup>
@@ -204,16 +271,31 @@
 
 		<p:dialog id="dlgDepartamento" widgetVar="dlgDepartamento"
 			modal="true" appendTo="@(body)" resizable="false">
+			<p:ajax event="close" update="formAddDepartamento"
+				listener="#{busquedaMB.cerrarDlgDepartamento()}" />
 			<h:form id="formAddDepartamento">
+				<h:panelGrid columns="2">
+					<h:panelGrid columns="3">
+						<p:outputLabel value="Pais:" />
+						<p:outputLabel id="outPais" value="#{busquedaMB.idPaisAdd}" />
+						<p:outputLabel id="origen" rendered="false"
+							value="#{busquedaMB.paisOrigen}" />
+					</h:panelGrid>
+				</h:panelGrid>
 				<h:panelGrid columns="2" columnClasses="columna1, columna1">
 					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
 						<div class="obligatorio" />
 						<p:outputLabel value="Departamento o Provincia" />
 					</h:panelGrid>
 					<h:panelGroup>
-						<h:inputText id="txtDepartamento" value="" required="true"
-							requiredMessage="Requerido" />
-						<p:commandButton id="btnAddDepartamento" icon="btnImageGuardar">
+						<h:inputText id="txtDepartamento"
+							value="#{busquedaMB.departamento}">
+							<p:ajax event="blur" update="txtDepartamento"
+								listener="#{busquedaMB.departamentoMayuscula()}" />
+						</h:inputText>
+						<p:commandButton id="btnAddDepartamento" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevoDepartamento()}"
+							update=":msg txtDepartamento">
 						</p:commandButton>
 						<p:message for="txtDepartamento" display="default" />
 					</h:panelGroup>
@@ -223,6 +305,8 @@
 
 		<p:dialog id="dlgCiudad" widgetVar="dlgCiudad" modal="true"
 			appendTo="@(body)" resizable="false">
+			<p:ajax event="close" update="formAddCiudad"
+				listener="#{busquedaMB.cerrarDlgCiudad()}" />
 			<h:form id="formAddCiudad">
 				<h:panelGrid columns="2" columnClasses="columna1, columna1">
 					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">

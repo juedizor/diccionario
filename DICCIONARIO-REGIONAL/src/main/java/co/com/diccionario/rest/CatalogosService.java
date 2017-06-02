@@ -1,5 +1,6 @@
 package co.com.diccionario.rest;
 
+import java.text.Normalizer;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.com.diccionario.dto.CategoriaDTO;
 import co.com.diccionario.dto.CiudadDTO;
 import co.com.diccionario.dto.DepartamentoDTO;
 import co.com.diccionario.dto.PaisesDTO;
@@ -53,6 +55,7 @@ public class CatalogosService {
 			if (nombre == null || nombre.trim().isEmpty()) {
 				throw new GeneralErrorException("parametros de consulta vacios");
 			}
+			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
 			listPaises = consultarCatalogosIface.obtenerPaises(nombre.trim());
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error desconocido " + e.getMessage());
@@ -104,7 +107,7 @@ public class CatalogosService {
 			if (idPais <= 0 || nombre == null || nombre.trim().isEmpty()) {
 				throw new GeneralErrorException("parametros de consulta vacios");
 			}
-
+			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
 			listDepa = consultarCatalogosIface.obtenerDepartamentos(idPais, nombre.trim());
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error desconocido " + e.getMessage());
@@ -181,6 +184,56 @@ public class CatalogosService {
 			registrarCatalogosIface.registrarCiudad(ciudadDTO);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error desconocido " + e.getMessage());
+		}
+
+		return ResponseEntity.ok(HttpStatus.CREATED);
+	}
+
+	@RequestMapping(value = "/categorias", method = RequestMethod.GET)
+	public List<CategoriaDTO> getCategorias() throws CommonException {
+		List<CategoriaDTO> listCat;
+		try {
+			listCat = consultarCatalogosIface.obtenerCategorias();
+		} catch (Exception e) {
+			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
+		}
+
+		if (listCat == null || listCat.isEmpty()) {
+			throw new NotFoundException("no hay datos de categorias");
+		}
+
+		return listCat;
+	}
+
+	@RequestMapping(value = "/categorias/{nombre}", method = RequestMethod.GET)
+	public List<CategoriaDTO> getCategorias(@PathVariable(value = "nombre") String nombre) throws CommonException {
+		List<CategoriaDTO> listCat;
+		try {
+			if (nombre == null || nombre.trim().isEmpty()) {
+				throw new GeneralErrorException("el parametro nombre esta vacio");
+			}
+			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+			listCat = consultarCatalogosIface.obtenerCategorias(nombre);
+		} catch (Exception e) {
+			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
+		}
+
+		if (listCat == null || listCat.isEmpty()) {
+			throw new NotFoundException("no existe la categoria " + nombre + "");
+		}
+
+		return listCat;
+	}
+
+	@RequestMapping(value = "/categorias", method = RequestMethod.POST)
+	public ResponseEntity<HttpStatus> crearCategoria(@RequestBody CategoriaDTO categoriaDTO) throws CommonException {
+		try {
+			if (categoriaDTO == null) {
+				throw new GeneralErrorException("Datos vacios");
+			}
+			registrarCatalogosIface.registrarCategoria(categoriaDTO);
+		} catch (Exception e) {
+			throw new GeneralErrorException("Ocurrio error registrando la categoria " + e.getMessage());
 		}
 
 		return ResponseEntity.ok(HttpStatus.CREATED);
