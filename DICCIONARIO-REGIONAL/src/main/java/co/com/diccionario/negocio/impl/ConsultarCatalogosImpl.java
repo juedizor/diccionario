@@ -1,8 +1,10 @@
 package co.com.diccionario.negocio.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import co.com.diccionario.document.Categoria;
@@ -35,6 +37,8 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 	CiudadesRepository ciudadesRepository;
 	@Autowired
 	CategoriaRepository categoriaRepository;
+	@Autowired
+	Environment env;
 
 	@Override
 	public List<PaisesDTO> obtenerPaises() {
@@ -111,20 +115,32 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 	@Override
 	public List<CategoriaDTO> obtenerCategorias(String nombre) {
 		List<Categoria> listCategoria = categoriaRepository.findByNombreIgnoreCase(nombre);
+		List<CategoriaDTO> listCatDto;
 		if (listCategoria != null && !listCategoria.isEmpty()) {
-			List<CategoriaDTO> listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
+			listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
 			return listCatDto;
-		}else{
+		} else {
 			List<Categoria> listCategoriaAll = categoriaRepository.findAll();
+			listCategoria = new ArrayList<>();
+			String numCoincidencia = env.getProperty("num_coincidencia_palabra");
+			int numCoinc = 2;
+			if (numCoincidencia != null && !numCoincidencia.trim().isEmpty()) {
+				numCoinc = Integer.parseInt(numCoincidencia);
+			}
+
 			for (Categoria categoria : listCategoriaAll) {
 				int distance = LevenshteinDistance.computeLevenshteinDistance(nombre, categoria.getNombre());
-				
+
+				if (distance <= numCoinc) {
+					listCategoria.add(categoria);
+				}
+			}
+			if (listCategoria != null && !listCategoria.isEmpty()) {
+				listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
+				return listCatDto;
 			}
 		}
 		return null;
 	}
-	
-	
-	
 
 }

@@ -30,6 +30,7 @@ public class CatalogosService {
 	ConsultarCatalogosIface consultarCatalogosIface;
 	@Autowired
 	RegistrarCatalogosIface registrarCatalogosIface;
+	
 
 	@RequestMapping(value = "/paises", method = RequestMethod.GET)
 	public List<PaisesDTO> getPaises() throws CommonException {
