@@ -50,7 +50,13 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 		 * se busca el maximo id del documento
 		 */
 		Paises lastPais = paisesIface.findLastId();
-		paises.setId(lastPais.getId() + 1);
+		if(lastPais == null){
+			paises.setId(1);
+		}else{
+			paises.setId(lastPais.getId() + 1);
+		}
+		
+		
 		paisesRepository.save(paises);
 	}
 

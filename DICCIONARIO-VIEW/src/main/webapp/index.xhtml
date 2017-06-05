@@ -18,206 +18,198 @@
 		<h:form id="busqueda">
 			<p:panel id="pnlGeneral" styleClass="pnlForm"
 				header="BUSQUEDA DE TERMINOS">
-				<p:fieldset legend="¿DE DONDE ERES?" styleClass="fieForm">
-					<h:panelGrid id="pnlPais" columns="3"
-						columnClasses="columnas1, columnas1, columnas1">
 
-						<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
-							<div class="obligatorio" />
-							<p:outputLabel value="Pais" />
+				<p:outputPanel id="fieldPnlPais">
+					<p:fieldset legend="¿DE DONDE ERES?"
+						rendered="#{busquedaMB.mostrarOrigen}" styleClass="fieForm">
+						<h:panelGrid id="pnlPais" columns="2"
+							columnClasses="columnas1, columnas1, columnas1">
+
+							<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+								<div class="obligatorio" />
+								<p:outputLabel value="Pais" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbPais" filter="true"
+									value="#{busquedaMB.idPais}">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapPaises}" />
+									<f:attribute name="idPais" value="#{busquedaMB.idPais}"></f:attribute>
+									<p:ajax event="change" update="cmbDepartamento cmbCiudad :msg"
+										listener="#{busquedaMB.cargarDepartamentosOrigen}" />
+								</p:selectOneMenu>
+								<p:message for="cmbPais" display="default" />
+							</h:panelGroup>
+
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Departamento o Provincia" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbDepartamento"
+									value="#{busquedaMB.idDepartamento}" filter="true">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapDepartamento}" />
+									<p:ajax event="change" update="cmbCiudad :msg"
+										listener="#{busquedaMB.cargarCiudadOrigen}" />
+								</p:selectOneMenu>
+								<p:message for="cmbDepartamento" display="default" />
+							</h:panelGroup>
+
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Ciudad" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbCiudad" value="#{busquedaMB.idCiudad}"
+									filter="true">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapCiudad}" />
+								</p:selectOneMenu>
+								<p:message for="cmbCiudad" display="default" />
+							</h:panelGroup>
+
 						</h:panelGrid>
+					</p:fieldset>
+				</p:outputPanel>
 
-						<h:panelGroup>
-							<p:selectOneMenu id="cmbPais" filter="true"
-								value="#{busquedaMB.idPais}">
+
+				<h:panelGrid id="btnContinuarDestino">
+					<p:commandButton value="Continuar"
+						rendered="#{busquedaMB.mostrarBtnContinuarDestino}"
+						icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.continuarPanelPaisOrigen()}">
+					</p:commandButton>
+				</h:panelGrid>
+
+
+				<p:outputPanel id="fieldPnlUbicacion">
+					<p:fieldset legend="¿EN QUE LUGAR ME ENCUENTRO?"
+						styleClass="fieForm" rendered="#{busquedaMB.mostrarDestino}">
+						<h:panelGrid id="pnlUbicacion" columns="3"
+							columnClasses="columnas1, columnas1, columnas1">
+
+							<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+								<div class="obligatorio" />
+								<p:outputLabel value="Pais" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbPaisDestino" filter="true"
+									value="#{busquedaMB.idPaisDestino}">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapPaisesDestino}" />
+									<f:attribute name="idPaisDestino"
+										value="#{busquedaMB.idPaisDestino}"></f:attribute>
+									<p:ajax event="change"
+										update="cmbDepartamentoDestino cmbCiudadDestino :msg"
+										listener="#{busquedaMB.cargarDepartamentosDestino}" />
+								</p:selectOneMenu>
+								<p:message for="cmbPaisDestino" display="default" />
+							</h:panelGroup>
+
+							<h:panelGrid>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Departamento o Provincia" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbDepartamentoDestino"
+									value="#{busquedaMB.idDepartamentoDestino}" filter="true">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapDepartamentoDestino}" />
+									<p:ajax event="change" update="cmbCiudadDestino :msg"
+										listener="#{busquedaMB.cargarCiudadDestino}" />
+								</p:selectOneMenu>
+								<p:message for="cmbDepartamentoDestino" display="default" />
+							</h:panelGroup>
+
+							<h:panelGrid>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Ciudad" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbCiudadDestino"
+									value="#{busquedaMB.idCiudadDestino}" filter="true">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapCiudadDestino}" />
+								</p:selectOneMenu>
+								<p:message for="cmbCiudadDestino" display="default" />
+							</h:panelGroup>
+
+							<h:panelGrid>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+				</p:outputPanel>
+
+				<h:panelGrid id="btnsDestino" columns="2">
+					<p:commandButton rendered="#{busquedaMB.mostrarBotonesDestino}"
+						value="Regresar" icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.regresarPanelPaisOrigen()}">
+					</p:commandButton>
+
+					<p:commandButton rendered="#{busquedaMB.mostrarBotonesDestino}"
+						value="Continuar" icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.continuarPanelCategoria()}">
+					</p:commandButton>
+				</h:panelGrid>
+
+
+				<p:outputPanel id="fieldPnlTerminos">
+					<p:fieldset styleClass="fieForm"
+						rendered="#{busquedaMB.mostrarCategoria}">
+						<h:panelGrid id="pnlTerminos" columns="6">
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Categoria" />
+							</h:panelGrid>
+
+							<p:selectOneMenu id="cmbCategoria"
+								value="#{busquedaMB.idCategoria}" filter="true">
 								<f:selectItem itemLabel="Seleccione..." itemValue="" />
-								<f:selectItems value="#{busquedaMB.mapPaises}" />
-								<f:attribute name="idPais" value="#{busquedaMB.idPais}"></f:attribute>
-								<p:ajax event="change" update="cmbDepartamento cmbCiudad :msg"
-									listener="#{busquedaMB.cargarDepartamentosOrigen}" />
+								<f:selectItems value="#{busquedaMB.mapCategorias}" />
 							</p:selectOneMenu>
 
-							<p:message for="cmbPais" display="default" />
-						</h:panelGroup>
+							<p:commandButton id="btnAgregarCategoria" type="button"
+								onclick="PF('dlgCategoria').show();" icon="btnImageAdicionar">
+								<p:tooltip for="btnAgregarCategoria"
+									value="Agregar una nueva categoria" showEffect="fade"
+									hideEffect="fade" />
+							</p:commandButton>
 
-						<h:panelGrid>
-							<p:commandButton id="btnAgregarPais" icon="btnImageAdicionar"
-								onclick="PF('dlgPais').show();">
-								<p:tooltip for="btnAgregarPais" value="Agregar mi pais"
+							<h:panelGrid>
+								<p:outputLabel value="Palabra" />
+							</h:panelGrid>
+
+							<p:inputText id="txtPalabra" value="#{busquedaMB.palabra}">
+								<p:ajax event="blur" update="txtPalabra"
+									listener="#{busquedaMB.palabraMayuscula()}" />
+							</p:inputText>
+
+							<p:commandButton id="btnBuscarPalabra" icon="btnImageBuscar">
+								<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
 									showEffect="fade" hideEffect="fade" />
 							</p:commandButton>
+
 						</h:panelGrid>
 
-						<h:panelGrid columns="2">
-							<p:outputLabel value="Departamento o Provincia" />
-						</h:panelGrid>
+					</p:fieldset>
+				</p:outputPanel>
 
-						<h:panelGroup>
-							<p:selectOneMenu id="cmbDepartamento"
-								value="#{busquedaMB.idDepartamento}" filter="true">
-								<f:selectItem itemLabel="Seleccione..." itemValue="" />
-								<f:selectItems value="#{busquedaMB.mapDepartamento}" />
-								<p:ajax event="change" update="cmbCiudad :msg"
-									listener="#{busquedaMB.cargarCiudadOrigen}" />
-							</p:selectOneMenu>
-							<p:message for="cmbDepartamento" display="default" />
-						</h:panelGroup>
-
-						<h:panelGrid>
-							<p:commandButton id="btnAgregarDepartamento"
-								icon="btnImageAdicionar"
-								actionListener="#{busquedaMB.changeAddPais('true')}"
-								update=":formAddDepartamento:outPais :msg" immediate="true">
-								<p:tooltip for="btnAgregarDepartamento"
-									value="Agregar mi departamento" showEffect="fade"
-									hideEffect="fade" />
-							</p:commandButton>
-						</h:panelGrid>
-
-						<h:panelGrid columns="2">
-							<p:outputLabel value="Ciudad" />
-						</h:panelGrid>
-
-						<h:panelGroup>
-							<p:selectOneMenu id="cmbCiudad" value="#{busquedaMB.idCiudad}"
-								filter="true">
-								<f:selectItem itemLabel="Seleccione..." itemValue="" />
-								<f:selectItems value="#{busquedaMB.mapCiudad}" />
-							</p:selectOneMenu>
-							<p:message for="cmbCiudad" display="default" />
-						</h:panelGroup>
-
-						<h:panelGrid>
-							<p:commandButton id="btnAgregarCiudad" type="button"
-								onclick="PF('dlgCiudad').show();" icon="btnImageAdicionar">
-								<p:tooltip for="btnAgregarCiudad" value="Agregar mi ciudad"
-									showEffect="fade" hideEffect="fade" />
-							</p:commandButton>
-						</h:panelGrid>
-
-					</h:panelGrid>
-
-				</p:fieldset>
+				<h:panelGrid id="btnsCategoria" columns="2">
+					<p:commandButton rendered="#{busquedaMB.mostrarBotonesCategoria}"
+						value="Regresar" icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.regresarPanelPaisDestino()}">
+					</p:commandButton>
+				</h:panelGrid>
 
 
-				<p:fieldset legend="¿EN QUE LUGAR ME ENCUENTRO?"
-					styleClass="fieForm">
-					<h:panelGrid id="pnlUbicacion" columns="3"
-						columnClasses="columnas1, columnas1, columnas1">
-
-						<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
-							<div class="obligatorio" />
-							<p:outputLabel value="Pais" />
-						</h:panelGrid>
-
-						<h:panelGroup>
-							<p:selectOneMenu id="cmbPaisDestino" filter="true"
-								value="#{busquedaMB.idPaisDestino}">
-								<f:selectItem itemLabel="Seleccione..." itemValue="" />
-								<f:selectItems value="#{busquedaMB.mapPaisesDestino}" />
-								<f:attribute name="idPaisDestino"
-									value="#{busquedaMB.idPaisDestino}"></f:attribute>
-								<p:ajax event="change"
-									update="cmbDepartamentoDestino cmbCiudadDestino :msg"
-									listener="#{busquedaMB.cargarDepartamentosDestino}" />
-							</p:selectOneMenu>
-							<p:message for="cmbPaisDestino" display="default" />
-						</h:panelGroup>
-
-						<h:panelGrid>
-							<p:commandButton id="btnAgregarPaisDestino" type="button"
-								icon="btnImageAdicionar" onclick="PF('dlgPais').show();">
-								<p:tooltip for="btnAgregarPaisDestino"
-									value="Agregar pais donde estoy" showEffect="fade"
-									hideEffect="fade" />
-							</p:commandButton>
-						</h:panelGrid>
-
-						<h:panelGrid columns="2">
-							<p:outputLabel value="Departamento o Provincia" />
-						</h:panelGrid>
-
-						<h:panelGroup>
-							<p:selectOneMenu id="cmbDepartamentoDestino"
-								value="#{busquedaMB.idDepartamentoDestino}" filter="true">
-								<f:selectItem itemLabel="Seleccione..." itemValue="" />
-								<f:selectItems value="#{busquedaMB.mapDepartamentoDestino}" />
-								<p:ajax event="change" update="cmbCiudadDestino :msg"
-									listener="#{busquedaMB.cargarCiudadDestino}" />
-							</p:selectOneMenu>
-							<p:message for="cmbDepartamentoDestino" display="default" />
-						</h:panelGroup>
-
-						<h:panelGrid>
-							<p:commandButton id="btnAgregarDepartamentoDestino"
-								icon="btnImageAdicionar"
-								actionListener="#{busquedaMB.changeAddPais('false')}"
-								update=":formAddDepartamento:outPais :msg" immediate="true">
-								<p:tooltip for="btnAgregarDepartamentoDestino"
-									value="Agregar departamento donde estoy" showEffect="fade"
-									hideEffect="fade" />
-							</p:commandButton>
-						</h:panelGrid>
-
-						<h:panelGrid columns="2">
-							<p:outputLabel value="Ciudad" />
-						</h:panelGrid>
-
-						<h:panelGroup>
-							<p:selectOneMenu id="cmbCiudadDestino"
-								value="#{busquedaMB.idCiudadDestino}" filter="true">
-								<f:selectItem itemLabel="Seleccione..." itemValue="" />
-								<f:selectItems value="#{busquedaMB.mapCiudadDestino}" />
-							</p:selectOneMenu>
-							<p:message for="cmbCiudadDestino" display="default" />
-						</h:panelGroup>
-
-						<h:panelGrid>
-							<p:commandButton id="btnAgregarCiudadDestino" type="button"
-								onclick="PF('dlgCiudad').show();" icon="btnImageAdicionar">
-								<p:tooltip for="btnAgregarCiudadDestino"
-									value="Agregar ciudad donde estoy" showEffect="fade"
-									hideEffect="fade" />
-							</p:commandButton>
-						</h:panelGrid>
-					</h:panelGrid>
-				</p:fieldset>
-
-				<p:fieldset styleClass="fieForm">
-					<h:panelGrid id="pnlTerminos" columns="6">
-						<h:panelGrid columns="2">
-							<p:outputLabel value="Categoria" />
-						</h:panelGrid>
-
-						<p:selectOneMenu id="cmbCategoria"
-							value="#{busquedaMB.idCategoria}" filter="true">
-							<f:selectItem itemLabel="Seleccione..." itemValue="" />
-							<f:selectItems value="#{busquedaMB.mapCategorias}" />
-						</p:selectOneMenu>
-
-						<p:commandButton id="btnAgregarCategoria" type="button"
-							onclick="PF('dlgCategoria').show();" icon="btnImageAdicionar">
-							<p:tooltip for="btnAgregarCategoria"
-								value="Agregar una nueva categoria" showEffect="fade"
-								hideEffect="fade" />
-						</p:commandButton>
-
-						<h:panelGrid>
-							<p:outputLabel value="Palabra" />
-						</h:panelGrid>
-
-						<p:inputText id="txtPalabra" value="#{busquedaMB.palabra}">
-							<p:ajax event="blur" update="txtPalabra" listener="#{busquedaMB.palabraMayuscula()}" />
-						</p:inputText>
-
-						<p:commandButton id="btnBuscarPalabra" icon="btnImageGuardar">
-							<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
-								showEffect="fade" hideEffect="fade" />
-						</p:commandButton>
-
-					</h:panelGrid>
-
-				</p:fieldset>
 			</p:panel>
 
 			<p:growl id="msgGeneral" widgetVar="msgGeneral" showDetail="true"
@@ -233,9 +225,14 @@
 						<p:outputLabel value="Categoria" />
 					</h:panelGrid>
 					<h:panelGroup>
-						<h:inputText id="txtCategoria" value="" required="true"
-							requiredMessage="Requerido" />
-						<p:commandButton id="btnAddCategoria" icon="btnImageGuardar">
+						<h:inputText id="txtCategoria" value="#{busquedaMB.categoria}">
+							<p:ajax event="blur"
+								listener="#{busquedaMB.categoriaMayuscula()}"
+								update="txtCategoria" />
+						</h:inputText>
+						<p:commandButton update=":busqueda:cmbCategoria :msg"
+							id="btnAddCategoria" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevaCategoria()}">
 						</p:commandButton>
 						<p:message for="txtCategoria" display="default" />
 					</h:panelGroup>

@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
@@ -22,7 +22,7 @@ import co.com.diccionario.utils.ParamsBundle;
 import co.com.diccionario.utils.Utils;
 
 @ManagedBean(name = "busquedaMB")
-@ViewScoped
+@SessionScoped
 public class BusquedaTerminosMB {
 
 	private String idPais;
@@ -55,6 +55,15 @@ public class BusquedaTerminosMB {
 
 	private String palabra;
 
+	private boolean isMostrarDestino;
+	private boolean isMostrarCategoria;
+	private boolean isMostrarOrigen = true;
+	private boolean isMostrarBtnContinuarDestino = true;
+	private boolean isMostrarBotonesDestino;
+	private boolean isMostrarBotonesCategoria;
+
+	private String categoria;
+
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
 		ParamsBundle.getInstance().getEtiquetas(ParamsBundle.MSG);
@@ -64,6 +73,75 @@ public class BusquedaTerminosMB {
 	public void cargarPaises() {
 		obtenerPaises();
 		obtenerCategorias();
+	}
+
+	public void regresarPanelPaisDestino() {
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		requestContext.update("busqueda:fieldPnlUbicacion");
+		requestContext.update("busqueda:btnContinuarDestino");
+		requestContext.update("busqueda:btnsDestino");
+		requestContext.update("busqueda:btnsCategoria");
+		requestContext.update("busqueda:fieldPnlTerminos");
+		isMostrarDestino = true;
+		isMostrarCategoria = false;
+		isMostrarBotonesDestino = true;
+		isMostrarBotonesCategoria = false;
+	}
+
+	public void continuarPanelCategoria() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		if (idPaisDestino == null || idPaisDestino.trim().isEmpty()) {
+			requestContext.update("msg");
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null,
+					ParamsBundle.getInstance().getMapMensajes().get("msg_seleccione_pais"),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+		requestContext.update("busqueda:fieldPnlUbicacion");
+		requestContext.update("busqueda:btnContinuarDestino");
+		requestContext.update("busqueda:btnsDestino");
+		requestContext.update("busqueda:btnsCategoria");
+		requestContext.update("busqueda:fieldPnlTerminos");
+		isMostrarDestino = false;
+		isMostrarCategoria = true;
+		isMostrarBotonesDestino = false;
+		isMostrarBotonesCategoria = true;
+	}
+
+	public void regresarPanelPaisOrigen() {
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		requestContext.update("busqueda:fieldPnlPais");
+		requestContext.update("busqueda:fieldPnlUbicacion");
+		requestContext.update("busqueda:btnContinuarDestino");
+		requestContext.update("busqueda:btnsDestino");
+		isMostrarDestino = false;
+		isMostrarBotonesDestino = false;
+		isMostrarOrigen = true;
+		isMostrarBtnContinuarDestino = true;
+	}
+
+	public void continuarPanelPaisOrigen() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		if (idPais == null || idPais.trim().isEmpty()) {
+			requestContext.update("msg");
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null,
+					ParamsBundle.getInstance().getMapMensajes().get("msg_seleccione_pais"),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+		requestContext.update("busqueda:fieldPnlPais");
+		requestContext.update("busqueda:fieldPnlUbicacion");
+		requestContext.update("busqueda:btnContinuarDestino");
+		requestContext.update("busqueda:btnsDestino");
+		isMostrarDestino = true;
+		isMostrarOrigen = false;
+		isMostrarBtnContinuarDestino = false;
+		isMostrarBotonesDestino = true;
+
 	}
 
 	public void obtenerCategorias() {
@@ -172,10 +250,6 @@ public class BusquedaTerminosMB {
 		}
 
 		if (listDepartamentoDTO == null || listDepartamentoDTO.isEmpty()) {
-			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
-					ParamsBundle.getInstance().getMapMensajes().get("msg_no_departamentos"),
-					ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
-			mapDepartamentoDestino = new LinkedHashMap<>();
 			return;
 		}
 
@@ -206,10 +280,6 @@ public class BusquedaTerminosMB {
 		}
 
 		if (listDepartamentoDTO == null || listDepartamentoDTO.isEmpty()) {
-			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
-					ParamsBundle.getInstance().getMapMensajes().get("msg_no_departamentos"),
-					ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
-			mapDepartamento = new LinkedHashMap<>();
 			return;
 		}
 
@@ -248,10 +318,6 @@ public class BusquedaTerminosMB {
 		}
 
 		if (listCiudadDTO == null || listCiudadDTO.isEmpty()) {
-			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
-					ParamsBundle.getInstance().getMapMensajes().get("msg_no_ciudad"),
-					ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
-			mapCiudad = new LinkedHashMap<>();
 			return;
 		}
 
@@ -280,10 +346,6 @@ public class BusquedaTerminosMB {
 		}
 
 		if (listCiudadDTO == null || listCiudadDTO.isEmpty()) {
-			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
-					ParamsBundle.getInstance().getMapMensajes().get("msg_no_ciudad"),
-					ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
-			mapCiudadDestino = new LinkedHashMap<>();
 			return;
 		}
 
@@ -319,6 +381,59 @@ public class BusquedaTerminosMB {
 			palabra = palabra.trim().replaceAll(" +", " ");
 			palabra = palabra.toUpperCase();
 		}
+	}
+
+	public void categoriaMayuscula() {
+		if (categoria != null && !categoria.trim().isEmpty()) {
+			categoria = categoria.trim().replaceAll(" +", " ");
+			categoria = categoria.toUpperCase();
+		}
+	}
+
+	public void addNuevaCategoria() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		if (categoria == null || categoria.trim().isEmpty()) {
+			String msg = "Debe digitar la categoria";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		List<CategoriaDTO> listCategoriaDTO;
+		try {
+			listCategoriaDTO = CatalogosServiceClient.getInstance().getCategorias(categoria);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		if (listCategoriaDTO != null && !listCategoriaDTO.isEmpty()) {
+			String msg = "Ya existe una categoria con el nombre " + categoria + "";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			setCategoria("");
+			return;
+		}
+
+		CategoriaDTO categoriaDTO = new CategoriaDTO();
+		categoriaDTO.setNombre(categoria);
+		try {
+			boolean creado = CatalogosServiceClient.getInstance().crearCategoria(categoriaDTO);
+			if (creado) {
+				obtenerCategorias();
+				String mensaje = "La categoria con nombre " + categoria + " ha sido creada";
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null, mensaje,
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+				setCategoria("");
+			}
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
 	}
 
 	public void addNuevoPais() {
@@ -754,12 +869,116 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param palabra the palabra to set
+	 * @param palabra
+	 *            the palabra to set
 	 */
 	public void setPalabra(String palabra) {
 		this.palabra = palabra;
 	}
-	
-	
+
+	/**
+	 * @return the isMostrarDestino
+	 */
+	public boolean isMostrarDestino() {
+		return isMostrarDestino;
+	}
+
+	/**
+	 * @param isMostrarDestino
+	 *            the isMostrarDestino to set
+	 */
+	public void setMostrarDestino(boolean isMostrarDestino) {
+		this.isMostrarDestino = isMostrarDestino;
+	}
+
+	/**
+	 * @return the isMostrarCategoria
+	 */
+	public boolean isMostrarCategoria() {
+		return isMostrarCategoria;
+	}
+
+	/**
+	 * @param isMostrarCategoria
+	 *            the isMostrarCategoria to set
+	 */
+	public void setMostrarCategoria(boolean isMostrarCategoria) {
+		this.isMostrarCategoria = isMostrarCategoria;
+	}
+
+	/**
+	 * @return the isMostrarOrigen
+	 */
+	public boolean isMostrarOrigen() {
+		return isMostrarOrigen;
+	}
+
+	/**
+	 * @param isMostrarOrigen
+	 *            the isMostrarOrigen to set
+	 */
+	public void setMostrarOrigen(boolean isMostrarOrigen) {
+		this.isMostrarOrigen = isMostrarOrigen;
+	}
+
+	/**
+	 * @return the isMostrarBtnContinuarDestino
+	 */
+	public boolean isMostrarBtnContinuarDestino() {
+		return isMostrarBtnContinuarDestino;
+	}
+
+	/**
+	 * @param isMostrarBtnContinuarDestino
+	 *            the isMostrarBtnContinuarDestino to set
+	 */
+	public void setMostrarBtnContinuarDestino(boolean isMostrarBtnContinuarDestino) {
+		this.isMostrarBtnContinuarDestino = isMostrarBtnContinuarDestino;
+	}
+
+	/**
+	 * @return the isMostrarBotonesDestino
+	 */
+	public boolean isMostrarBotonesDestino() {
+		return isMostrarBotonesDestino;
+	}
+
+	/**
+	 * @param isMostrarBotonesDestino
+	 *            the isMostrarBotonesDestino to set
+	 */
+	public void setMostrarBotonesDestino(boolean isMostrarBotonesDestino) {
+		this.isMostrarBotonesDestino = isMostrarBotonesDestino;
+	}
+
+	/**
+	 * @return the isMostrarBotonesCategoria
+	 */
+	public boolean isMostrarBotonesCategoria() {
+		return isMostrarBotonesCategoria;
+	}
+
+	/**
+	 * @param isMostrarBotonesCategoria
+	 *            the isMostrarBotonesCategoria to set
+	 */
+	public void setMostrarBotonesCategoria(boolean isMostrarBotonesCategoria) {
+		this.isMostrarBotonesCategoria = isMostrarBotonesCategoria;
+	}
+
+	/**
+	 * @return the categoria
+	 */
+	public String getCategoria() {
+		return categoria;
+	}
+
+	/**
+	 * @param categoria
+	 *            the categoria to set
+	 */
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
+	}
 
 }

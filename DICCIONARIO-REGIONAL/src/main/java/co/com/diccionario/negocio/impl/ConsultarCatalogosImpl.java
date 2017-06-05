@@ -22,6 +22,7 @@ import co.com.diccionario.mongodb.repository.iface.CiudadesRepository;
 import co.com.diccionario.mongodb.repository.iface.DepartamentosRepository;
 import co.com.diccionario.mongodb.repository.iface.PaisesRepository;
 import co.com.diccionario.negocio.iface.ConsultarCatalogosIface;
+import co.com.diccionario.utilidades.LevenshteinDistance;
 
 @Service
 public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
@@ -113,8 +114,17 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 		if (listCategoria != null && !listCategoria.isEmpty()) {
 			List<CategoriaDTO> listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
 			return listCatDto;
+		}else{
+			List<Categoria> listCategoriaAll = categoriaRepository.findAll();
+			for (Categoria categoria : listCategoriaAll) {
+				int distance = LevenshteinDistance.computeLevenshteinDistance(nombre, categoria.getNombre());
+				
+			}
 		}
 		return null;
 	}
+	
+	
+	
 
 }
