@@ -216,6 +216,37 @@
 				life="3000" globalOnly="true" />
 		</h:form>
 
+
+
+		<p:dialog id="dlgCategoriaAproximadas"
+			widgetVar="dlgCategoriaAproximadas" modal="true" appendTo="@(body)"
+			resizable="false">
+			<h:form id="formAddCategoriaAproximadas">
+				<h:panelGrid>
+					<p:outputLabel value="#{busquedaMB.mensajeCategoriaAproximada}" />
+
+					<p:panelGrid columns="2">
+						<p:selectOneRadio id="radioPosibleCategoria"
+							value="#{busquedaMB.posibleCategoria}">
+							<f:selectItems value="#{busquedaMB.listPosiblesCategorias}"
+								var="c" itemLabel="#{c.nombre}" itemValue="#{c.id}" />
+						</p:selectOneRadio>
+					</p:panelGrid>
+
+					<h:panelGroup>
+						<h:panelGrid columns="2">
+							<p:commandButton value="Aceptar"
+								actionListener="#{busquedaMB.seleccionarCategoriaAproximada()}">
+							</p:commandButton>
+							<p:commandButton value="Cancelar">
+
+							</p:commandButton>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
 		<p:dialog id="dlgCategoria" widgetVar="dlgCategoria" modal="true"
 			appendTo="@(body)" resizable="false">
 			<h:form id="formAddCategoria">

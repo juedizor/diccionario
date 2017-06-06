@@ -24,5 +24,7 @@ public interface ConsultarCatalogosIface {
 	public List<CategoriaDTO> obtenerCategorias();
 	
 	public List<CategoriaDTO> obtenerCategorias(String nombre);
+	
+	public List<CategoriaDTO> obtenerCategoriasAproximado(String nombre);
 
 }

@@ -24,8 +24,8 @@ public class MongoConfiguration {
 				env.getProperty("spring.data.mongodb.database"));
 	}
 
+	@SuppressWarnings("deprecation")
 	public @Bean MongoTemplate mongoTemplate() throws Exception {
-		// remove _class
 		MappingMongoConverter converter = new MappingMongoConverter(mongoDbFactory(), new MongoMappingContext());
 		converter.setTypeMapper(new DefaultMongoTypeMapper(null));
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory(), converter);

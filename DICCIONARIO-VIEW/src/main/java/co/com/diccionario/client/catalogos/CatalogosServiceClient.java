@@ -231,6 +231,30 @@ public class CatalogosServiceClient {
 		return null;
 	}
 
+	public List<CategoriaDTO> getCategoriasAproximados(String nombre) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + CATALOGOS + "/categorias/aproximado/{nombre}";
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("nombre", nombre);
+			ResponseEntity<List<CategoriaDTO>> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+					new ParameterizedTypeReference<List<CategoriaDTO>>() {
+					}, params);
+			List<CategoriaDTO> listCategoriaDTO = response.getBody();
+			return listCategoriaDTO;
+		} catch (HttpClientErrorException e) {
+			if (e.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+				throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+			}
+
+			if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
 	public boolean crearCategoria(CategoriaDTO categoriaDTO) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String uri = HOST_END_POINT + CATALOGOS + "/categorias";

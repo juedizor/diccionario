@@ -63,6 +63,9 @@ public class BusquedaTerminosMB {
 	private boolean isMostrarBotonesCategoria;
 
 	private String categoria;
+	private String posibleCategoria;
+	private List<CategoriaDTO> listPosiblesCategorias;
+	private String mensajeCategoriaAproximada;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -390,9 +393,32 @@ public class BusquedaTerminosMB {
 		}
 	}
 
+	public void seleccionarCategoriaAproximada() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		if (posibleCategoria == null || posibleCategoria.trim().isEmpty()) {
+			requestContext.update("msg");
+			String msg = "Debe seleccionar la categoria";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		requestContext.update("busqueda:cmbCategoria");
+		requestContext.update("formAddCategoria");
+		requestContext.update("formAddCategoriaAproximadas");
+		idCategoria = posibleCategoria;
+		posibleCategoria = "";
+		categoria = "";
+		requestContext.execute("PF('dlgCategoriaAproximadas').hide();");
+		requestContext.execute("PF('dlgCategoria').hide();");
+	}
+
 	public void addNuevaCategoria() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
+		RequestContext requestContext = RequestContext.getCurrentInstance();
 		if (categoria == null || categoria.trim().isEmpty()) {
 			String msg = "Debe digitar la categoria";
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
@@ -409,11 +435,38 @@ public class BusquedaTerminosMB {
 			return;
 		}
 
+		/*
+		 * realiza la verificacion de nombre exacto
+		 */
 		if (listCategoriaDTO != null && !listCategoriaDTO.isEmpty()) {
 			String msg = "Ya existe una categoria con el nombre " + categoria + "";
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
 			setCategoria("");
+			return;
+		}
+
+		/*
+		 * realiza la verificacion de nombre aproximados
+		 */
+		try {
+			listPosiblesCategorias = CatalogosServiceClient.getInstance().getCategoriasAproximados(categoria);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		if (listPosiblesCategorias != null && !listPosiblesCategorias.isEmpty()) {
+			/*
+			 * en este punto ya tenemos resultado de categorias aproximadas a la
+			 * digitada
+			 */
+			mensajeCategoriaAproximada = "La categoria " + categoria
+					+ " que quieres agregar podria encontrarse en alguna de las siguientes, "
+					+ "\n ¿Podrias seleccionar una de estas?";
+			requestContext.update("formAddCategoriaAproximadas");
+			requestContext.execute("PF('dlgCategoriaAproximadas').show();");
 			return;
 		}
 
@@ -433,7 +486,6 @@ public class BusquedaTerminosMB {
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
 			return;
 		}
-
 	}
 
 	public void addNuevoPais() {
@@ -979,6 +1031,51 @@ public class BusquedaTerminosMB {
 	 */
 	public void setCategoria(String categoria) {
 		this.categoria = categoria;
+	}
+
+	/**
+	 * @return the posibleCategoria
+	 */
+	public String getPosibleCategoria() {
+		return posibleCategoria;
+	}
+
+	/**
+	 * @param posibleCategoria
+	 *            the posibleCategoria to set
+	 */
+	public void setPosibleCategoria(String posibleCategoria) {
+		this.posibleCategoria = posibleCategoria;
+	}
+
+	/**
+	 * @return the listPosiblesCategorias
+	 */
+	public List<CategoriaDTO> getListPosiblesCategorias() {
+		return listPosiblesCategorias;
+	}
+
+	/**
+	 * @param listPosiblesCategorias
+	 *            the listPosiblesCategorias to set
+	 */
+	public void setListPosiblesCategorias(List<CategoriaDTO> listPosiblesCategorias) {
+		this.listPosiblesCategorias = listPosiblesCategorias;
+	}
+
+	/**
+	 * @return the mensajeCategoriaAproximada
+	 */
+	public String getMensajeCategoriaAproximada() {
+		return mensajeCategoriaAproximada;
+	}
+
+	/**
+	 * @param mensajeCategoriaAproximada
+	 *            the mensajeCategoriaAproximada to set
+	 */
+	public void setMensajeCategoriaAproximada(String mensajeCategoriaAproximada) {
+		this.mensajeCategoriaAproximada = mensajeCategoriaAproximada;
 	}
 
 }

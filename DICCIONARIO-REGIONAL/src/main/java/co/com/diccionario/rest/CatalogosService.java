@@ -30,7 +30,6 @@ public class CatalogosService {
 	ConsultarCatalogosIface consultarCatalogosIface;
 	@Autowired
 	RegistrarCatalogosIface registrarCatalogosIface;
-	
 
 	@RequestMapping(value = "/paises", method = RequestMethod.GET)
 	public List<PaisesDTO> getPaises() throws CommonException {
@@ -215,6 +214,27 @@ public class CatalogosService {
 			}
 			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
 			listCat = consultarCatalogosIface.obtenerCategorias(nombre);
+		} catch (Exception e) {
+			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
+		}
+
+		if (listCat == null || listCat.isEmpty()) {
+			throw new NotFoundException("no existe la categoria " + nombre + "");
+		}
+
+		return listCat;
+	}
+
+	@RequestMapping(value = "/categorias/aproximado/{nombre}", method = RequestMethod.GET)
+	public List<CategoriaDTO> getCategoriasAproximada(@PathVariable(value = "nombre") String nombre)
+			throws CommonException {
+		List<CategoriaDTO> listCat;
+		try {
+			if (nombre == null || nombre.trim().isEmpty()) {
+				throw new GeneralErrorException("el parametro nombre esta vacio");
+			}
+			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+			listCat = consultarCatalogosIface.obtenerCategoriasAproximado(nombre);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
 		}

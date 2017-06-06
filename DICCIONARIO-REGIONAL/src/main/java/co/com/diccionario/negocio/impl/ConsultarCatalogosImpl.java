@@ -19,6 +19,7 @@ import co.com.diccionario.mapper.CategoriaMapper;
 import co.com.diccionario.mapper.CiudadMapper;
 import co.com.diccionario.mapper.DepartamentoMapper;
 import co.com.diccionario.mapper.PaisesMapper;
+import co.com.diccionario.mongodb.iface.CategoriaIface;
 import co.com.diccionario.mongodb.repository.iface.CategoriaRepository;
 import co.com.diccionario.mongodb.repository.iface.CiudadesRepository;
 import co.com.diccionario.mongodb.repository.iface.DepartamentosRepository;
@@ -39,6 +40,8 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 	CategoriaRepository categoriaRepository;
 	@Autowired
 	Environment env;
+	@Autowired
+	CategoriaIface categoriaIface;
 
 	@Override
 	public List<PaisesDTO> obtenerPaises() {
@@ -119,28 +122,113 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 		if (listCategoria != null && !listCategoria.isEmpty()) {
 			listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
 			return listCatDto;
-		} else {
-			List<Categoria> listCategoriaAll = categoriaRepository.findAll();
-			listCategoria = new ArrayList<>();
-			String numCoincidencia = env.getProperty("num_coincidencia_palabra");
-			int numCoinc = 2;
-			if (numCoincidencia != null && !numCoincidencia.trim().isEmpty()) {
-				numCoinc = Integer.parseInt(numCoincidencia);
+		}
+		return null;
+	}
+
+	@Override
+	public List<CategoriaDTO> obtenerCategoriasAproximado(String nombre) {
+		List<Categoria> listCategoria = categoriaIface.findByNombreLike(nombre);
+		List<CategoriaDTO> listCatDto = new ArrayList<>();
+		if (listCategoria != null && !listCategoria.isEmpty()) {
+			listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
+		}
+
+		List<Categoria> listCategoriaAll = categoriaRepository.findAll();
+		listCategoria = new ArrayList<>();
+		String numCoincidencia = env.getProperty("num_coincidencia_palabra");
+		int numCoinc = 2;
+		if (numCoincidencia != null && !numCoincidencia.trim().isEmpty()) {
+			numCoinc = Integer.parseInt(numCoincidencia);
+		}
+
+		for (Categoria categoria : listCategoriaAll) {
+			int distance = LevenshteinDistance.computeLevenshteinDistance(nombre, categoria.getNombre());
+			if (distance <= numCoinc) {
+				listCategoria.add(categoria);
 			}
 
-			for (Categoria categoria : listCategoriaAll) {
-				int distance = LevenshteinDistance.computeLevenshteinDistance(nombre, categoria.getNombre());
+			String[] sWords = categoria.getNombre().split(" ");
+			if (sWords.length > 1) {
+				for (String palabra : sWords) {
+					distance = LevenshteinDistance.computeLevenshteinDistance(nombre, palabra);
+					if (distance <= numCoinc) {
+						if (listCategoria.contains(categoria)) {
+							continue;
+						}
+						listCategoria.add(categoria);
+					}
+				}
+			}
 
-				if (distance <= numCoinc) {
+			sWords = nombre.split(" ");
+			if (sWords.length > 1) {
+				for (String palabra : sWords) {
+					String[] cat = categoria.getNombre().split(" ");
+					boolean validarPalabraAproximada = false;
+					if (cat.length > 1) {
+						validarPalabraAproximada = validarPalabraAproximada(categoria.getNombre(), palabra, numCoinc);
+					}
+
+					if (validarPalabraAproximada) {
+						if (listCategoria.contains(categoria)) {
+							continue;
+						}
+						listCategoria.add(categoria);
+					}
+
+					distance = LevenshteinDistance.computeLevenshteinDistance(palabra, categoria.getNombre());
+					if (distance <= numCoinc) {
+						if (listCategoria.contains(categoria)) {
+							continue;
+						}
+						listCategoria.add(categoria);
+					}
+				}
+			}
+
+			String sTexto = categoria.getNombre();
+			int encontro = sTexto.indexOf(nombre);
+			if (encontro == -1) {
+				continue;
+			}
+
+			if (listCategoria.contains(categoria)) {
+				continue;
+			}
+
+			if (sTexto.length() > 1) {
+				sTexto = sTexto.substring(sTexto.indexOf(nombre), sTexto.length());
+				while (sTexto.indexOf(nombre) > -1) {
+					sTexto = sTexto.substring(sTexto.indexOf(nombre), sTexto.length());
+					if (listCategoria.contains(categoria)) {
+						break;
+					}
 					listCategoria.add(categoria);
 				}
 			}
-			if (listCategoria != null && !listCategoria.isEmpty()) {
-				listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
-				return listCatDto;
+		}
+
+		if (listCategoria != null && !listCategoria.isEmpty()) {
+			listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
+			return listCatDto;
+		}
+
+		return listCatDto;
+	}
+
+	private boolean validarPalabraAproximada(String word, String nombre, int numCoinc) {
+		String[] sWords = word.split(" ");
+		if (sWords.length > 1) {
+			for (String palabra : sWords) {
+				int distance = LevenshteinDistance.computeLevenshteinDistance(nombre, palabra);
+				if (distance <= numCoinc) {
+					return true;
+				}
 			}
 		}
-		return null;
+
+		return false;
 	}
 
 }
