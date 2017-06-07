@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -106,6 +107,7 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 	}
 
 	@Override
+	@Cacheable("categorias")
 	public List<CategoriaDTO> obtenerCategorias() {
 		List<Categoria> listCategoria = categoriaRepository.findAll();
 		if (listCategoria != null && !listCategoria.isEmpty()) {
@@ -134,18 +136,17 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 			listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
 		}
 
-		List<Categoria> listCategoriaAll = categoriaRepository.findAll();
-		listCategoria = new ArrayList<>();
+		List<CategoriaDTO> listCategoriaAll = obtenerCategorias();
 		String numCoincidencia = env.getProperty("num_coincidencia_palabra");
 		int numCoinc = 2;
 		if (numCoincidencia != null && !numCoincidencia.trim().isEmpty()) {
 			numCoinc = Integer.parseInt(numCoincidencia);
 		}
 
-		for (Categoria categoria : listCategoriaAll) {
+		for (CategoriaDTO categoria : listCategoriaAll) {
 			int distance = LevenshteinDistance.computeLevenshteinDistance(nombre, categoria.getNombre());
 			if (distance <= numCoinc) {
-				listCategoria.add(categoria);
+				listCatDto.add(categoria);
 			}
 
 			String[] sWords = categoria.getNombre().split(" ");
@@ -153,10 +154,10 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 				for (String palabra : sWords) {
 					distance = LevenshteinDistance.computeLevenshteinDistance(nombre, palabra);
 					if (distance <= numCoinc) {
-						if (listCategoria.contains(categoria)) {
+						if (listCatDto.contains(categoria)) {
 							continue;
 						}
-						listCategoria.add(categoria);
+						listCatDto.add(categoria);
 					}
 				}
 			}
@@ -171,18 +172,18 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 					}
 
 					if (validarPalabraAproximada) {
-						if (listCategoria.contains(categoria)) {
+						if (listCatDto.contains(categoria)) {
 							continue;
 						}
-						listCategoria.add(categoria);
+						listCatDto.add(categoria);
 					}
 
 					distance = LevenshteinDistance.computeLevenshteinDistance(palabra, categoria.getNombre());
 					if (distance <= numCoinc) {
-						if (listCategoria.contains(categoria)) {
+						if (listCatDto.contains(categoria)) {
 							continue;
 						}
-						listCategoria.add(categoria);
+						listCatDto.add(categoria);
 					}
 				}
 			}
@@ -193,7 +194,7 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 				continue;
 			}
 
-			if (listCategoria.contains(categoria)) {
+			if (listCatDto.contains(categoria)) {
 				continue;
 			}
 
@@ -201,17 +202,12 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 				sTexto = sTexto.substring(sTexto.indexOf(nombre), sTexto.length());
 				while (sTexto.indexOf(nombre) > -1) {
 					sTexto = sTexto.substring(sTexto.indexOf(nombre), sTexto.length());
-					if (listCategoria.contains(categoria)) {
+					if (listCatDto.contains(categoria)) {
 						break;
 					}
-					listCategoria.add(categoria);
+					listCatDto.add(categoria);
 				}
 			}
-		}
-
-		if (listCategoria != null && !listCategoria.isEmpty()) {
-			listCatDto = CategoriaMapper.INSTANCE.categoriasToCategoriaDTOs(listCategoria);
-			return listCatDto;
 		}
 
 		return listCatDto;
@@ -227,7 +223,6 @@ public class ConsultarCatalogosImpl implements ConsultarCatalogosIface {
 				}
 			}
 		}
-
 		return false;
 	}
 

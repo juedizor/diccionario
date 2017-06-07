@@ -1,5 +1,8 @@
 package co.com.diccionario.negocio.impl;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ import co.com.diccionario.mongodb.repository.iface.CiudadesRepository;
 import co.com.diccionario.mongodb.repository.iface.DepartamentosRepository;
 import co.com.diccionario.mongodb.repository.iface.PaisesRepository;
 import co.com.diccionario.negocio.iface.RegistrarCatalogosIface;
+import co.com.diccionario.utilidades.CacheUtils;
 
 @Service
 public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
@@ -43,6 +47,9 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 	@Autowired
 	CiudadIface ciudadIface;
 
+	@Autowired
+	CacheUtils cacheUtils;
+
 	@Override
 	public void registraPaises(PaisesDTO paisesDTO) {
 		Paises paises = PaisesMapper.INSTANCE.paisDTOToPaises(paisesDTO);
@@ -50,13 +57,12 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 		 * se busca el maximo id del documento
 		 */
 		Paises lastPais = paisesIface.findLastId();
-		if(lastPais == null){
+		if (lastPais == null) {
 			paises.setId(1);
-		}else{
+		} else {
 			paises.setId(lastPais.getId() + 1);
 		}
-		
-		
+
 		paisesRepository.save(paises);
 	}
 
@@ -92,6 +98,13 @@ public class RegistrarCatalogosImpl implements RegistrarCatalogosIface {
 	public void registrarCategoria(CategoriaDTO categoriaDTO) {
 		Categoria categoria = CategoriaMapper.INSTANCE.categoriDTOToCategoria(categoriaDTO);
 		categoriaRepository.save(categoria);
+		/*
+		 * eliminamos la cache asociada a las categorias
+		 */
+		boolean elimina = cacheUtils.clearCacheFromCacheName("categorias");
+		if (elimina) {
+			Logger.getAnonymousLogger().log(Level.INFO, "Elimino cache categorias");
+		}
 	}
 
 }
