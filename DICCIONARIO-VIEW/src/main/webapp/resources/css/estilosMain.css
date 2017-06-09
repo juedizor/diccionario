@@ -56,3 +56,7 @@ body {
 	min-width: 190px;
 	max-width: auto;
 }
+
+.ui-datalist-content ui-widget-content {
+	border: 0px;	
+}

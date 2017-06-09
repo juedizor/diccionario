@@ -7,6 +7,10 @@ public class ParamsBusquedaPalabraDTO {
 	
 	private PaisesDTO paisOrigen;
 	private PaisesDTO paisDestino;
+	private DepartamentoDTO departamentoOrigen;
+	private DepartamentoDTO departamentoDestino;
+	private CiudadDTO ciudadDestino;
+	private CiudadDTO ciudadOrigen;
 	private String termino;
 	private String categoria;
 	private List<String> sinonimos;
@@ -85,4 +89,54 @@ public class ParamsBusquedaPalabraDTO {
 	public void setOraciones(List<String> oraciones) {
 		this.oraciones = oraciones;
 	}
+	/**
+	 * @return the departamentoOrigen
+	 */
+	public DepartamentoDTO getDepartamentoOrigen() {
+		return departamentoOrigen;
+	}
+	/**
+	 * @param departamentoOrigen the departamentoOrigen to set
+	 */
+	public void setDepartamentoOrigen(DepartamentoDTO departamentoOrigen) {
+		this.departamentoOrigen = departamentoOrigen;
+	}
+	/**
+	 * @return the departamentoDestino
+	 */
+	public DepartamentoDTO getDepartamentoDestino() {
+		return departamentoDestino;
+	}
+	/**
+	 * @param departamentoDestino the departamentoDestino to set
+	 */
+	public void setDepartamentoDestino(DepartamentoDTO departamentoDestino) {
+		this.departamentoDestino = departamentoDestino;
+	}
+	/**
+	 * @return the ciudadDestino
+	 */
+	public CiudadDTO getCiudadDestino() {
+		return ciudadDestino;
+	}
+	/**
+	 * @param ciudadDestino the ciudadDestino to set
+	 */
+	public void setCiudadDestino(CiudadDTO ciudadDestino) {
+		this.ciudadDestino = ciudadDestino;
+	}
+	/**
+	 * @return the ciudadOrigen
+	 */
+	public CiudadDTO getCiudadOrigen() {
+		return ciudadOrigen;
+	}
+	/**
+	 * @param ciudadOrigen the ciudadOrigen to set
+	 */
+	public void setCiudadOrigen(CiudadDTO ciudadOrigen) {
+		this.ciudadOrigen = ciudadOrigen;
+	}
+	
+	
 }

@@ -14,10 +14,13 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.primefaces.context.RequestContext;
 
 import co.com.diccionario.client.catalogos.CatalogosServiceClient;
+import co.com.diccionario.client.catalogos.GestionarPalabrasServiceClient;
 import co.com.diccionario.dto.CategoriaDTO;
 import co.com.diccionario.dto.CiudadDTO;
 import co.com.diccionario.dto.DepartamentoDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
+import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.utils.ParamsBundle;
 import co.com.diccionario.utils.Utils;
 
@@ -61,11 +64,14 @@ public class BusquedaTerminosMB {
 	private boolean isMostrarBtnContinuarDestino = true;
 	private boolean isMostrarBotonesDestino;
 	private boolean isMostrarBotonesCategoria;
+	private boolean isMostrarResultado;
 
 	private String categoria;
 	private String posibleCategoria;
 	private List<CategoriaDTO> listPosiblesCategorias;
 	private String mensajeCategoriaAproximada;
+
+	private List<SinonimosDTO> listResultadosBusquedaSinonimos;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -78,6 +84,60 @@ public class BusquedaTerminosMB {
 		obtenerCategorias();
 	}
 
+	public void buscarSinonimos() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		RequestContext requestContext = RequestContext.getCurrentInstance();
+		if (palabra == null || palabra.trim().isEmpty()) {
+			requestContext.update("msg");
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null,
+					ParamsBundle.getInstance().getMapMensajes().get("msg_digite_palabra"),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		ParamsBusquedaPalabraDTO params = new ParamsBusquedaPalabraDTO();
+
+		PaisesDTO paisesOrigenDTO = new PaisesDTO();
+		String valueMap = Utils.foundValueMap(mapPaises, idPais);
+		paisesOrigenDTO.setNombre(valueMap);
+
+		PaisesDTO paisesDestinoDTO = new PaisesDTO();
+		valueMap = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
+		paisesDestinoDTO.setNombre(valueMap);
+		DepartamentoDTO departamentoOrigenDTO = new DepartamentoDTO();
+		DepartamentoDTO departamentoDestinoDTO = new DepartamentoDTO();
+		params.setTermino(palabra);
+		params.setDepartamentoDestino(departamentoDestinoDTO);
+		params.setDepartamentoOrigen(departamentoOrigenDTO);
+		params.setPaisDestino(paisesDestinoDTO);
+		params.setPaisOrigen(paisesOrigenDTO);
+
+		try {
+			listResultadosBusquedaSinonimos = GestionarPalabrasServiceClient.getInstance().obtenerSinonimos(params);
+		} catch (Exception e) {
+			requestContext.update("msg");
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		int i = 0;
+		for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
+			String [] oraciones = sinonimosDTO.getOraciones();
+			if(oraciones == null || oraciones.length <= 0){
+				oraciones = new String[1];
+				oraciones [0] = "No hay ejemplos";
+				listResultadosBusquedaSinonimos.get(i).setOraciones(oraciones);
+			}
+			i++;
+		}
+		
+		requestContext.update("busqueda:fieldPnlResultadosPalabras");
+		isMostrarResultado = true;
+
+	}
+
 	public void regresarPanelPaisDestino() {
 		RequestContext requestContext = RequestContext.getCurrentInstance();
 		requestContext.update("busqueda:fieldPnlUbicacion");
@@ -85,10 +145,12 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:btnsDestino");
 		requestContext.update("busqueda:btnsCategoria");
 		requestContext.update("busqueda:fieldPnlTerminos");
+		requestContext.update("busqueda:fieldPnlResultadosPalabras");
 		isMostrarDestino = true;
 		isMostrarCategoria = false;
 		isMostrarBotonesDestino = true;
 		isMostrarBotonesCategoria = false;
+		isMostrarResultado = false;
 	}
 
 	public void continuarPanelCategoria() {
@@ -1076,6 +1138,36 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMensajeCategoriaAproximada(String mensajeCategoriaAproximada) {
 		this.mensajeCategoriaAproximada = mensajeCategoriaAproximada;
+	}
+
+	/**
+	 * @return the isMostrarResultado
+	 */
+	public boolean isMostrarResultado() {
+		return isMostrarResultado;
+	}
+
+	/**
+	 * @param isMostrarResultado
+	 *            the isMostrarResultado to set
+	 */
+	public void setMostrarResultado(boolean isMostrarResultado) {
+		this.isMostrarResultado = isMostrarResultado;
+	}
+
+	/**
+	 * @return the listResultadosBusquedaSinonimos
+	 */
+	public List<SinonimosDTO> getListResultadosBusquedaSinonimos() {
+		return listResultadosBusquedaSinonimos;
+	}
+
+	/**
+	 * @param listResultadosBusquedaSinonimos
+	 *            the listResultadosBusquedaSinonimos to set
+	 */
+	public void setListResultadosBusquedaSinonimos(List<SinonimosDTO> listResultadosBusquedaSinonimos) {
+		this.listResultadosBusquedaSinonimos = listResultadosBusquedaSinonimos;
 	}
 
 }

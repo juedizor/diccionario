@@ -2,6 +2,14 @@ package co.com.diccionario.client.catalogos;
 
 import java.util.List;
 
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
 import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.utils.ParamsBundle;
@@ -11,6 +19,7 @@ public class GestionarPalabrasServiceClient {
 	private static GestionarPalabrasServiceClient INSTANCE;
 	private static String HOST_END_POINT;
 	private static final String HOST = "host_end_point";
+	private static final String PALABRAS = "palabras";
 
 	private GestionarPalabrasServiceClient() {
 		// TODO Auto-generated constructor stub
@@ -24,11 +33,28 @@ public class GestionarPalabrasServiceClient {
 		}
 		return INSTANCE;
 	}
-	
-	public List<SinonimosDTO> obtenerSinonimos(ParamsBusquedaPalabraDTO paramsBusqueda) throws Exception{
-		
+
+	public List<SinonimosDTO> obtenerSinonimos(ParamsBusquedaPalabraDTO paramsBusqueda) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/busqueda";
+		try {
+			HttpEntity<ParamsBusquedaPalabraDTO> httpEntity = new HttpEntity<ParamsBusquedaPalabraDTO>(paramsBusqueda);
+			ResponseEntity<List<SinonimosDTO>> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
+					new ParameterizedTypeReference<List<SinonimosDTO>>() {
+					});
+			List<SinonimosDTO> listSinonimos = response.getBody();
+			return listSinonimos;
+		} catch (HttpClientErrorException e) {
+			if (e.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+				throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+			}
+
+			if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+				return null;
+			}
+		}
+
+		return null;
 	}
-	
-	
 
 }

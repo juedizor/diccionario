@@ -113,7 +113,7 @@ db.categoria.insert(categoria);
 var categoria = {
 	nombre: 'FRUTA'
 }
-
+setFont(new java.awt.Font("Dialog", 1, 12));
 db.categoria.insert(categoria);
 
 var palabra = {

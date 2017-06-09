@@ -16,7 +16,10 @@ import co.com.diccionario.dto.CategoriaDTO;
 import co.com.diccionario.dto.CiudadDTO;
 import co.com.diccionario.dto.DepartamentoDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.negocio.cacheable.iface.CategoriasCacheableIface;
+import co.com.diccionario.negocio.cacheable.iface.PaisesCaheableIface;
 import co.com.diccionario.negocio.iface.ConsultarCatalogosIface;
+import co.com.diccionario.negocio.iface.GestionarBusquedaCategoriaIface;
 import co.com.diccionario.negocio.iface.RegistrarCatalogosIface;
 import co.com.diccionario.rest.exception.CommonException;
 import co.com.diccionario.rest.exception.GeneralErrorException;
@@ -30,12 +33,18 @@ public class CatalogosService {
 	ConsultarCatalogosIface consultarCatalogosIface;
 	@Autowired
 	RegistrarCatalogosIface registrarCatalogosIface;
+	@Autowired
+	CategoriasCacheableIface categoriasCacheableIface;
+	@Autowired
+	PaisesCaheableIface paisesCaheableIface;
+	@Autowired
+	GestionarBusquedaCategoriaIface gestionarBusquedaCategoriaIface;
 
 	@RequestMapping(value = "/paises", method = RequestMethod.GET)
 	public List<PaisesDTO> getPaises() throws CommonException {
 		List<PaisesDTO> listPaises;
 		try {
-			listPaises = consultarCatalogosIface.obtenerPaises();
+			listPaises = paisesCaheableIface.obtenerPaises();
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error desconocido " + e.getMessage());
 		}
@@ -193,7 +202,7 @@ public class CatalogosService {
 	public List<CategoriaDTO> getCategorias() throws CommonException {
 		List<CategoriaDTO> listCat;
 		try {
-			listCat = consultarCatalogosIface.obtenerCategorias();
+			listCat = categoriasCacheableIface.obtenerCategorias();
 		} catch (Exception e) {
 			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
 		}
@@ -213,7 +222,7 @@ public class CatalogosService {
 				throw new GeneralErrorException("el parametro nombre esta vacio");
 			}
 			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
-			listCat = consultarCatalogosIface.obtenerCategorias(nombre);
+			listCat = gestionarBusquedaCategoriaIface.obtenerCategorias(nombre);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
 		}
@@ -234,7 +243,7 @@ public class CatalogosService {
 				throw new GeneralErrorException("el parametro nombre esta vacio");
 			}
 			nombre = Normalizer.normalize(nombre.trim(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
-			listCat = consultarCatalogosIface.obtenerCategoriasAproximado(nombre);
+			listCat = gestionarBusquedaCategoriaIface.obtenerCategoriasAproximado(nombre);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Ocurrio error " + e.getMessage());
 		}

@@ -192,7 +192,8 @@
 									listener="#{busquedaMB.palabraMayuscula()}" />
 							</p:inputText>
 
-							<p:commandButton id="btnBuscarPalabra" icon="btnImageBuscar">
+							<p:commandButton id="btnBuscarPalabra" icon="btnImageBuscar"
+								actionListener="#{busquedaMB.buscarSinonimos()}">
 								<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
 									showEffect="fade" hideEffect="fade" />
 							</p:commandButton>
@@ -208,6 +209,56 @@
 						actionListener="#{busquedaMB.regresarPanelPaisDestino()}">
 					</p:commandButton>
 				</h:panelGrid>
+
+				<p:outputPanel id="fieldPnlResultadosPalabras">
+					<h3>
+						<h:outputText
+							value="Su busqueda a arrojado los siguientes resultados: " />
+					</h3>
+					<p:dataGrid value="#{busquedaMB.listResultadosBusquedaSinonimos}"
+						var="result" columns="1" emptyMessage="Sin resultados"
+						rendered="#{busquedaMB.mostrarResultado}">
+						<p:panel header="#{result.termino}" style="font-size:14px;">
+							<h:outputText style="font-size:12px;"
+								value="La palabra significa:" />
+							<p />
+							<div class="ui-g">
+								<div class="ui-g-1"></div>
+								<div class="ui-g-8">
+									<h:outputText value="No existe significado" />
+								</div>
+							</div>
+
+							<p />
+							<h:outputText style="font-size:12px;"
+								value="Palabras que puedes usar:" />
+							<p />
+							<p:repeat value="#{result.sinonimos}" var="sinonimos">
+								<div class="ui-g">
+									<div class="ui-g-1"></div>
+									<div class="ui-g-8">
+										<h:outputText value="#{sinonimos}" />
+									</div>
+								</div>
+							</p:repeat>
+							<p />
+							<h:outputText style="font-size:12px;"
+								value="Ejemplo de como usar la palabra:" />
+							<p />
+							<p:repeat value="#{result.oraciones}" var="oracion">
+								<div class="ui-g">
+									<div class="ui-g-1"></div>
+									<div class="ui-g-8">
+										<h:outputText value="#{oracion}" />
+									</div>
+								</div>
+							</p:repeat>
+
+
+						</p:panel>
+					</p:dataGrid>
+
+				</p:outputPanel>
 
 
 			</p:panel>

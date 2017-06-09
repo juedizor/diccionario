@@ -1,7 +1,13 @@
 package co.com.diccionario.dto;
 
-public class PaisesDTO {
+import java.io.Serializable;
 
+public class PaisesDTO implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private String nombre;
 
