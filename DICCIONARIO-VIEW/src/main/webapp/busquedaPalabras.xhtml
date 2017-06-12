@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title><ui:insert name="titulo">.:: APP-terminos ::.</ui:insert></title>
+	<h:outputStylesheet library="css" name="estilosMain.css" />
+</h:head>
+
+
+<ui:composition template="template.xhtml">
+
+	<ui:define name="contenido">
+		<h:form id="busqueda">
+			<p:panel id="pnlGeneral" styleClass="pnlForm"
+				header="BUSQUEDA POR PALABRAS">
+
+				<p:outputPanel id="fieldPnlTerminos">
+					<p:fieldset styleClass="fieForm">
+						<h:panelGrid id="pnlTerminos" columns="3">
+							<h:panelGrid>
+								<p:outputLabel value="Palabra" />
+							</h:panelGrid>
+							<p:inputText id="txtPalabra" value="#{busquedaMB.palabra}">
+								<p:ajax event="blur" update="txtPalabra"
+									listener="#{busquedaMB.palabraMayuscula()}" />
+							</p:inputText>
+
+							<p:commandButton id="btnBuscarPalabra" icon="btnImageBuscar"
+								actionListener="#{busquedaMB.buscarSinonimos()}">
+								<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
+									showEffect="fade" hideEffect="fade" />
+							</p:commandButton>
+
+						</h:panelGrid>
+
+					</p:fieldset>
+				</p:outputPanel>
+
+
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>

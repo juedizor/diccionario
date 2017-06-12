@@ -17,7 +17,7 @@
 	<ui:define name="contenido">
 		<h:form id="busqueda">
 			<p:panel id="pnlGeneral" styleClass="pnlForm"
-				header="BUSQUEDA DE TERMINOS">
+				header="BUSQUEDA PRINCIPAL">
 
 				<p:outputPanel id="fieldPnlPais">
 					<p:fieldset legend="¿DE DONDE ERES?"
@@ -161,6 +161,27 @@
 					</p:commandButton>
 				</h:panelGrid>
 
+				<p:outputPanel id="filtroSeleccionado" style="text-align:center">
+					<p:panelGrid columns="3" rendered="#{busquedaMB.mostrarBanderas}">
+						<p:graphicImage width="24" height="24" library="banderas"
+							name="#{busquedaMB.nombreBanderaPaisOrigen}">
+
+						</p:graphicImage>
+
+						<p:graphicImage width="24" height="24" library="banderas"
+							name="next.png">
+
+						</p:graphicImage>
+
+						<p:graphicImage width="24" height="24" library="banderas"
+							name="#{busquedaMB.nombreBanderaPaisDestino}">
+
+						</p:graphicImage>
+
+					</p:panelGrid>
+
+
+				</p:outputPanel>
 
 				<p:outputPanel id="fieldPnlTerminos">
 					<p:fieldset styleClass="fieForm"
@@ -210,11 +231,12 @@
 					</p:commandButton>
 				</h:panelGrid>
 
+
 				<p:outputPanel id="fieldPnlResultadosPalabras">
-					<h3>
-						<h:outputText
-							value="Su busqueda a arrojado los siguientes resultados: " />
-					</h3>
+					<h4>
+						<h:outputText rendered="#{busquedaMB.mostrarResultado}"
+							value="#{busquedaMB.respuestaResultados}" />
+					</h4>
 					<p:dataGrid value="#{busquedaMB.listResultadosBusquedaSinonimos}"
 						var="result" columns="1" emptyMessage="Sin resultados"
 						rendered="#{busquedaMB.mostrarResultado}">
@@ -226,6 +248,15 @@
 								<div class="ui-g-1"></div>
 								<div class="ui-g-8">
 									<h:outputText value="No existe significado" />
+								</div>
+							</div>
+
+							<h:outputText style="font-size:12px;" value="Categoria:" />
+							<p />
+							<div class="ui-g">
+								<div class="ui-g-1"></div>
+								<div class="ui-g-8">
+									<h:outputText value="#{result.categoria}" />
 								</div>
 							</div>
 
@@ -253,9 +284,30 @@
 									</div>
 								</div>
 							</p:repeat>
+							<p />
+							<p />
+							<p:panelGrid columns="3">
+								<h:panelGrid style="text-align:center">
+									<p:graphicImage alt="" library="iconos" width="32" height="32"
+										name="addMind.png" />
+									<p:outputLabel value="Nuevo significado" />
+								</h:panelGrid>
 
+								<h:panelGrid style="text-align:center">
+									<p:graphicImage alt="" library="iconos" width="32" height="32"
+										name="word.png" />
+									<p:outputLabel value="Nuevo termino" />
+								</h:panelGrid>
+
+								<h:panelGrid style="text-align:center">
+									<p:graphicImage alt="" library="iconos" width="32" height="32"
+										name="example.png" />
+									<p:outputLabel value="Nuevo ejemplo" />
+								</h:panelGrid>
+							</p:panelGrid>
 
 						</p:panel>
+
 					</p:dataGrid>
 
 				</p:outputPanel>

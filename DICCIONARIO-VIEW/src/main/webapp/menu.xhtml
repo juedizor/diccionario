@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<h:form>
+	<p:menu style="width:180px">
+		<p:submenu label="Tipos de Busqueda">
+			<p:menuitem value="Principal" action="/busquedaGeneral.xhtml"	icon="ui-icon-disk" />
+			<p:menuitem value="Usando solo Palabras"
+				action="/busquedaPalabras.xhtml" icon="ui-icon-arrowrefresh-1-w" />
+			<p:menuitem value="Usando Categoria o Palabras"
+				icon="ui-icon-arrowrefresh-1-w" />
+		</p:submenu>
+
+	</p:menu>
+
+</h:form>
+
+
+
+</html>

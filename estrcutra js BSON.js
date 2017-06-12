@@ -127,6 +127,16 @@ var palabra = {
 db.sinonimos.insert(palabra);
 
 var palabra = {
+	pais_origen: 'ARGENTINA', 
+	pais_destino: 'COLOMBIA', 
+	termino: 'CAMPERA',
+	categoria: 'ROPA',
+	sinonimos: ['CHAQUETA']
+};
+
+db.sinonimos.insert(palabra);
+
+var palabra = {
 	pais_origen: 'COLOMBIA', 
 	pais_destino: 'ARGENTINA', 
 	termino: 'PARCE',

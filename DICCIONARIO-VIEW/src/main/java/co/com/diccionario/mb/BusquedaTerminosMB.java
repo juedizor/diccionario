@@ -65,6 +65,10 @@ public class BusquedaTerminosMB {
 	private boolean isMostrarBotonesDestino;
 	private boolean isMostrarBotonesCategoria;
 	private boolean isMostrarResultado;
+	private String respuestaResultados;
+	private boolean isMostrarBanderas;
+	private String nombreBanderaPaisOrigen;
+	private String nombreBanderaPaisDestino;
 
 	private String categoria;
 	private String posibleCategoria;
@@ -105,6 +109,9 @@ public class BusquedaTerminosMB {
 		PaisesDTO paisesDestinoDTO = new PaisesDTO();
 		valueMap = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
 		paisesDestinoDTO.setNombre(valueMap);
+		valueMap = Utils.foundValueMap(mapCategorias, idCategoria);
+		params.setCategoria(valueMap);
+
 		DepartamentoDTO departamentoOrigenDTO = new DepartamentoDTO();
 		DepartamentoDTO departamentoDestinoDTO = new DepartamentoDTO();
 		params.setTermino(palabra);
@@ -122,19 +129,31 @@ public class BusquedaTerminosMB {
 			return;
 		}
 
-		int i = 0;
-		for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
-			String [] oraciones = sinonimosDTO.getOraciones();
-			if(oraciones == null || oraciones.length <= 0){
-				oraciones = new String[1];
-				oraciones [0] = "No hay ejemplos";
-				listResultadosBusquedaSinonimos.get(i).setOraciones(oraciones);
+		if (listResultadosBusquedaSinonimos != null && !listResultadosBusquedaSinonimos.isEmpty()) {
+			respuestaResultados = "Su busqueda a arrojado los siguientes resultados:";
+			boolean resultAproximado = listResultadosBusquedaSinonimos.get(0).isResultAproximado();
+			if (resultAproximado) {
+				respuestaResultados = "Su busqueda no ha encontrado resultados exactos con los filtros seleccionados,  "
+						+ "el termino a buscar se puede relacionar a las siguientes palabras:";
+				requestContext.update("busqueda:fieldPnlResultadosPalabras");
 			}
-			i++;
+			int i = 0;
+			for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
+				String[] oraciones = sinonimosDTO.getOraciones();
+				if (oraciones == null || oraciones.length <= 0) {
+					oraciones = new String[1];
+					oraciones[0] = "No hay ejemplos";
+					listResultadosBusquedaSinonimos.get(i).setOraciones(oraciones);
+				}
+				i++;
+			}
+			requestContext.update("busqueda:fieldPnlResultadosPalabras");
+			isMostrarResultado = true;
+
+		} else {
+			requestContext.update("busqueda:fieldPnlResultadosPalabras");
+			isMostrarResultado = false;
 		}
-		
-		requestContext.update("busqueda:fieldPnlResultadosPalabras");
-		isMostrarResultado = true;
 
 	}
 
@@ -146,11 +165,14 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:btnsCategoria");
 		requestContext.update("busqueda:fieldPnlTerminos");
 		requestContext.update("busqueda:fieldPnlResultadosPalabras");
+		requestContext.update("busqueda:fieldPnlResultAproximado");
+		requestContext.update("busqueda:filtroSeleccionado");
 		isMostrarDestino = true;
 		isMostrarCategoria = false;
 		isMostrarBotonesDestino = true;
 		isMostrarBotonesCategoria = false;
 		isMostrarResultado = false;
+		isMostrarBanderas = false;
 	}
 
 	public void continuarPanelCategoria() {
@@ -164,15 +186,22 @@ public class BusquedaTerminosMB {
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
 			return;
 		}
+
+		String nombrePaisOrigen = Utils.foundValueMap(mapPaises, idPais);
+		String nombrePaisDestino = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
+		nombreBanderaPaisOrigen = nombrePaisOrigen.toLowerCase() + ".png";
+		nombreBanderaPaisDestino = nombrePaisDestino.toLowerCase() + ".png";
 		requestContext.update("busqueda:fieldPnlUbicacion");
 		requestContext.update("busqueda:btnContinuarDestino");
 		requestContext.update("busqueda:btnsDestino");
 		requestContext.update("busqueda:btnsCategoria");
 		requestContext.update("busqueda:fieldPnlTerminos");
+		requestContext.update("busqueda:filtroSeleccionado");
 		isMostrarDestino = false;
 		isMostrarCategoria = true;
 		isMostrarBotonesDestino = false;
 		isMostrarBotonesCategoria = true;
+		isMostrarBanderas = true;
 	}
 
 	public void regresarPanelPaisOrigen() {
@@ -181,6 +210,7 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:fieldPnlUbicacion");
 		requestContext.update("busqueda:btnContinuarDestino");
 		requestContext.update("busqueda:btnsDestino");
+
 		isMostrarDestino = false;
 		isMostrarBotonesDestino = false;
 		isMostrarOrigen = true;
@@ -1168,6 +1198,66 @@ public class BusquedaTerminosMB {
 	 */
 	public void setListResultadosBusquedaSinonimos(List<SinonimosDTO> listResultadosBusquedaSinonimos) {
 		this.listResultadosBusquedaSinonimos = listResultadosBusquedaSinonimos;
+	}
+
+	/**
+	 * @return the respuestaResultados
+	 */
+	public String getRespuestaResultados() {
+		return respuestaResultados;
+	}
+
+	/**
+	 * @param respuestaResultados
+	 *            the respuestaResultados to set
+	 */
+	public void setRespuestaResultados(String respuestaResultados) {
+		this.respuestaResultados = respuestaResultados;
+	}
+
+	/**
+	 * @return the nombreBanderaPaisOrigen
+	 */
+	public String getNombreBanderaPaisOrigen() {
+		return nombreBanderaPaisOrigen;
+	}
+
+	/**
+	 * @param nombreBanderaPaisOrigen
+	 *            the nombreBanderaPaisOrigen to set
+	 */
+	public void setNombreBanderaPaisOrigen(String nombreBanderaPaisOrigen) {
+		this.nombreBanderaPaisOrigen = nombreBanderaPaisOrigen;
+	}
+
+	/**
+	 * @return the nombreBanderaPaisDestino
+	 */
+	public String getNombreBanderaPaisDestino() {
+		return nombreBanderaPaisDestino;
+	}
+
+	/**
+	 * @param nombreBanderaPaisDestino
+	 *            the nombreBanderaPaisDestino to set
+	 */
+	public void setNombreBanderaPaisDestino(String nombreBanderaPaisDestino) {
+		this.nombreBanderaPaisDestino = nombreBanderaPaisDestino;
+	}
+
+	/**
+	 * @return the isMostrarBanderas
+	 */
+	public boolean isMostrarBanderas() {
+		return isMostrarBanderas;
+	}
+
+	/**
+	 * @param isMostrarBanderas
+	 *            the isMostrarBanderas to set
+	 */
+	public void setMostrarBanderas(boolean isMostrarBanderas) {
+		this.isMostrarBanderas = isMostrarBanderas;
 	}
 
 }

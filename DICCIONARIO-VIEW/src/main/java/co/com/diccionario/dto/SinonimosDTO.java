@@ -1,7 +1,13 @@
 package co.com.diccionario.dto;
 
-public class SinonimosDTO {
+import java.io.Serializable;
 
+public class SinonimosDTO implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String _id;
 	private String paisOrigen;
 	private String paisDestino;
@@ -13,6 +19,7 @@ public class SinonimosDTO {
 	private String categoria;
 	private String[] sinonimos;
 	private String[] oraciones;
+	private boolean isResultAproximado;
 
 	/**
 	 * @return the _id
@@ -177,6 +184,20 @@ public class SinonimosDTO {
 	 */
 	public void setOraciones(String[] oraciones) {
 		this.oraciones = oraciones;
+	}
+
+	/**
+	 * @return the isResultAproximado
+	 */
+	public boolean isResultAproximado() {
+		return isResultAproximado;
+	}
+
+	/**
+	 * @param isResultAproximado the isResultAproximado to set
+	 */
+	public void setResultAproximado(boolean isResultAproximado) {
+		this.isResultAproximado = isResultAproximado;
 	}
 
 }

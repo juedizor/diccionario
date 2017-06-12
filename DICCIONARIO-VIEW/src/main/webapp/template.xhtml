@@ -35,14 +35,17 @@
         	<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 		</p:confirmDialog>
 
-		<p:layout style="height:100% !important; width:40% !important;">
+		<p:layout style="height:100% !important; width:55% !important;">
 
-			<p:layoutUnit position="north" style="width:40% !important;">
+			<p:layoutUnit position="north" style="width:50% !important;">
 
 			</p:layoutUnit>
 
-
-			<p:layoutUnit position="center" style="width:40% !important;">
+				
+			<p:layoutUnit position="west" size="200">
+				<ui:include src="/menu.xhtml" />
+			</p:layoutUnit>
+			<p:layoutUnit position="center">
 				<ui:insert name="contenido" />
 			</p:layoutUnit>
 

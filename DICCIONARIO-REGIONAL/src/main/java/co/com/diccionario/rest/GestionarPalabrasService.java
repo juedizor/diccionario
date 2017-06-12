@@ -22,22 +22,6 @@ public class GestionarPalabrasService {
 	@Autowired
 	GestionarBusquedaPalabrasIface gestionarBusquedaPalabrasIface;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public List<SinonimosDTO> getPalabras() throws CommonException {
-		List<SinonimosDTO> listPalabras;
-		try {
-			listPalabras = gestionarBusquedaPalabrasIface.obtenerTodasLasPalabras();
-		} catch (Exception e) {
-			throw new GeneralErrorException("Error consultando palabras " + e.getMessage());
-		}
-
-		if (listPalabras == null || listPalabras.isEmpty()) {
-			throw new NotFoundException("no hay palabras en el sistema");
-		}
-
-		return listPalabras;
-	}
-
 	@RequestMapping(value = "/busqueda", method = RequestMethod.POST)
 	public List<SinonimosDTO> getPalabras(@RequestBody ParamsBusquedaPalabraDTO params) throws CommonException {
 		List<SinonimosDTO> listPalabras;
