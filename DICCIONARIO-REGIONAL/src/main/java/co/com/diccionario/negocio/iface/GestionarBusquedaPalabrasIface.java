@@ -7,6 +7,6 @@ import co.com.diccionario.dto.SinonimosDTO;
 
 public interface GestionarBusquedaPalabrasIface {
 	
-	public List<SinonimosDTO> obtenerTodasLasPalabras(ParamsBusquedaPalabraDTO params);
+	public List<SinonimosDTO> obtenerPalabrasPorTerminoCategoria(ParamsBusquedaPalabraDTO params);
 
 }

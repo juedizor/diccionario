@@ -23,10 +23,11 @@ public class GestionarPalabrasService {
 	GestionarBusquedaPalabrasIface gestionarBusquedaPalabrasIface;
 
 	@RequestMapping(value = "/busqueda", method = RequestMethod.POST)
-	public List<SinonimosDTO> getPalabras(@RequestBody ParamsBusquedaPalabraDTO params) throws CommonException {
+	public List<SinonimosDTO> getPalabrasTerminoCategoria(@RequestBody ParamsBusquedaPalabraDTO params)
+			throws CommonException {
 		List<SinonimosDTO> listPalabras;
 		try {
-			listPalabras = gestionarBusquedaPalabrasIface.obtenerTodasLasPalabras(params);
+			listPalabras = gestionarBusquedaPalabrasIface.obtenerPalabrasPorTerminoCategoria(params);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error consultando palabras " + e.getMessage());
 		}

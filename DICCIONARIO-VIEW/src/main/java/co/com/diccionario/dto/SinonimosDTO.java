@@ -19,7 +19,6 @@ public class SinonimosDTO implements Serializable{
 	private String categoria;
 	private String[] sinonimos;
 	private String[] oraciones;
-	private boolean isResultAproximado;
 
 	/**
 	 * @return the _id
@@ -184,20 +183,6 @@ public class SinonimosDTO implements Serializable{
 	 */
 	public void setOraciones(String[] oraciones) {
 		this.oraciones = oraciones;
-	}
-
-	/**
-	 * @return the isResultAproximado
-	 */
-	public boolean isResultAproximado() {
-		return isResultAproximado;
-	}
-
-	/**
-	 * @param isResultAproximado the isResultAproximado to set
-	 */
-	public void setResultAproximado(boolean isResultAproximado) {
-		this.isResultAproximado = isResultAproximado;
 	}
 
 }

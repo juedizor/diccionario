@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title><ui:insert name="titulo">.:: APP-terminos ::.</ui:insert></title>
+	<h:outputStylesheet library="css" name="estilosMain.css" />
+</h:head>
+
+
+<ui:composition template="template.xhtml">
+
+	<ui:define name="contenido">
+		<h:form id="busqueda">
+			<p:panel id="pnlGeneral" styleClass="pnlForm"
+				header="BUSQUEDA PRINCIPAL">
+
+				<p:outputPanel id="fieldPnlPais">
+					<p:fieldset legend="¿DE DONDE ERES?"
+						rendered="#{busquedaMB.mostrarOrigen}" styleClass="fieForm">
+						<h:panelGrid id="pnlPais" columns="2"
+							columnClasses="columnas1, columnas1, columnas1">
+
+							<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+								<div class="obligatorio" />
+								<p:outputLabel value="Pais" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbPais" filter="true"
+									value="#{busquedaMB.idPais}">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapPaises}" />
+								</p:selectOneMenu>
+								<p:message for="cmbPais" display="default" />
+							</h:panelGroup>
+
+						</h:panelGrid>
+					</p:fieldset>
+				</p:outputPanel>
+
+
+				<h:panelGrid id="btnContinuarDestino">
+					<p:commandButton value="Continuar"
+						rendered="#{busquedaMB.mostrarBtnContinuarDestino}"
+						icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.continuarPanelPaisOrigen()}">
+					</p:commandButton>
+				</h:panelGrid>
+
+
+				<p:outputPanel id="fieldPnlUbicacion">
+					<p:fieldset legend="¿EN QUE LUGAR ME ENCUENTRO?"
+						styleClass="fieForm" rendered="#{busquedaMB.mostrarDestino}">
+						<h:panelGrid id="pnlUbicacion" columns="3"
+							columnClasses="columnas1, columnas1, columnas1">
+
+							<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+								<div class="obligatorio" />
+								<p:outputLabel value="Pais" />
+							</h:panelGrid>
+
+							<h:panelGroup>
+								<p:selectOneMenu id="cmbPaisDestino" filter="true"
+									value="#{busquedaMB.idPaisDestino}">
+									<f:selectItem itemLabel="Seleccione..." itemValue="" />
+									<f:selectItems value="#{busquedaMB.mapPaisesDestino}" />
+								</p:selectOneMenu>
+								<p:message for="cmbPaisDestino" display="default" />
+							</h:panelGroup>
+							<h:panelGrid>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:fieldset>
+				</p:outputPanel>
+
+				<h:panelGrid id="btnsDestino" columns="2">
+					<p:commandButton rendered="#{busquedaMB.mostrarBotonesDestino}"
+						value="Regresar" icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.regresarPanelPaisOrigen()}">
+					</p:commandButton>
+
+					<p:commandButton rendered="#{busquedaMB.mostrarBotonesDestino}"
+						value="Continuar" icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.continuarPanelCategoria()}">
+					</p:commandButton>
+				</h:panelGrid>
+
+				<p:outputPanel id="filtroSeleccionado" style="text-align:center">
+					<p:panelGrid columns="3" rendered="#{busquedaMB.mostrarBanderas}">
+						<p:graphicImage width="24" height="24" library="banderas"
+							name="#{busquedaMB.nombreBanderaPaisOrigen}">
+
+						</p:graphicImage>
+
+						<p:graphicImage width="24" height="24" library="banderas"
+							name="next.png">
+
+						</p:graphicImage>
+
+						<p:graphicImage width="24" height="24" library="banderas"
+							name="#{busquedaMB.nombreBanderaPaisDestino}">
+
+						</p:graphicImage>
+
+					</p:panelGrid>
+
+
+				</p:outputPanel>
+
+				<p:outputPanel id="fieldPnlTerminos">
+					<p:fieldset styleClass="fieForm"
+						rendered="#{busquedaMB.mostrarCategoria}">
+						<h:panelGrid id="pnlTerminos" columns="6">
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Categoria" />
+							</h:panelGrid>
+
+							<p:selectOneMenu id="cmbCategoria"
+								value="#{busquedaMB.idCategoria}" filter="true">
+								<f:selectItem itemLabel="Seleccione..." itemValue="" />
+								<f:selectItems value="#{busquedaMB.mapCategorias}" />
+							</p:selectOneMenu>
+
+							<p:commandButton id="btnAgregarCategoria" type="button"
+								onclick="PF('dlgCategoria').show();" icon="btnImageAdicionar">
+								<p:tooltip for="btnAgregarCategoria"
+									value="Agregar una nueva categoria" showEffect="fade"
+									hideEffect="fade" />
+							</p:commandButton>
+
+							<h:panelGrid>
+								<p:outputLabel value="Palabra" />
+							</h:panelGrid>
+
+							<p:inputText id="txtPalabra" value="#{busquedaMB.palabra}">
+								<p:ajax event="blur" update="txtPalabra"
+									listener="#{busquedaMB.palabraMayuscula()}" />
+							</p:inputText>
+
+							<p:commandButton id="btnBuscarPalabra" icon="btnImageBuscar"
+								actionListener="#{busquedaMB.buscarSinonimos()}">
+								<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
+									showEffect="fade" hideEffect="fade" />
+							</p:commandButton>
+
+						</h:panelGrid>
+
+					</p:fieldset>
+				</p:outputPanel>
+
+				<h:panelGrid id="btnsCategoria" columns="2">
+					<p:commandButton rendered="#{busquedaMB.mostrarBotonesCategoria}"
+						value="Regresar" icon="fa-long-arrow-right"
+						actionListener="#{busquedaMB.regresarPanelPaisDestino()}">
+					</p:commandButton>
+				</h:panelGrid>
+
+				<p:outputPanel id="fieldMsgResultado">
+					<h4>
+						<h:outputText rendered="#{busquedaMB.mostrarMensajeResultado }"
+							value="#{busquedaMB.mensajeResultado}" />
+					</h4>
+				</p:outputPanel>
+
+				<p:outputPanel id="fieldPnlResultadosPalabras">
+					<p:dataGrid value="#{busquedaMB.listResultadosBusquedaSinonimos}"
+						var="result" columns="1" emptyMessage="Sin resultados"
+						rendered="#{busquedaMB.mostrarResultado}">
+						<p:panel header="#{result.termino}" style="font-size:14px;">
+							<h:outputText style="font-size:12px;"
+								value="La palabra significa:" />
+							<p />
+							<div class="ui-g">
+								<div class="ui-g-1"></div>
+								<div class="ui-g-8">
+									<h:outputText value="No existe significado" />
+								</div>
+							</div>
+
+							<h:outputText style="font-size:12px;" value="Categoria:" />
+							<p />
+							<div class="ui-g">
+								<div class="ui-g-1"></div>
+								<div class="ui-g-8">
+									<h:outputText value="#{result.categoria}" />
+								</div>
+							</div>
+
+							<p />
+							<h:outputText style="font-size:12px;"
+								value="Palabras que puedes usar:" />
+							<p />
+							<p:repeat value="#{result.sinonimos}" var="sinonimos">
+								<div class="ui-g">
+									<div class="ui-g-1"></div>
+									<div class="ui-g-8">
+										<h:outputText value="#{sinonimos}" />
+									</div>
+								</div>
+							</p:repeat>
+							<p />
+							<h:outputText style="font-size:12px;"
+								value="Ejemplo de como usar la palabra:" />
+							<p />
+							<p:repeat value="#{result.oraciones}" var="oracion">
+								<div class="ui-g">
+									<div class="ui-g-1"></div>
+									<div class="ui-g-8">
+										<h:outputText value="#{oracion}" />
+									</div>
+								</div>
+							</p:repeat>
+							<p />
+							<p />
+							<p:panelGrid columns="3">
+								<h:panelGrid style="text-align:center">
+									<p:graphicImage alt="" library="iconos" width="32" height="32"
+										name="addMind.png" />
+									<p:outputLabel value="Nuevo significado" />
+								</h:panelGrid>
+
+								<h:panelGrid style="text-align:center">
+									<p:graphicImage alt="" library="iconos" width="32" height="32"
+										name="word.png" />
+									<p:outputLabel value="Nuevo termino" />
+								</h:panelGrid>
+
+								<h:panelGrid style="text-align:center">
+									<p:graphicImage alt="" library="iconos" width="32" height="32"
+										name="example.png" />
+									<p:outputLabel value="Nuevo ejemplo" />
+								</h:panelGrid>
+							</p:panelGrid>
+
+						</p:panel>
+
+					</p:dataGrid>
+
+				</p:outputPanel>
+
+
+			</p:panel>
+
+			<p:growl id="msgGeneral" widgetVar="msgGeneral" showDetail="true"
+				life="3000" globalOnly="true" />
+		</h:form>
+
+
+
+		<p:dialog id="dlgCategoriaAproximadas"
+			widgetVar="dlgCategoriaAproximadas" modal="true" appendTo="@(body)"
+			resizable="false">
+			<h:form id="formAddCategoriaAproximadas">
+				<h:panelGrid>
+					<p:outputLabel value="#{busquedaMB.mensajeCategoriaAproximada}" />
+
+					<p:panelGrid columns="2">
+						<p:selectOneRadio id="radioPosibleCategoria"
+							value="#{busquedaMB.posibleCategoria}">
+							<f:selectItems value="#{busquedaMB.listPosiblesCategorias}"
+								var="c" itemLabel="#{c.nombre}" itemValue="#{c.id}" />
+						</p:selectOneRadio>
+					</p:panelGrid>
+
+					<h:panelGroup>
+						<h:panelGrid columns="2">
+							<p:commandButton value="Aceptar"
+								actionListener="#{busquedaMB.seleccionarCategoriaAproximada()}">
+							</p:commandButton>
+							<p:commandButton value="Cancelar">
+
+							</p:commandButton>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgCategoria" widgetVar="dlgCategoria" modal="true"
+			appendTo="@(body)" resizable="false">
+			<h:form id="formAddCategoria">
+				<h:panelGrid columns="2" columnClasses="columna1, columna1">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Categoria" />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtCategoria" value="#{busquedaMB.categoria}">
+							<p:ajax event="blur"
+								listener="#{busquedaMB.categoriaMayuscula()}"
+								update="txtCategoria" />
+						</h:inputText>
+						<p:commandButton update=":busqueda:cmbCategoria :msg"
+							id="btnAddCategoria" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevaCategoria()}">
+						</p:commandButton>
+						<p:message for="txtCategoria" display="default" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgPais" widgetVar="dlgPais" modal="true"
+			appendTo="@(body)" resizable="false">
+			<p:ajax event="close" update="formAddPais"
+				listener="#{busquedaMB.cerrarDlgPais()}" />
+			<h:form id="formAddPais">
+				<h:panelGrid columns="2" columnClasses="columna1, columna1">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Pais" />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtPais" value="#{busquedaMB.pais}">
+							<p:ajax event="blur" update="txtPais"
+								listener="#{busquedaMB.paisMayuscula()}" />
+						</h:inputText>
+						<p:commandButton id="btnAddPais" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevoPais}"
+							update=":busqueda:cmbPais :busqueda:cmbPaisDestino :msg formAddPais">
+						</p:commandButton>
+						<p:message for="txtPais" display="default" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgDepartamento" widgetVar="dlgDepartamento"
+			modal="true" appendTo="@(body)" resizable="false">
+			<p:ajax event="close" update="formAddDepartamento"
+				listener="#{busquedaMB.cerrarDlgDepartamento()}" />
+			<h:form id="formAddDepartamento">
+				<h:panelGrid columns="2">
+					<h:panelGrid columns="3">
+						<p:outputLabel value="Pais:" />
+						<p:outputLabel id="outPais" value="#{busquedaMB.idPaisAdd}" />
+						<p:outputLabel id="origen" rendered="false"
+							value="#{busquedaMB.paisOrigen}" />
+					</h:panelGrid>
+				</h:panelGrid>
+				<h:panelGrid columns="2" columnClasses="columna1, columna1">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Departamento o Provincia" />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtDepartamento"
+							value="#{busquedaMB.departamento}">
+							<p:ajax event="blur" update="txtDepartamento"
+								listener="#{busquedaMB.departamentoMayuscula()}" />
+						</h:inputText>
+						<p:commandButton id="btnAddDepartamento" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevoDepartamento()}"
+							update=":msg txtDepartamento">
+						</p:commandButton>
+						<p:message for="txtDepartamento" display="default" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgCiudad" widgetVar="dlgCiudad" modal="true"
+			appendTo="@(body)" resizable="false">
+			<p:ajax event="close" update="formAddCiudad"
+				listener="#{busquedaMB.cerrarDlgCiudad()}" />
+			<h:form id="formAddCiudad">
+				<h:panelGrid columns="2" columnClasses="columna1, columna1">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Ciudad" />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtCiudad" value="" required="true"
+							requiredMessage="Requerido" />
+						<p:commandButton id="btnAddCiudad" icon="btnImageGuardar">
+						</p:commandButton>
+						<p:message for="txtCiudad" display="default" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>
+</html>

@@ -29,24 +29,14 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 	Environment env;
 
 	@Override
-	public List<SinonimosDTO> obtenerTodasLasPalabras(ParamsBusquedaPalabraDTO params) {
+	public List<SinonimosDTO> obtenerPalabrasPorTerminoCategoria(ParamsBusquedaPalabraDTO params) {
 
-		List<SinonimosDTO> listSinonimosEncontrados = buscarTeniendoDepartamentos(params);
-		if (listSinonimosEncontrados != null) {
-			return listSinonimosEncontrados;
-		}
-
-		listSinonimosEncontrados = buscarPorCategoriaTermino(params);
+		List<SinonimosDTO> listSinonimosEncontrados = buscarPorCategoriaTermino(params);
 		if (listSinonimosEncontrados != null) {
 			return listSinonimosEncontrados;
 		}
 
 		listSinonimosEncontrados = buscarPorTermino(params);
-		if (listSinonimosEncontrados != null) {
-			return listSinonimosEncontrados;
-		}
-
-		listSinonimosEncontrados = buscarPorCategoria(params);
 		if (listSinonimosEncontrados != null) {
 			return listSinonimosEncontrados;
 		}
@@ -61,11 +51,12 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			return null;
 		}
 
-		
-		List<SinonimosDTO> listSinonimosAll = sinonimosRepository.findByPaisOrigen(paisOrigen);
-		listSinonimosEncontrados = buscarPalabraAproximada(palabra.trim());
-		if (listSinonimosEncontrados != null && !listSinonimosEncontrados.isEmpty()) {
-			listSinonimosEncontrados.get(0).setResultAproximado(true);
+		List<Sinonimos> listSinonimosAll = sinonimosRepository.findByPaisOrigenAndPaisDestino(
+				params.getPaisOrigen().getNombre(), params.getPaisDestino().getNombre());
+		if (listSinonimosAll != null && !listSinonimosAll.isEmpty()) {
+			listSinonimosEncontrados = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimosAll);
+			listSinonimosEncontrados = buscarPalabraAproximada(palabra.trim(), listSinonimosEncontrados);
+			return listSinonimosEncontrados;
 		}
 
 		return listSinonimosEncontrados;

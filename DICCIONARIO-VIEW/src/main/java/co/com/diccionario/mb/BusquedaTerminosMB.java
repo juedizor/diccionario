@@ -70,6 +70,9 @@ public class BusquedaTerminosMB {
 	private String nombreBanderaPaisOrigen;
 	private String nombreBanderaPaisDestino;
 
+	private String mensajeResultado;
+	private boolean mostrarMensajeResultado;
+
 	private String categoria;
 	private String posibleCategoria;
 	private List<CategoriaDTO> listPosiblesCategorias;
@@ -105,20 +108,17 @@ public class BusquedaTerminosMB {
 		PaisesDTO paisesOrigenDTO = new PaisesDTO();
 		String valueMap = Utils.foundValueMap(mapPaises, idPais);
 		paisesOrigenDTO.setNombre(valueMap);
+		params.setPaisOrigen(paisesOrigenDTO);
 
 		PaisesDTO paisesDestinoDTO = new PaisesDTO();
 		valueMap = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
 		paisesDestinoDTO.setNombre(valueMap);
+		params.setPaisDestino(paisesDestinoDTO);
+
 		valueMap = Utils.foundValueMap(mapCategorias, idCategoria);
 		params.setCategoria(valueMap);
 
-		DepartamentoDTO departamentoOrigenDTO = new DepartamentoDTO();
-		DepartamentoDTO departamentoDestinoDTO = new DepartamentoDTO();
 		params.setTermino(palabra);
-		params.setDepartamentoDestino(departamentoDestinoDTO);
-		params.setDepartamentoOrigen(departamentoOrigenDTO);
-		params.setPaisDestino(paisesDestinoDTO);
-		params.setPaisOrigen(paisesOrigenDTO);
 
 		try {
 			listResultadosBusquedaSinonimos = GestionarPalabrasServiceClient.getInstance().obtenerSinonimos(params);
@@ -130,13 +130,6 @@ public class BusquedaTerminosMB {
 		}
 
 		if (listResultadosBusquedaSinonimos != null && !listResultadosBusquedaSinonimos.isEmpty()) {
-			respuestaResultados = "Su busqueda a arrojado los siguientes resultados:";
-			boolean resultAproximado = listResultadosBusquedaSinonimos.get(0).isResultAproximado();
-			if (resultAproximado) {
-				respuestaResultados = "Su busqueda no ha encontrado resultados exactos con los filtros seleccionados,  "
-						+ "el termino a buscar se puede relacionar a las siguientes palabras:";
-				requestContext.update("busqueda:fieldPnlResultadosPalabras");
-			}
 			int i = 0;
 			for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
 				String[] oraciones = sinonimosDTO.getOraciones();
@@ -147,11 +140,16 @@ public class BusquedaTerminosMB {
 				}
 				i++;
 			}
+			mensajeResultado = "Su consulta a arrojado los siguientes resultados";
+			requestContext.update("busqueda:fieldMsgResultado");
 			requestContext.update("busqueda:fieldPnlResultadosPalabras");
+			mostrarMensajeResultado = false;
 			isMostrarResultado = true;
-
 		} else {
+			mensajeResultado = "No hay resultados, con los filtros seleccionados";
+			requestContext.update("busqueda:fieldMsgResultado");
 			requestContext.update("busqueda:fieldPnlResultadosPalabras");
+			mostrarMensajeResultado = true;
 			isMostrarResultado = false;
 		}
 
@@ -165,8 +163,10 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:btnsCategoria");
 		requestContext.update("busqueda:fieldPnlTerminos");
 		requestContext.update("busqueda:fieldPnlResultadosPalabras");
-		requestContext.update("busqueda:fieldPnlResultAproximado");
 		requestContext.update("busqueda:filtroSeleccionado");
+		requestContext.update("busqueda:fieldMsgResultado");
+		requestContext.update("busqueda:fieldPnlResultadosPalabras");
+		mostrarMensajeResultado = false;
 		isMostrarDestino = true;
 		isMostrarCategoria = false;
 		isMostrarBotonesDestino = true;
@@ -210,7 +210,6 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:fieldPnlUbicacion");
 		requestContext.update("busqueda:btnContinuarDestino");
 		requestContext.update("busqueda:btnsDestino");
-
 		isMostrarDestino = false;
 		isMostrarBotonesDestino = false;
 		isMostrarOrigen = true;
@@ -1258,6 +1257,36 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMostrarBanderas(boolean isMostrarBanderas) {
 		this.isMostrarBanderas = isMostrarBanderas;
+	}
+
+	/**
+	 * @return the mensajeResultado
+	 */
+	public String getMensajeResultado() {
+		return mensajeResultado;
+	}
+
+	/**
+	 * @param mensajeResultado
+	 *            the mensajeResultado to set
+	 */
+	public void setMensajeResultado(String mensajeResultado) {
+		this.mensajeResultado = mensajeResultado;
+	}
+
+	/**
+	 * @return the mostrarMensajeResultado
+	 */
+	public boolean isMostrarMensajeResultado() {
+		return mostrarMensajeResultado;
+	}
+
+	/**
+	 * @param mostrarMensajeResultado
+	 *            the mostrarMensajeResultado to set
+	 */
+	public void setMostrarMensajeResultado(boolean mostrarMensajeResultado) {
+		this.mostrarMensajeResultado = mostrarMensajeResultado;
 	}
 
 }
