@@ -24,5 +24,7 @@ public interface SinonimosRepository extends MongoRepository<Sinonimos, String> 
 	public List<Sinonimos> findByPaisOrigenAndPaisDestino(String paisOrigen, String paisDestino);
 	
 	public List<Sinonimos> findByPaisOrigen(String paisOrigen);
+	
+	
 
 }

@@ -196,6 +196,7 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 	 * @param params
 	 * @return
 	 */
+	@Override
 	public List<SinonimosDTO> buscarPorCategoriaTermino(ParamsBusquedaPalabraDTO params) {
 
 		PaisesDTO paisDestinoDTO = params.getPaisDestino();
@@ -228,6 +229,7 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			List<SinonimosDTO> listSinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimos);
 			return listSinonimosDTO;
 		}
+		
 		return null;
 	}
 

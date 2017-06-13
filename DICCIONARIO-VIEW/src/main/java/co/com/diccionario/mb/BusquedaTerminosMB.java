@@ -1,5 +1,6 @@
 package co.com.diccionario.mb;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ public class BusquedaTerminosMB {
 	private Map<String, String> mapCategorias;
 
 	private String pais;
-
 	private String palabra;
 
 	private boolean isMostrarDestino;
@@ -58,7 +58,9 @@ public class BusquedaTerminosMB {
 	private List<CategoriaDTO> listPosiblesCategorias;
 	private String mensajeCategoriaAproximada;
 
+	private SinonimosDTO selectedSinonimosDTO;
 	private List<SinonimosDTO> listResultadosBusquedaSinonimos;
+	private String nuevoTermino;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -112,10 +114,10 @@ public class BusquedaTerminosMB {
 		if (listResultadosBusquedaSinonimos != null && !listResultadosBusquedaSinonimos.isEmpty()) {
 			int i = 0;
 			for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
-				String[] oraciones = sinonimosDTO.getOraciones();
-				if (oraciones == null || oraciones.length <= 0) {
-					oraciones = new String[1];
-					oraciones[0] = "No hay ejemplos";
+				List<String> oraciones = sinonimosDTO.getOraciones();
+				if (oraciones == null || oraciones.isEmpty()) {
+					oraciones = new ArrayList<>();
+					oraciones.add("No hay ejemplos");
 					listResultadosBusquedaSinonimos.get(i).setOraciones(oraciones);
 				}
 				i++;
@@ -153,7 +155,7 @@ public class BusquedaTerminosMB {
 		isMostrarBanderas = false;
 		isMostrarDestino = true;
 		isMostrarBotonesDestino = true;
-		
+
 	}
 
 	public void continuarPanelCategoria() {
@@ -172,8 +174,7 @@ public class BusquedaTerminosMB {
 		String nombrePaisDestino = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
 		nombreBanderaPaisOrigen = nombrePaisOrigen.toLowerCase() + ".png";
 		nombreBanderaPaisDestino = nombrePaisDestino.toLowerCase() + ".png";
-		
-		
+
 		requestContext.update("busqueda:fieldPnlUbicacion");
 		requestContext.update("busqueda:btnContinuarDestino");
 		requestContext.update("busqueda:btnsDestino");
@@ -280,8 +281,6 @@ public class BusquedaTerminosMB {
 		pais = "";
 	}
 
-	
-
 	public void paisMayuscula() {
 		if (pais != null && !pais.trim().isEmpty()) {
 			pais = pais.trim().replaceAll(" +", " ");
@@ -300,6 +299,13 @@ public class BusquedaTerminosMB {
 		if (categoria != null && !categoria.trim().isEmpty()) {
 			categoria = categoria.trim().replaceAll(" +", " ");
 			categoria = categoria.toUpperCase();
+		}
+	}
+
+	public void nuevoTerminoMayuscula() {
+		if (nuevoTermino != null && !nuevoTermino.trim().isEmpty()) {
+			nuevoTermino = nuevoTermino.trim().replaceAll(" +", " ");
+			nuevoTermino = nuevoTermino.toUpperCase();
 		}
 	}
 
@@ -323,6 +329,82 @@ public class BusquedaTerminosMB {
 		categoria = "";
 		requestContext.execute("PF('dlgCategoriaAproximadas').hide();");
 		requestContext.execute("PF('dlgCategoria').hide();");
+	}
+	
+	public void cerrarDialogAddNuevoTermino(){
+		setNuevoTermino("");
+	}
+
+	public void addNuevoTermino() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+
+		/**
+		 * primero verifica que el termino no exista
+		 */
+		ParamsBusquedaPalabraDTO params = new ParamsBusquedaPalabraDTO();
+
+		PaisesDTO paisesOrigenDTO = new PaisesDTO();
+		String valueMap = Utils.foundValueMap(mapPaises, idPais);
+		paisesOrigenDTO.setNombre(valueMap);
+		params.setPaisOrigen(paisesOrigenDTO);
+
+		PaisesDTO paisesDestinoDTO = new PaisesDTO();
+		valueMap = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
+		paisesDestinoDTO.setNombre(valueMap);
+		params.setPaisDestino(paisesDestinoDTO);
+
+		if (idCategoria == null) {
+			String msg = "No has seleccionado una categoria";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		valueMap = Utils.foundValueMap(mapCategorias, idCategoria);
+		params.setCategoria(valueMap);
+
+		params.setTermino(nuevoTermino);
+		List<SinonimosDTO> listSinonimosDTO;
+		try {
+			listSinonimosDTO = GestionarPalabrasServiceClient.getInstance().getSinonimoCategoriaPalabra(params);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		if (listSinonimosDTO != null && !listSinonimosDTO.isEmpty()) {
+			String msg = "La palabra " + nuevoTermino + " ya esta relacionada al termino";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+			return;
+		}
+
+		List<String> sinonimos = selectedSinonimosDTO.getSinonimos();
+		if (sinonimos != null && !sinonimos.isEmpty()) {
+			sinonimos.add(nuevoTermino);
+		} else {
+			sinonimos = new ArrayList<>();
+			sinonimos.add(nuevoTermino);
+		}
+
+		selectedSinonimosDTO.setSinonimos(sinonimos);
+		try {
+			selectedSinonimosDTO = GestionarPalabrasServiceClient.getInstance()
+					.agregarNuevoSinonimo(selectedSinonimosDTO);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		String msg = "La palabra " + nuevoTermino + " ha sido relacionada";
+		Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null, msg,
+				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+		setNuevoTermino("");
+		buscarSinonimos();
+
 	}
 
 	public void addNuevaCategoria() {
@@ -786,6 +868,36 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMostrarMensajeResultado(boolean mostrarMensajeResultado) {
 		this.mostrarMensajeResultado = mostrarMensajeResultado;
+	}
+
+	/**
+	 * @return the selectedSinonimosDTO
+	 */
+	public SinonimosDTO getSelectedSinonimosDTO() {
+		return selectedSinonimosDTO;
+	}
+
+	/**
+	 * @param selectedSinonimosDTO
+	 *            the selectedSinonimosDTO to set
+	 */
+	public void setSelectedSinonimosDTO(SinonimosDTO selectedSinonimosDTO) {
+		this.selectedSinonimosDTO = selectedSinonimosDTO;
+	}
+
+	/**
+	 * @return the nuevoTermino
+	 */
+	public String getNuevoTermino() {
+		return nuevoTermino;
+	}
+
+	/**
+	 * @param nuevoTermino
+	 *            the nuevoTermino to set
+	 */
+	public void setNuevoTermino(String nuevoTermino) {
+		this.nuevoTermino = nuevoTermino;
 	}
 
 }

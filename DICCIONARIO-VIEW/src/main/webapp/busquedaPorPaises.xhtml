@@ -94,7 +94,6 @@
 					<p:panelGrid columns="3" rendered="#{busquedaMB.mostrarBanderas}">
 						<p:graphicImage width="24" height="24" library="banderas"
 							name="#{busquedaMB.nombreBanderaPaisOrigen}">
-
 						</p:graphicImage>
 
 						<p:graphicImage width="24" height="24" library="banderas"
@@ -168,8 +167,9 @@
 				</p:outputPanel>
 
 				<p:outputPanel id="fieldPnlResultadosPalabras">
-					<p:dataGrid value="#{busquedaMB.listResultadosBusquedaSinonimos}"
-						var="result" columns="1" emptyMessage="Sin resultados"
+					<p:dataGrid id="dataGridSinonimos"
+						value="#{busquedaMB.listResultadosBusquedaSinonimos}" var="result"
+						columns="1" emptyMessage="Sin resultados"
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
 							<h:outputText style="font-size:12px;"
@@ -219,20 +219,29 @@
 							<p />
 							<p:panelGrid columns="3">
 								<h:panelGrid style="text-align:center">
-									<p:graphicImage alt="" library="iconos" width="32" height="32"
-										name="addMind.png" />
+									<p:commandLink>
+										<p:graphicImage alt="" library="iconos" width="32" height="32"
+											name="addMind.png" />
+									</p:commandLink>
 									<p:outputLabel value="Nuevo significado" />
 								</h:panelGrid>
 
 								<h:panelGrid style="text-align:center">
-									<p:graphicImage alt="" library="iconos" width="32" height="32"
-										name="word.png" />
-									<p:outputLabel value="Nuevo termino" />
+									<p:commandLink update=":formAddNuevoTermino"
+										oncomplete="PF('dlgAddNuevoTermino').show();">
+										<p:graphicImage alt="" library="iconos" width="32" height="32"
+											name="word.png" />
+										<f:setPropertyActionListener value="#{result}"
+											target="#{busquedaMB.selectedSinonimosDTO}" />
+									</p:commandLink>
+									<p:outputLabel value="Nuevo sinonimo" />
 								</h:panelGrid>
 
 								<h:panelGrid style="text-align:center">
-									<p:graphicImage alt="" library="iconos" width="32" height="32"
-										name="example.png" />
+									<h:commandLink>
+										<p:graphicImage alt="" library="iconos" width="32" height="32"
+											name="example.png" />
+									</h:commandLink>
 									<p:outputLabel value="Nuevo ejemplo" />
 								</h:panelGrid>
 							</p:panelGrid>
@@ -250,11 +259,39 @@
 				life="3000" globalOnly="true" />
 		</h:form>
 
+		<p:dialog id="dlgAddNuevoTermino" widgetVar="dlgAddNuevoTermino"
+			modal="true" appendTo="@(body)" resizable="false"
+			header="#{busquedaMB.selectedSinonimosDTO.termino}">
+			<p:ajax event="close" update="formAddNuevoTermino"
+				listener="#{busquedaMB.cerrarDialogAddNuevoTermino()}" />
+			<h:form id="formAddNuevoTermino">
+				<h:panelGrid columns="2">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Nuevo Termino: " />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtNuevoTermino"
+							value="#{busquedaMB.nuevoTermino}">
+							<p:ajax event="blur"
+								listener="#{busquedaMB.nuevoTerminoMayuscula()}"
+								update="txtNuevoTermino" />
+						</h:inputText>
+						<p:commandButton id="btnAddNuevoTermino" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevoTermino()}"
+							update=":busqueda:dataGridSinonimos :msg">
+						</p:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+
+		</p:dialog>
 
 
 		<p:dialog id="dlgCategoriaAproximadas"
 			widgetVar="dlgCategoriaAproximadas" modal="true" appendTo="@(body)"
 			resizable="false">
+
 			<h:form id="formAddCategoriaAproximadas">
 				<h:panelGrid>
 					<p:outputLabel value="#{busquedaMB.mensajeCategoriaAproximada}" />

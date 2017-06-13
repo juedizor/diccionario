@@ -8,6 +8,18 @@ var palabra = {
 
 db.sinonimos.insert(palabra);
 
+
+var palabra = {
+	pais_origen: 'COLOMBIA', 
+	pais_destino: 'ARGENTINA', 
+	termino: 'BUZO',
+	categoria: 'ROPA',
+	sinonimos: ['POLERA']
+};
+
+db.sinonimos.insert(palabra);
+
+
 var palabra = {
 	pais_origen: 'ARGENTINA', 
 	pais_destino: 'COLOMBIA', 

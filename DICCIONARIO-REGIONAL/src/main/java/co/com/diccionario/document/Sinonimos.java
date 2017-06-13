@@ -1,5 +1,7 @@
 package co.com.diccionario.document;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,8 +25,8 @@ public class Sinonimos {
 	private String ciudadDestino;
 	private String termino;
 	private String categoria;
-	private String[] sinonimos;
-	private String[] oraciones;
+	private List<String> sinonimos;
+	private List<String> oraciones;
 
 	/**
 	 * @return the _id
@@ -164,29 +166,31 @@ public class Sinonimos {
 	/**
 	 * @return the sinonimos
 	 */
-	public String[] getSinonimos() {
+	public List<String> getSinonimos() {
 		return sinonimos;
 	}
 
 	/**
 	 * @param sinonimos the sinonimos to set
 	 */
-	public void setSinonimos(String[] sinonimos) {
+	public void setSinonimos(List<String> sinonimos) {
 		this.sinonimos = sinonimos;
 	}
 
 	/**
 	 * @return the oraciones
 	 */
-	public String[] getOraciones() {
+	public List<String> getOraciones() {
 		return oraciones;
 	}
 
 	/**
 	 * @param oraciones the oraciones to set
 	 */
-	public void setOraciones(String[] oraciones) {
+	public void setOraciones(List<String> oraciones) {
 		this.oraciones = oraciones;
 	}
+	
+	
 
 }

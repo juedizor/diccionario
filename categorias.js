@@ -1,4 +1,4 @@
- var categoria = {
+var categoria = {
 	nombre: 'ROPA'
 }
 

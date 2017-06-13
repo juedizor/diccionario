@@ -57,4 +57,41 @@ public class GestionarPalabrasServiceClient {
 		return null;
 	}
 
+	public List<SinonimosDTO> getSinonimoCategoriaPalabra(ParamsBusquedaPalabraDTO paramsBusqueda) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/busqueda/validarSinonimoPalabra";
+		try {
+			HttpEntity<ParamsBusquedaPalabraDTO> httpEntity = new HttpEntity<ParamsBusquedaPalabraDTO>(paramsBusqueda);
+			ResponseEntity<List<SinonimosDTO>> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
+					new ParameterizedTypeReference<List<SinonimosDTO>>() {
+					});
+			List<SinonimosDTO> listSinonimos = response.getBody();
+			return listSinonimos;
+		} catch (HttpClientErrorException e) {
+			if (e.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+				throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+			}
+
+			if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
+	public SinonimosDTO agregarNuevoSinonimo(SinonimosDTO sinonimosDTO) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/sinonimo";
+		try {
+			HttpEntity<SinonimosDTO> httpEntity = new HttpEntity<>(sinonimosDTO);
+			ResponseEntity<SinonimosDTO> response = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity,
+					new ParameterizedTypeReference<SinonimosDTO>() {
+					});
+			return response.getBody();
+		} catch (HttpClientErrorException e) {
+			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+		}
+	}
+
 }
