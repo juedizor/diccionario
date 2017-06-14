@@ -330,8 +330,8 @@ public class BusquedaTerminosMB {
 		requestContext.execute("PF('dlgCategoriaAproximadas').hide();");
 		requestContext.execute("PF('dlgCategoria').hide();");
 	}
-	
-	public void cerrarDialogAddNuevoTermino(){
+
+	public void cerrarDialogAddNuevoTermino() {
 		setNuevoTermino("");
 	}
 
@@ -364,7 +364,10 @@ public class BusquedaTerminosMB {
 		valueMap = Utils.foundValueMap(mapCategorias, idCategoria);
 		params.setCategoria(valueMap);
 
-		params.setTermino(nuevoTermino);
+		List<String> listSinonimos = new ArrayList<>();
+		listSinonimos.add(nuevoTermino);
+		params.setSinonimos(listSinonimos);
+		
 		List<SinonimosDTO> listSinonimosDTO;
 		try {
 			listSinonimosDTO = GestionarPalabrasServiceClient.getInstance().getSinonimoCategoriaPalabra(params);

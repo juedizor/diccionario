@@ -63,6 +63,25 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 
 	}
 
+	public List<SinonimosDTO> obtenerSinonimosPorSinonimo(ParamsBusquedaPalabraDTO params) {
+		PaisesDTO paisDestinoDTO = params.getPaisDestino();
+		PaisesDTO paisOrigenDTO = params.getPaisOrigen();
+		if (paisDestinoDTO == null || paisOrigenDTO == null) {
+			return null;
+		}
+
+		List<String> sinonimo = params.getSinonimos();
+		List<Sinonimos> listSinonimos = sinonimosRepository.findByPaisOrigenAndPaisDestinoAndSinonimos(
+				paisOrigenDTO.getNombre(), paisDestinoDTO.getNombre(), sinonimo);
+		if(listSinonimos != null && !listSinonimos.isEmpty()){
+			List<SinonimosDTO> listSinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimos);
+			return listSinonimosDTO;
+		}
+		
+		return null;
+
+	}
+
 	/**
 	 * realiza la busqueda por pais origen, pais destino, departamento origen,
 	 * departamento destino el termino y su categoria
@@ -229,7 +248,7 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			List<SinonimosDTO> listSinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimos);
 			return listSinonimosDTO;
 		}
-		
+
 		return null;
 	}
 

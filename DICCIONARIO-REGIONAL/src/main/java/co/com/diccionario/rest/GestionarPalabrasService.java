@@ -47,7 +47,7 @@ public class GestionarPalabrasService {
 			throws CommonException {
 		List<SinonimosDTO> listPalabras;
 		try {
-			listPalabras = gestionarBusquedaPalabrasIface.buscarPorCategoriaTermino(params);
+			listPalabras = gestionarBusquedaPalabrasIface.obtenerSinonimosPorSinonimo(params);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error consultando palabras " + e.getMessage());
 		}
