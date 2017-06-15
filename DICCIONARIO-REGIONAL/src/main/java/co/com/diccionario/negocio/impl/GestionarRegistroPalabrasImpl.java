@@ -23,13 +23,12 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 		Sinonimos sinonimos = SinonimosMapper.INSTANCE.sinonimoDTOToSinonimo(sinonimosDTO);
 
 		/**
-		 * agrega el sinonimo para pais origen y destino
+		 * agrega el sinonimo normal
 		 */
 		Sinonimos sinonimosInicial = sinonimosRepository.save(sinonimos);
 
 		/**
-		 * cambiamos el pais de origen por el destino y hacemos el insert de
-		 * manera contraria, pero tenemos que realizar la busqueda del id
+		 * agregamos el sinonimo al contrario
 		 */
 		String paisOrigen = sinonimos.getPaisDestino();
 		String paisDestino = sinonimos.getPaisOrigen();
