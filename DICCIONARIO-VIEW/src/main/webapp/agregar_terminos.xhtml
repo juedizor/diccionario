@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:form id="registrarNuevoTermino">
+
+	<p:panel id="pnlGeneral" styleClass="pnlForm">
+
+		<p:outputPanel id="fieldPnlPais">
+			<p:outputPanel id="filtroSeleccionado" style="text-align:center">
+				<p:panelGrid columns="3">
+					<p:graphicImage width="24" height="24" library="banderas"
+						name="#{registroTermino.nombreBanderaPaisOrigen}">
+					</p:graphicImage>
+
+					<p:graphicImage width="24" height="24" library="banderas"
+						name="next.png">
+
+					</p:graphicImage>
+
+					<p:graphicImage width="24" height="24" library="banderas"
+						name="#{registroTermino.nombreBanderaPaisDestino}">
+
+					</p:graphicImage>
+
+				</p:panelGrid>
+
+
+			</p:outputPanel>
+
+
+			<p:fieldset styleClass="fieForm">
+				<h:panelGrid id="pnlPais" columns="2"
+					columnClasses="columnas1, columnas1, columnas1">
+
+
+
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Nueva palabra" />
+					</h:panelGrid>
+
+					<p:inputText>
+					</p:inputText>
+
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Pais" />
+					</h:panelGrid>
+
+					<h:panelGroup>
+						<p:selectOneMenu id="cmbPaisOrigen" filter="true"
+							value="#{registroTermino.paisOrigen}"
+							converter="selectItemsConverter">
+							<f:selectItem itemLabel="Seleccione..." itemValue="" />
+							<f:selectItems value="#{registroTermino.listPaisesOrigen}"
+								var="paisOrigen" itemLabel="#{paisOrigen.nombre}"
+								itemValue="#{paisOrigen}" />
+						</p:selectOneMenu>
+					</h:panelGroup>
+
+				</h:panelGrid>
+			</p:fieldset>
+		</p:outputPanel>
+
+	</p:panel>
+
+</h:form>
+</html>

@@ -168,6 +168,22 @@
 					</p:commandButton>
 				</h:panelGrid>
 
+				<p />
+
+				<p:outputPanel id="pnlAgregarNuevaPalabra">
+					<p:panelGrid rendered="#{busquedaMB.mostrarAgregarMiPalabra}"
+						columns="1" style="text-align:center">
+						<p:commandLink title="Agregar mi palabra"
+							oncomplete="PF('dlgNuevosTerminos').show();">
+							<p:graphicImage library="iconos" width="32" height="32"
+								name="word.png" />
+						</p:commandLink>
+						<p:outputLabel value="Agregar nuevas palabras" />
+					</p:panelGrid>
+				</p:outputPanel>
+
+				<p />
+
 				<p:outputPanel id="fieldMsgResultado">
 					<h4>
 						<h:outputText rendered="#{busquedaMB.mostrarMensajeResultado }"
@@ -236,13 +252,12 @@
 								</h:panelGrid>
 
 								<h:panelGrid style="text-align:center">
-									<p:commandLink
+									<p:commandLink actionListener="#{registroTermino.getParams}"
 										update=":formAddNuevoTermino :dlgAddNuevoTermino"
 										oncomplete="PF('dlgAddNuevoTermino').show();">
 										<p:graphicImage alt="" library="iconos" width="32" height="32"
 											name="word.png" />
-										<f:setPropertyActionListener value="#{result}"
-											target="#{busquedaMB.selectedSinonimosDTO}" />
+										<f:param value="#{busquedaMB.paisOrigen}" name="paisOrigen"></f:param>
 									</p:commandLink>
 									<p:outputLabel value="Nuevo sinonimo" />
 								</h:panelGrid>
@@ -268,6 +283,13 @@
 			<p:growl id="msgGeneral" widgetVar="msgGeneral" showDetail="true"
 				life="3000" globalOnly="true" />
 		</h:form>
+
+		<p:dialog width="50%" id="dlgNuevosTerminos"
+			widgetVar="dlgNuevosTerminos" modal="true" appendTo="@(body)"
+			resizable="false" header="AGREGANDO MIS PALABRAS">
+			<ui:include src="/agregar_terminos.xhtml" />
+
+		</p:dialog>
 
 		<p:dialog id="dlgAddNuevoTermino" widgetVar="dlgAddNuevoTermino"
 			modal="true" appendTo="@(body)" resizable="false"

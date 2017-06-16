@@ -60,6 +60,8 @@ public class BusquedaTerminosMB {
 	private List<SinonimosDTO> listResultadosBusquedaSinonimos;
 	private String nuevoTermino;
 
+	private boolean mostrarAgregarMiPalabra;
+
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
 		ParamsBundle.getInstance().getEtiquetas(ParamsBundle.MSG);
@@ -112,14 +114,18 @@ public class BusquedaTerminosMB {
 			mensajeResultado = "Su consulta a arrojado los siguientes resultados";
 			requestContext.update("busqueda:fieldMsgResultado");
 			requestContext.update("busqueda:fieldPnlResultadosPalabras");
+			requestContext.update("busqueda:pnlAgregarNuevaPalabra");
 			mostrarMensajeResultado = true;
 			isMostrarResultado = true;
+			mostrarAgregarMiPalabra = true;
 		} else {
 			mensajeResultado = "No hay resultados, con los filtros seleccionados";
 			requestContext.update("busqueda:fieldMsgResultado");
 			requestContext.update("busqueda:fieldPnlResultadosPalabras");
+			requestContext.update("busqueda:pnlAgregarNuevaPalabra");
 			mostrarMensajeResultado = true;
 			isMostrarResultado = false;
+			mostrarAgregarMiPalabra = true;
 		}
 
 	}
@@ -135,13 +141,16 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:filtroSeleccionado");
 		requestContext.update("busqueda:fieldMsgResultado");
 		requestContext.update("busqueda:fieldPnlResultadosPalabras");
+		requestContext.update("busqueda:pnlAgregarNuevaPalabra");
 		mostrarMensajeResultado = false;
 		isMostrarCategoria = false;
 		isMostrarBotonesCategoria = false;
 		isMostrarResultado = false;
 		isMostrarBanderas = false;
+		mostrarAgregarMiPalabra = false;
 		isMostrarDestino = true;
 		isMostrarBotonesDestino = true;
+		
 
 	}
 
@@ -311,7 +320,7 @@ public class BusquedaTerminosMB {
 		requestContext.update("formAddCategoriaAproximadas");
 		categorias = posibleCategoria;
 		for (CategoriaDTO categoriaDTO : listCategorias) {
-			if(categorias.getId().equals(categoriaDTO.getId())){
+			if (categorias.getId().equals(categoriaDTO.getId())) {
 				categorias = categoriaDTO;
 				break;
 			}
@@ -349,7 +358,7 @@ public class BusquedaTerminosMB {
 		List<String> listSinonimos = new ArrayList<>();
 		listSinonimos.add(nuevoTermino);
 		params.setSinonimos(listSinonimos);
-		
+
 		List<SinonimosDTO> listSinonimosDTO;
 		try {
 			listSinonimosDTO = GestionarPalabrasServiceClient.getInstance().getSinonimoCategoriaPalabra(params);
@@ -464,7 +473,6 @@ public class BusquedaTerminosMB {
 			return;
 		}
 	}
-
 
 	/**
 	 * @return the pais
@@ -804,7 +812,8 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param paisOrigen the paisOrigen to set
+	 * @param paisOrigen
+	 *            the paisOrigen to set
 	 */
 	public void setPaisOrigen(PaisesDTO paisOrigen) {
 		this.paisOrigen = paisOrigen;
@@ -818,7 +827,8 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param listPaisesOrigen the listPaisesOrigen to set
+	 * @param listPaisesOrigen
+	 *            the listPaisesOrigen to set
 	 */
 	public void setListPaisesOrigen(List<PaisesDTO> listPaisesOrigen) {
 		this.listPaisesOrigen = listPaisesOrigen;
@@ -832,7 +842,8 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param paisDestino the paisDestino to set
+	 * @param paisDestino
+	 *            the paisDestino to set
 	 */
 	public void setPaisDestino(PaisesDTO paisDestino) {
 		this.paisDestino = paisDestino;
@@ -846,7 +857,8 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param listPaisesDestino the listPaisesDestino to set
+	 * @param listPaisesDestino
+	 *            the listPaisesDestino to set
 	 */
 	public void setListPaisesDestino(List<PaisesDTO> listPaisesDestino) {
 		this.listPaisesDestino = listPaisesDestino;
@@ -860,7 +872,8 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param categorias the categorias to set
+	 * @param categorias
+	 *            the categorias to set
 	 */
 	public void setCategorias(CategoriaDTO categorias) {
 		this.categorias = categorias;
@@ -874,10 +887,26 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @param listCategorias the listCategorias to set
+	 * @param listCategorias
+	 *            the listCategorias to set
 	 */
 	public void setListCategorias(List<CategoriaDTO> listCategorias) {
 		this.listCategorias = listCategorias;
+	}
+
+	/**
+	 * @return the mostrarAgregarMiPalabra
+	 */
+	public boolean isMostrarAgregarMiPalabra() {
+		return mostrarAgregarMiPalabra;
+	}
+
+	/**
+	 * @param mostrarAgregarMiPalabra
+	 *            the mostrarAgregarMiPalabra to set
+	 */
+	public void setMostrarAgregarMiPalabra(boolean mostrarAgregarMiPalabra) {
+		this.mostrarAgregarMiPalabra = mostrarAgregarMiPalabra;
 	}
 
 }

@@ -71,7 +71,7 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 		}
 
 		List<String> sinonimo = params.getSinonimos();
-		List<Sinonimos> listSinonimos = sinonimosRepository.findByPaisOrigenAndPaisDestinoAndSinonimos(
+		List<Sinonimos> listSinonimos = sinonimosRepository.findByPaisOrigenAndPaisDestinoAndSinonimosIn(
 				paisOrigenDTO.getNombre(), paisDestinoDTO.getNombre(), sinonimo);
 		if(listSinonimos != null && !listSinonimos.isEmpty()){
 			List<SinonimosDTO> listSinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimos);
