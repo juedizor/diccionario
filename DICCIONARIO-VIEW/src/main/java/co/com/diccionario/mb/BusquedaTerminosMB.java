@@ -1,9 +1,7 @@
 package co.com.diccionario.mb;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -26,14 +24,14 @@ import co.com.diccionario.utils.Utils;
 @SessionScoped
 public class BusquedaTerminosMB {
 
-	private String idPais;
-	private Map<String, String> mapPaises;
+	private PaisesDTO paisOrigen;
+	private List<PaisesDTO> listPaisesOrigen;
 
-	private String idPaisDestino;
-	private Map<String, String> mapPaisesDestino;
+	private PaisesDTO paisDestino;
+	private List<PaisesDTO> listPaisesDestino;
 
-	private String idCategoria;
-	private Map<String, String> mapCategorias;
+	private CategoriaDTO categorias;
+	private List<CategoriaDTO> listCategorias;
 
 	private String pais;
 	private String palabra;
@@ -54,7 +52,7 @@ public class BusquedaTerminosMB {
 	private boolean mostrarMensajeResultado;
 
 	private String categoria;
-	private String posibleCategoria;
+	private CategoriaDTO posibleCategoria;
 	private List<CategoriaDTO> listPosiblesCategorias;
 	private String mensajeCategoriaAproximada;
 
@@ -86,20 +84,9 @@ public class BusquedaTerminosMB {
 		}
 
 		ParamsBusquedaPalabraDTO params = new ParamsBusquedaPalabraDTO();
-
-		PaisesDTO paisesOrigenDTO = new PaisesDTO();
-		String valueMap = Utils.foundValueMap(mapPaises, idPais);
-		paisesOrigenDTO.setNombre(valueMap);
-		params.setPaisOrigen(paisesOrigenDTO);
-
-		PaisesDTO paisesDestinoDTO = new PaisesDTO();
-		valueMap = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
-		paisesDestinoDTO.setNombre(valueMap);
-		params.setPaisDestino(paisesDestinoDTO);
-
-		valueMap = Utils.foundValueMap(mapCategorias, idCategoria);
-		params.setCategoria(valueMap);
-
+		params.setPaisOrigen(paisOrigen);
+		params.setPaisDestino(paisDestino);
+		params.setCategoria(categoria);
 		params.setTermino(palabra);
 
 		try {
@@ -162,7 +149,7 @@ public class BusquedaTerminosMB {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
 		RequestContext requestContext = RequestContext.getCurrentInstance();
-		if (idPaisDestino == null || idPaisDestino.trim().isEmpty()) {
+		if (paisDestino == null) {
 			requestContext.update("msg");
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null,
 					ParamsBundle.getInstance().getMapMensajes().get("msg_seleccione_pais"),
@@ -170,10 +157,8 @@ public class BusquedaTerminosMB {
 			return;
 		}
 
-		String nombrePaisOrigen = Utils.foundValueMap(mapPaises, idPais);
-		String nombrePaisDestino = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
-		nombreBanderaPaisOrigen = nombrePaisOrigen.toLowerCase() + ".png";
-		nombreBanderaPaisDestino = nombrePaisDestino.toLowerCase() + ".png";
+		nombreBanderaPaisOrigen = paisOrigen.getNombre().toLowerCase() + ".png";
+		nombreBanderaPaisDestino = paisDestino.getNombre().toLowerCase() + ".png";
 
 		requestContext.update("busqueda:fieldPnlUbicacion");
 		requestContext.update("busqueda:btnContinuarDestino");
@@ -204,7 +189,7 @@ public class BusquedaTerminosMB {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
 		RequestContext requestContext = RequestContext.getCurrentInstance();
-		if (idPais == null || idPais.trim().isEmpty()) {
+		if (paisOrigen == null) {
 			requestContext.update("msg");
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null,
 					ParamsBundle.getInstance().getMapMensajes().get("msg_seleccione_pais"),
@@ -242,9 +227,9 @@ public class BusquedaTerminosMB {
 			return;
 		}
 
-		mapCategorias = new LinkedHashMap<>();
+		listCategorias = new ArrayList<>();
 		for (CategoriaDTO categoriaDTO : listCategoriaDTO) {
-			mapCategorias.put(categoriaDTO.getNombre(), "" + categoriaDTO.getId());
+			listCategorias.add(categoriaDTO);
 		}
 	}
 
@@ -268,11 +253,11 @@ public class BusquedaTerminosMB {
 			return;
 		}
 
-		mapPaises = new LinkedHashMap<>();
-		mapPaisesDestino = new LinkedHashMap<>();
+		listPaisesOrigen = new ArrayList<>();
+		listPaisesDestino = new ArrayList<>();
 		for (PaisesDTO paisesDTO : listPaisesDTO) {
-			mapPaises.put(paisesDTO.getNombre(), "" + paisesDTO.getId());
-			mapPaisesDestino.put(paisesDTO.getNombre(), "" + paisesDTO.getId());
+			listPaisesOrigen.add(paisesDTO);
+			listPaisesDestino.add(paisesDTO);
 		}
 
 	}
@@ -313,7 +298,7 @@ public class BusquedaTerminosMB {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
 		RequestContext requestContext = RequestContext.getCurrentInstance();
-		if (posibleCategoria == null || posibleCategoria.trim().isEmpty()) {
+		if (posibleCategoria == null) {
 			requestContext.update("msg");
 			String msg = "Debe seleccionar la categoria";
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
@@ -324,8 +309,14 @@ public class BusquedaTerminosMB {
 		requestContext.update("busqueda:cmbCategoria");
 		requestContext.update("formAddCategoria");
 		requestContext.update("formAddCategoriaAproximadas");
-		idCategoria = posibleCategoria;
-		posibleCategoria = "";
+		categorias = posibleCategoria;
+		for (CategoriaDTO categoriaDTO : listCategorias) {
+			if(categorias.getId().equals(categoriaDTO.getId())){
+				categorias = categoriaDTO;
+				break;
+			}
+		}
+		posibleCategoria = null;
 		categoria = "";
 		requestContext.execute("PF('dlgCategoriaAproximadas').hide();");
 		requestContext.execute("PF('dlgCategoria').hide();");
@@ -343,26 +334,17 @@ public class BusquedaTerminosMB {
 		 * primero verifica que el termino no exista
 		 */
 		ParamsBusquedaPalabraDTO params = new ParamsBusquedaPalabraDTO();
+		params.setPaisOrigen(paisOrigen);
+		params.setPaisDestino(paisDestino);
 
-		PaisesDTO paisesOrigenDTO = new PaisesDTO();
-		String valueMap = Utils.foundValueMap(mapPaises, idPais);
-		paisesOrigenDTO.setNombre(valueMap);
-		params.setPaisOrigen(paisesOrigenDTO);
-
-		PaisesDTO paisesDestinoDTO = new PaisesDTO();
-		valueMap = Utils.foundValueMap(mapPaisesDestino, idPaisDestino);
-		paisesDestinoDTO.setNombre(valueMap);
-		params.setPaisDestino(paisesDestinoDTO);
-
-		if (idCategoria == null) {
+		if (categorias == null) {
 			String msg = "No has seleccionado una categoria";
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
 			return;
 		}
 
-		valueMap = Utils.foundValueMap(mapCategorias, idCategoria);
-		params.setCategoria(valueMap);
+		params.setCategoria(categorias.getNombre());
 
 		List<String> listSinonimos = new ArrayList<>();
 		listSinonimos.add(nuevoTermino);
@@ -483,65 +465,6 @@ public class BusquedaTerminosMB {
 		}
 	}
 
-	/**
-	 * @return the mapPaises
-	 */
-	public Map<String, String> getMapPaises() {
-		return mapPaises;
-	}
-
-	/**
-	 * @param mapPaises
-	 *            the mapPaises to set
-	 */
-	public void setMapPaises(Map<String, String> mapPaises) {
-		this.mapPaises = mapPaises;
-	}
-
-	/**
-	 * @return the idPais
-	 */
-	public String getIdPais() {
-		return idPais;
-	}
-
-	/**
-	 * @param idPais
-	 *            the idPais to set
-	 */
-	public void setIdPais(String idPais) {
-		this.idPais = idPais;
-	}
-
-	/**
-	 * @return the idPaisDestino
-	 */
-	public String getIdPaisDestino() {
-		return idPaisDestino;
-	}
-
-	/**
-	 * @param idPaisDestino
-	 *            the idPaisDestino to set
-	 */
-	public void setIdPaisDestino(String idPaisDestino) {
-		this.idPaisDestino = idPaisDestino;
-	}
-
-	/**
-	 * @return the mapPaisesDestino
-	 */
-	public Map<String, String> getMapPaisesDestino() {
-		return mapPaisesDestino;
-	}
-
-	/**
-	 * @param mapPaisesDestino
-	 *            the mapPaisesDestino to set
-	 */
-	public void setMapPaisesDestino(Map<String, String> mapPaisesDestino) {
-		this.mapPaisesDestino = mapPaisesDestino;
-	}
 
 	/**
 	 * @return the pais
@@ -556,36 +479,6 @@ public class BusquedaTerminosMB {
 	 */
 	public void setPais(String pais) {
 		this.pais = pais;
-	}
-
-	/**
-	 * @return the idCategoria
-	 */
-	public String getIdCategoria() {
-		return idCategoria;
-	}
-
-	/**
-	 * @param idCategoria
-	 *            the idCategoria to set
-	 */
-	public void setIdCategoria(String idCategoria) {
-		this.idCategoria = idCategoria;
-	}
-
-	/**
-	 * @return the mapCategorias
-	 */
-	public Map<String, String> getMapCategorias() {
-		return mapCategorias;
-	}
-
-	/**
-	 * @param mapCategorias
-	 *            the mapCategorias to set
-	 */
-	public void setMapCategorias(Map<String, String> mapCategorias) {
-		this.mapCategorias = mapCategorias;
 	}
 
 	/**
@@ -711,7 +604,7 @@ public class BusquedaTerminosMB {
 	/**
 	 * @return the posibleCategoria
 	 */
-	public String getPosibleCategoria() {
+	public CategoriaDTO getPosibleCategoria() {
 		return posibleCategoria;
 	}
 
@@ -719,7 +612,7 @@ public class BusquedaTerminosMB {
 	 * @param posibleCategoria
 	 *            the posibleCategoria to set
 	 */
-	public void setPosibleCategoria(String posibleCategoria) {
+	public void setPosibleCategoria(CategoriaDTO posibleCategoria) {
 		this.posibleCategoria = posibleCategoria;
 	}
 
@@ -901,6 +794,90 @@ public class BusquedaTerminosMB {
 	 */
 	public void setNuevoTermino(String nuevoTermino) {
 		this.nuevoTermino = nuevoTermino;
+	}
+
+	/**
+	 * @return the paisOrigen
+	 */
+	public PaisesDTO getPaisOrigen() {
+		return paisOrigen;
+	}
+
+	/**
+	 * @param paisOrigen the paisOrigen to set
+	 */
+	public void setPaisOrigen(PaisesDTO paisOrigen) {
+		this.paisOrigen = paisOrigen;
+	}
+
+	/**
+	 * @return the listPaisesOrigen
+	 */
+	public List<PaisesDTO> getListPaisesOrigen() {
+		return listPaisesOrigen;
+	}
+
+	/**
+	 * @param listPaisesOrigen the listPaisesOrigen to set
+	 */
+	public void setListPaisesOrigen(List<PaisesDTO> listPaisesOrigen) {
+		this.listPaisesOrigen = listPaisesOrigen;
+	}
+
+	/**
+	 * @return the paisDestino
+	 */
+	public PaisesDTO getPaisDestino() {
+		return paisDestino;
+	}
+
+	/**
+	 * @param paisDestino the paisDestino to set
+	 */
+	public void setPaisDestino(PaisesDTO paisDestino) {
+		this.paisDestino = paisDestino;
+	}
+
+	/**
+	 * @return the listPaisesDestino
+	 */
+	public List<PaisesDTO> getListPaisesDestino() {
+		return listPaisesDestino;
+	}
+
+	/**
+	 * @param listPaisesDestino the listPaisesDestino to set
+	 */
+	public void setListPaisesDestino(List<PaisesDTO> listPaisesDestino) {
+		this.listPaisesDestino = listPaisesDestino;
+	}
+
+	/**
+	 * @return the categorias
+	 */
+	public CategoriaDTO getCategorias() {
+		return categorias;
+	}
+
+	/**
+	 * @param categorias the categorias to set
+	 */
+	public void setCategorias(CategoriaDTO categorias) {
+		this.categorias = categorias;
+	}
+
+	/**
+	 * @return the listCategorias
+	 */
+	public List<CategoriaDTO> getListCategorias() {
+		return listCategorias;
+	}
+
+	/**
+	 * @param listCategorias the listCategorias to set
+	 */
+	public void setListCategorias(List<CategoriaDTO> listCategorias) {
+		this.listCategorias = listCategorias;
 	}
 
 }
