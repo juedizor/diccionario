@@ -42,6 +42,11 @@ body {
 	background-image: url(../resources/img/requiredIcon.png) !important;
 }
 
+.no_obligatorio {
+	width: 16px !important;
+	height: 16px !important;
+}
+
 .columnas1 {
 	padding-top: 5px;
 	padding-bottom: 5px;

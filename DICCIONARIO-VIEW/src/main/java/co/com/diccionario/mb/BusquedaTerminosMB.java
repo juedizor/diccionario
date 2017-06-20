@@ -150,7 +150,6 @@ public class BusquedaTerminosMB {
 		mostrarAgregarMiPalabra = false;
 		isMostrarDestino = true;
 		isMostrarBotonesDestino = true;
-		
 
 	}
 
@@ -345,6 +344,7 @@ public class BusquedaTerminosMB {
 		ParamsBusquedaPalabraDTO params = new ParamsBusquedaPalabraDTO();
 		params.setPaisOrigen(paisOrigen);
 		params.setPaisDestino(paisDestino);
+		params.setTermino(selectedSinonimosDTO.getTermino());
 
 		if (categorias == null) {
 			String msg = "No has seleccionado una categoria";

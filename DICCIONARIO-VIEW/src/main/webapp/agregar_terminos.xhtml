@@ -5,15 +5,21 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 
-<h:form id="registrarNuevoTermino">
 
-	<p:panel id="pnlGeneral" styleClass="pnlForm">
+
+<h:form enctype="multipart/form-data" id="registrarNuevoTermino">
+
+	<p:focus id="focus" for="#{registroTermino.focusIdLocalizade}"></p:focus>
+	<p:growl widgetVar="msgRegistro" id="msgRegistro" life="2000" />
+
+	<p:panel style="float:left;overflow-y: auto;height:500px;"
+		id="pnlGeneral" styleClass="pnlForm">
 
 		<p:outputPanel id="fieldPnlPais">
 			<p:outputPanel id="filtroSeleccionado" style="text-align:center">
 				<p:panelGrid columns="3">
 					<p:graphicImage width="24" height="24" library="banderas"
-						name="#{registroTermino.nombreBanderaPaisOrigen}">
+						value="resources/banderas/#{registroTermino.nombreBanderaPaisOrigen}">
 					</p:graphicImage>
 
 					<p:graphicImage width="24" height="24" library="banderas"
@@ -22,8 +28,7 @@
 					</p:graphicImage>
 
 					<p:graphicImage width="24" height="24" library="banderas"
-						name="#{registroTermino.nombreBanderaPaisDestino}">
-
+						value="resources/banderas/#{registroTermino.nombreBanderaPaisDestino}">
 					</p:graphicImage>
 
 				</p:panelGrid>
@@ -33,42 +38,185 @@
 
 
 			<p:fieldset styleClass="fieForm">
-				<h:panelGrid id="pnlPais" columns="2"
-					columnClasses="columnas1, columnas1, columnas1">
-
-
-
-
+				<h:panelGrid id="pnlPais" columns="2">
 					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
 						<div class="obligatorio" />
-						<p:outputLabel value="Nueva palabra" />
+						<p:outputLabel
+							value="Mi palabra o expresión en #{registroTermino.paisOrigen.nombre}: " />
 					</h:panelGrid>
 
-					<p:inputText>
+					<p:inputText value="#{registroTermino.miTermino}"
+						id="txtPalabraOrigen" size="50">
+						<p:ajax event="blur"
+							listener="#{registroTermino.validarPalabraExiste()}"
+							update="txtPalabraOrigen ingreso_actual :msg focus" />
 					</p:inputText>
 
 
 					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
-						<div class="obligatorio" />
-						<p:outputLabel value="Pais" />
+						<div class="no_obligatorio" />
+						<p:outputLabel value="Mi palabra hace parte de la categoria:  " />
 					</h:panelGrid>
 
-					<h:panelGroup>
-						<p:selectOneMenu id="cmbPaisOrigen" filter="true"
-							value="#{registroTermino.paisOrigen}"
-							converter="selectItemsConverter">
-							<f:selectItem itemLabel="Seleccione..." itemValue="" />
-							<f:selectItems value="#{registroTermino.listPaisesOrigen}"
-								var="paisOrigen" itemLabel="#{paisOrigen.nombre}"
-								itemValue="#{paisOrigen}" />
-						</p:selectOneMenu>
-					</h:panelGroup>
+					<p:selectOneMenu id="cmbCategoria" filter="true"
+						value="#{registroTermino.categorias}"
+						converter="selectItemsConverter">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{registroTermino.listCategorias}"
+							var="categorias" itemLabel="#{categorias.nombre}"
+							itemValue="#{categorias}" />
+						<p:ajax event="change" update="cmbCategoria"></p:ajax>
+					</p:selectOneMenu>
+
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Definición: " />
+					</h:panelGrid>
+
+					<p:inputTextarea value="#{registroTermino.definicion}" rows="6"
+						cols="50" />
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Pais donde se dice la palabra: " />
+					</h:panelGrid>
+
+					<p:selectOneMenu id="cmbPaisOrigen" filter="true"
+						value="#{registroTermino.paisOrigen}"
+						converter="selectItemsConverter">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{registroTermino.listPaisesOrigen}"
+							var="paisOrigen" itemLabel="#{paisOrigen.nombre}"
+							itemValue="#{paisOrigen}" />
+						<p:ajax event="change"
+							listener="#{registroTermino.onChangePaisOrigen}"
+							update="fieldPnlPais" />
+					</p:selectOneMenu>
+
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Pais donde me encuentro" />
+					</h:panelGrid>
+
+					<p:selectOneMenu id="cmbPaisDestino" filter="true"
+						value="#{registroTermino.paisDestino}"
+						converter="selectItemsConverter">
+						<f:selectItem itemLabel="Seleccione..." itemValue="" />
+						<f:selectItems value="#{registroTermino.listPaisesDestino}"
+							var="paisDestino" itemLabel="#{paisDestino.nombre}"
+							itemValue="#{paisDestino}" />
+						<p:ajax event="change"
+							listener="#{registroTermino.onChangePaisDestino}"
+							update="fieldPnlPais" />
+					</p:selectOneMenu>
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel
+							value="Como se puede decir la palabra en #{registroTermino.paisDestino.nombre}: " />
+					</h:panelGrid>
+
+
+					<h:panelGrid columns="2">
+						<p:inputText widgetVar="txtSinonimoAdd" id="txtSinonimoAdd"
+							value="#{registroTermino.sinonimoAdd}" size="50">
+							<p:ajax event="blur"
+								listener="#{registroTermino.convertMayusculaSinonimoAdd()}"
+								update="txtSinonimoAdd" />
+						</p:inputText>
+						<p:commandButton id="guardarSinonimo"
+							actionListener="#{registroTermino.addSinonimoTemp}"
+							icon="btnImageGuardar"
+							update="focus txtSinonimoAdd :msg ingreso_actual">
+						</p:commandButton>
+					</h:panelGrid>
+
+
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Agrega ejemplos de como usar la palabra" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<p:inputText id="txtEjemplos" value="#{registroTermino.ejemplo}"
+							size="50">
+						</p:inputText>
+						<p:commandButton id="guardarEjemplo" icon="btnImageGuardar"
+							actionListener="#{registroTermino.addEjemplosTemp()}"
+							update="focus txtEjemplos :msg ingreso_actual">
+						</p:commandButton>
+					</h:panelGrid>
+
+
 
 				</h:panelGrid>
 			</p:fieldset>
+
+			<p:fieldset>
+				<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+					<div class="obligatorio" />
+					<p:outputLabel value="Quieres agregar una imagen, hazlo !!!" />
+				</h:panelGrid>
+
+				<p:fileUpload fileUploadListener="#{registroTermino.upload}"
+					label="Cargar" uploadLabel="subir" cancelLabel="cancelar"
+					mode="advanced" skinSimple="true" />
+
+			</p:fieldset>
+
+			<p:outputPanel id="ingreso_actual">
+				<p:panel
+					header="Palabras que puedes usar por #{registroTermino.miTermino}">
+					<p:repeat var="result" value="#{registroTermino.listSinonimosAdd}">
+						<h:panelGrid border="0" columns="2">
+							<p:outputLabel value="#{result}" />
+							<h:panelGroup>
+								<p:commandLink action="#{registroTermino.deleteSinonimoTemp()}"
+									title="eliminar" update="registrarNuevoTermino:ingreso_actual">
+									<p:graphicImage library="img" name="delete.png" width="16"
+										height="16" />
+									<f:setPropertyActionListener value="#{result}"
+										target="#{registroTermino.sinonimoAdd}" />
+								</p:commandLink>
+							</h:panelGroup>
+						</h:panelGrid>
+
+					</p:repeat>
+
+				</p:panel>
+
+				<p:panel header="Estos son tus ejemplos agregados">
+					<p:repeat var="result" value="#{registroTermino.ejemplos}">
+						<h:panelGrid border="0" columns="2">
+							<p:outputLabel value="#{result}" />
+							<h:panelGroup>
+								<p:commandLink action="#{registroTermino.deleteEjemploTemp()}"
+									title="eliminar" update="registrarNuevoTermino:ingreso_actual">
+									<p:graphicImage library="img" name="delete.png" width="16"
+										height="16" />
+									<f:setPropertyActionListener value="#{result}"
+										target="#{registroTermino.ejemplo}" />
+								</p:commandLink>
+							</h:panelGroup>
+						</h:panelGrid>
+
+					</p:repeat>
+				</p:panel>
+			</p:outputPanel>
+
+			<p />
+
+			<p:commandButton id="btnGuardar" icon="btnImageGuardar"
+				onclick="PF('statusDialog').show();"
+				oncomplete="PF('statusDialog').hide();"
+				actionListener="#{registroTermino.guardarNuevoTermino()}"
+				value="Guardar"></p:commandButton>
 		</p:outputPanel>
 
 	</p:panel>
 
 </h:form>
+
 </html>

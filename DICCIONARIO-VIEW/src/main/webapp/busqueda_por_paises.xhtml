@@ -174,9 +174,34 @@
 					<p:panelGrid rendered="#{busquedaMB.mostrarAgregarMiPalabra}"
 						columns="1" style="text-align:center">
 						<p:commandLink title="Agregar mi palabra"
-							oncomplete="PF('dlgNuevosTerminos').show();">
-							<p:graphicImage library="iconos" width="32" height="32"
-								name="word.png" />
+							oncomplete="PF('dlgNuevosTerminos').show();"
+							update=":registrarNuevoTermino">
+							<p:graphicImage library="iconos" name="word.png" width="32"
+								height="32" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.paisOrigen}"
+								value="#{busquedaMB.paisOrigen}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.listPaisesOrigen}"
+								value="#{busquedaMB.listPaisesOrigen}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.paisDestino}"
+								value="#{busquedaMB.paisDestino}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.listPaisesDestino}"
+								value="#{busquedaMB.listPaisesDestino}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.nombreBanderaPaisOrigen}"
+								value="#{busquedaMB.nombreBanderaPaisOrigen}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.nombreBanderaPaisDestino}"
+								value="#{busquedaMB.nombreBanderaPaisDestino}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.categorias}"
+								value="#{busquedaMB.categorias}" />
+							<f:setPropertyActionListener
+								target="#{registroTermino.listCategorias}"
+								value="#{busquedaMB.listCategorias}" />
 						</p:commandLink>
 						<p:outputLabel value="Agregar nuevas palabras" />
 					</p:panelGrid>
@@ -252,12 +277,13 @@
 								</h:panelGrid>
 
 								<h:panelGrid style="text-align:center">
-									<p:commandLink actionListener="#{registroTermino.getParams}"
+									<p:commandLink
 										update=":formAddNuevoTermino :dlgAddNuevoTermino"
 										oncomplete="PF('dlgAddNuevoTermino').show();">
 										<p:graphicImage alt="" library="iconos" width="32" height="32"
 											name="word.png" />
-										<f:param value="#{busquedaMB.paisOrigen}" name="paisOrigen"></f:param>
+										<f:setPropertyActionListener value="#{result}"
+											target="#{busquedaMB.selectedSinonimosDTO}" />
 									</p:commandLink>
 									<p:outputLabel value="Nuevo sinonimo" />
 								</h:panelGrid>
@@ -288,6 +314,7 @@
 			widgetVar="dlgNuevosTerminos" modal="true" appendTo="@(body)"
 			resizable="false" header="AGREGANDO MIS PALABRAS">
 			<ui:include src="/agregar_terminos.xhtml" />
+			<p:ajax event="close" listener="#{registroTermino.eliminarBean()}"></p:ajax>
 
 		</p:dialog>
 

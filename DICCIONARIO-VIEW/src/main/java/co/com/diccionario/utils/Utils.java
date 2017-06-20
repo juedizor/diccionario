@@ -68,5 +68,9 @@ public class Utils {
 
 		return value;
 	}
+	
+	public static void removeSessionBean(final String beanName) {
+		FacesContext.getCurrentInstance().getViewRoot().getViewMap().remove(beanName);
+	}
 
 }

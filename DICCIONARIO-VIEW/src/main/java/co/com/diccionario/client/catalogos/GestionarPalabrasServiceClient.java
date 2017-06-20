@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import co.com.diccionario.dto.ParametrosRegistroTermino;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
 import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.utils.ParamsBundle;
@@ -20,6 +21,7 @@ public class GestionarPalabrasServiceClient {
 	private static String HOST_END_POINT;
 	private static final String HOST = "host_end_point";
 	private static final String PALABRAS = "palabras";
+	private static final String BUSQUEDA = "busqueda";
 
 	private GestionarPalabrasServiceClient() {
 		// TODO Auto-generated constructor stub
@@ -36,7 +38,7 @@ public class GestionarPalabrasServiceClient {
 
 	public List<SinonimosDTO> obtenerSinonimos(ParamsBusquedaPalabraDTO paramsBusqueda) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String uri = HOST_END_POINT + PALABRAS + "/busqueda";
+		String uri = HOST_END_POINT + PALABRAS + "/" + BUSQUEDA;
 		try {
 			HttpEntity<ParamsBusquedaPalabraDTO> httpEntity = new HttpEntity<ParamsBusquedaPalabraDTO>(paramsBusqueda);
 			ResponseEntity<List<SinonimosDTO>> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
@@ -59,7 +61,7 @@ public class GestionarPalabrasServiceClient {
 
 	public List<SinonimosDTO> getSinonimoCategoriaPalabra(ParamsBusquedaPalabraDTO paramsBusqueda) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String uri = HOST_END_POINT + PALABRAS + "/busqueda/validarSinonimoPalabra";
+		String uri = HOST_END_POINT + PALABRAS + "/" + BUSQUEDA + "/validarSinonimoPalabra";
 		try {
 			HttpEntity<ParamsBusquedaPalabraDTO> httpEntity = new HttpEntity<ParamsBusquedaPalabraDTO>(paramsBusqueda);
 			ResponseEntity<List<SinonimosDTO>> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
@@ -89,6 +91,69 @@ public class GestionarPalabrasServiceClient {
 					new ParameterizedTypeReference<SinonimosDTO>() {
 					});
 			return response.getBody();
+		} catch (HttpClientErrorException e) {
+			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+		}
+	}
+
+	public List<SinonimosDTO> obtenerSinonimosCategoriaPalabra(ParamsBusquedaPalabraDTO paramsBusqueda)
+			throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/" + BUSQUEDA + "/categoriaTermino";
+		try {
+			HttpEntity<ParamsBusquedaPalabraDTO> httpEntity = new HttpEntity<ParamsBusquedaPalabraDTO>(paramsBusqueda);
+			ResponseEntity<List<SinonimosDTO>> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
+					new ParameterizedTypeReference<List<SinonimosDTO>>() {
+					});
+			List<SinonimosDTO> listSinonimos = response.getBody();
+			return listSinonimos;
+		} catch (HttpClientErrorException e) {
+			if (e.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+				throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+			}
+
+			if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
+	public List<SinonimosDTO> obtenerSinonimosPalabra(ParamsBusquedaPalabraDTO paramsBusqueda) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/" + BUSQUEDA + "/termino";
+		try {
+			HttpEntity<ParamsBusquedaPalabraDTO> httpEntity = new HttpEntity<ParamsBusquedaPalabraDTO>(paramsBusqueda);
+			ResponseEntity<List<SinonimosDTO>> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
+					new ParameterizedTypeReference<List<SinonimosDTO>>() {
+					});
+			List<SinonimosDTO> listSinonimos = response.getBody();
+			return listSinonimos;
+		} catch (HttpClientErrorException e) {
+			if (e.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+				throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+			}
+
+			if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
+	public boolean crearNuevoTermino(ParametrosRegistroTermino params) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/sinonimo";
+		try {
+			ResponseEntity<HttpStatus> response = restTemplate.postForEntity(uri, params, HttpStatus.class);
+			HttpStatus httpStatus = response.getBody();
+			if (httpStatus.equals(HttpStatus.OK)) {
+				return true;
+			}
+
+			return false;
 		} catch (HttpClientErrorException e) {
 			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
 		}

@@ -24,6 +24,8 @@ public class Sinonimos {
 	@Field(value = "ciudad_destino")
 	private String ciudadDestino;
 	private String termino;
+	private List<String> definiciones;
+	private List<String> rutasImagenes;
 	private String categoria;
 	private List<String> sinonimos;
 	private List<String> oraciones;
@@ -171,7 +173,8 @@ public class Sinonimos {
 	}
 
 	/**
-	 * @param sinonimos the sinonimos to set
+	 * @param sinonimos
+	 *            the sinonimos to set
 	 */
 	public void setSinonimos(List<String> sinonimos) {
 		this.sinonimos = sinonimos;
@@ -185,12 +188,39 @@ public class Sinonimos {
 	}
 
 	/**
-	 * @param oraciones the oraciones to set
+	 * @param oraciones
+	 *            the oraciones to set
 	 */
 	public void setOraciones(List<String> oraciones) {
 		this.oraciones = oraciones;
 	}
-	
-	
+
+	/**
+	 * @return the definiciones
+	 */
+	public List<String> getDefiniciones() {
+		return definiciones;
+	}
+
+	/**
+	 * @param definiciones the definiciones to set
+	 */
+	public void setDefiniciones(List<String> definiciones) {
+		this.definiciones = definiciones;
+	}
+
+	/**
+	 * @return the rutasImagenes
+	 */
+	public List<String> getRutasImagenes() {
+		return rutasImagenes;
+	}
+
+	/**
+	 * @param rutasImagenes the rutasImagenes to set
+	 */
+	public void setRutasImagenes(List<String> rutasImagenes) {
+		this.rutasImagenes = rutasImagenes;
+	}
 
 }

@@ -12,5 +12,7 @@ public interface GestionarBusquedaPalabrasIface {
 	public List<SinonimosDTO> buscarPorCategoriaTermino(ParamsBusquedaPalabraDTO params);
 	
 	public List<SinonimosDTO> obtenerSinonimosPorSinonimo(ParamsBusquedaPalabraDTO params);
+	
+	public List<SinonimosDTO> buscarPorTermino(ParamsBusquedaPalabraDTO params);
 
 }
