@@ -51,6 +51,7 @@ public class RegistroNuevosTerminosMB implements Serializable {
 
 	private String definicion;
 	private UploadedFile file;
+	private byte[] bytesImagen;
 
 	private boolean isMostrarAgregarMasContenido;
 	private String focusIdLocalizade = "txtPalabraOrigen";
@@ -61,6 +62,8 @@ public class RegistroNuevosTerminosMB implements Serializable {
 	
 	public void upload(FileUploadEvent event) {
 		file = event.getFile();
+		bytesImagen = file.getContents();
+		
 	}
 
 	public void guardarNuevoTermino() {
@@ -89,18 +92,25 @@ public class RegistroNuevosTerminosMB implements Serializable {
 		}
 		sinonimosDTO.setSinonimos(listSinonimosAdd);
 		sinonimosDTO.setOraciones(ejemplos);
+		sinonimosDTO.setTermino(miTermino);
 		sinonimosDTO.setDefiniciones(Arrays.asList(definicion));
 		ParametrosRegistroTermino params = new ParametrosRegistroTermino();
 		params.setSinonimosDTO(sinonimosDTO);
 		if (file != null) {
-			params.setImagen(file.getContents());
+			params.setImagen(bytesImagen);
 		}
 		try {
 			boolean creado = GestionarPalabrasServiceClient.getInstance().crearNuevoTermino(params);
 			if (creado) {
-				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null,
+				Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
 						"Hemos realizado su registro correctamente",
-						ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+						ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+				miTermino = "";
+				file = null;
+				bytesImagen = null;
+				ejemplos = null;
+				definicion = null;
+				listSinonimosAdd = null;
 				return;
 			}
 		} catch (Exception e) {

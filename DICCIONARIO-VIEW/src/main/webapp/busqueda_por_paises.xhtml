@@ -225,12 +225,14 @@
 							<h:outputText style="font-size:12px;"
 								value="La palabra significa:" />
 							<p />
-							<div class="ui-g">
-								<div class="ui-g-1"></div>
-								<div class="ui-g-8">
-									<h:outputText value="No existe significado" />
+							<p:repeat value="#{result.definiciones}" var="definicion">
+								<div class="ui-g">
+									<div class="ui-g-1"></div>
+									<div class="ui-g-8">
+										<h:outputText value="#{definicion}" />
+									</div>
 								</div>
-							</div>
+							</p:repeat>
 
 							<h:outputText style="font-size:12px;" value="Categoria:" />
 							<p />

@@ -10,7 +10,6 @@
 <h:form enctype="multipart/form-data" id="registrarNuevoTermino">
 
 	<p:focus id="focus" for="#{registroTermino.focusIdLocalizade}"></p:focus>
-	<p:growl widgetVar="msgRegistro" id="msgRegistro" life="2000" />
 
 	<p:panel style="float:left;overflow-y: auto;height:500px;"
 		id="pnlGeneral" styleClass="pnlForm">
@@ -159,11 +158,9 @@
 					<div class="obligatorio" />
 					<p:outputLabel value="Quieres agregar una imagen, hazlo !!!" />
 				</h:panelGrid>
-
 				<p:fileUpload fileUploadListener="#{registroTermino.upload}"
 					label="Cargar" uploadLabel="subir" cancelLabel="cancelar"
 					mode="advanced" skinSimple="true" />
-
 			</p:fieldset>
 
 			<p:outputPanel id="ingreso_actual">
@@ -212,7 +209,7 @@
 				onclick="PF('statusDialog').show();"
 				oncomplete="PF('statusDialog').hide();"
 				actionListener="#{registroTermino.guardarNuevoTermino()}"
-				value="Guardar"></p:commandButton>
+				value="Guardar" update="registrarNuevoTermino :msg"></p:commandButton>
 		</p:outputPanel>
 
 	</p:panel>

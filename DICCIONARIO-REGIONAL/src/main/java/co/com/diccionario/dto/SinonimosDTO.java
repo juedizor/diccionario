@@ -18,6 +18,7 @@ public class SinonimosDTO implements Serializable{
 	private String ciudadDestino;
 	private String termino;
 	private List<String> rutasImagenes;
+	private List<byte[]> imagenesBytes;
 	private List<String> definiciones;
 	private String categoria;
 	private List<String> sinonimos;
@@ -215,6 +216,23 @@ public class SinonimosDTO implements Serializable{
 	public void setRutasImagenes(List<String> rutasImagenes) {
 		this.rutasImagenes = rutasImagenes;
 	}
+
+	/**
+	 * @return the imagenesBytes
+	 */
+	public List<byte[]> getImagenesBytes() {
+		return imagenesBytes;
+	}
+
+	/**
+	 * @param imagenesBytes the imagenesBytes to set
+	 */
+	public void setImagenesBytes(List<byte[]> imagenesBytes) {
+		this.imagenesBytes = imagenesBytes;
+	}
+	
+	
+	
 
 	
 

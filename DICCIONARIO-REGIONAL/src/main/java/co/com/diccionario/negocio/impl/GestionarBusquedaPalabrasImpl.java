@@ -1,14 +1,20 @@
 package co.com.diccionario.negocio.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.terracotta.modules.ehcache.async.exceptions.BusyProcessingException;
 
 import co.com.diccionario.document.Sinonimos;
 import co.com.diccionario.dto.DepartamentoDTO;
+import co.com.diccionario.dto.ImagenesPalabraDTO;
 import co.com.diccionario.dto.PaisesDTO;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
 import co.com.diccionario.dto.SinonimosDTO;
@@ -63,6 +69,31 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 
 	}
 
+	private void setByteListImagenes(List<SinonimosDTO> listSinonimosEncontrados) throws IOException {
+		if (listSinonimosEncontrados != null && !listSinonimosEncontrados.isEmpty()) {
+			int i = 0;
+			for (SinonimosDTO sinonimosDTO : listSinonimosEncontrados) {
+				List<String> listRutasImagenes = sinonimosDTO.getRutasImagenes();
+				List<byte[]> listImagenes = new ArrayList<>();
+				if (listRutasImagenes != null && !listRutasImagenes.isEmpty()) {
+					for (String ruta : listRutasImagenes) {
+						Path pathImg = Paths.get(ruta);
+						if (Files.exists(pathImg)) {
+							byte[] byteImg = Files.readAllBytes(pathImg);
+							listImagenes.add(byteImg);
+						}
+					}
+					sinonimosDTO.setImagenesBytes(listImagenes);
+					listSinonimosEncontrados.set(i, sinonimosDTO);
+				}
+
+				i++;
+
+			}
+		}
+
+	}
+
 	public List<SinonimosDTO> obtenerSinonimosPorSinonimo(ParamsBusquedaPalabraDTO params) {
 		PaisesDTO paisDestinoDTO = params.getPaisDestino();
 		PaisesDTO paisOrigenDTO = params.getPaisOrigen();
@@ -74,11 +105,11 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 		String termino = params.getTermino();
 		List<Sinonimos> listSinonimos = sinonimosRepository.findByPaisOrigenAndPaisDestinoAndTerminoAndSinonimosIn(
 				paisOrigenDTO.getNombre(), paisDestinoDTO.getNombre(), termino, sinonimo);
-		if(listSinonimos != null && !listSinonimos.isEmpty()){
+		if (listSinonimos != null && !listSinonimos.isEmpty()) {
 			List<SinonimosDTO> listSinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimos);
 			return listSinonimosDTO;
 		}
-		
+
 		return null;
 
 	}

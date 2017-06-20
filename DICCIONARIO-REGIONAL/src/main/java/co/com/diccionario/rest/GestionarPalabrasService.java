@@ -107,8 +107,14 @@ public class GestionarPalabrasService {
 	}
 
 	@RequestMapping(value = "/sinonimo", method = RequestMethod.POST)
-	public ResponseEntity<HttpStatus> registrarNuevoTermino(@RequestBody ParametrosRegistroTermino params) {
-		System.out.println();
+	public ResponseEntity<HttpStatus> registrarNuevoTermino(@RequestBody ParametrosRegistroTermino params)
+			throws CommonException {
+		try {
+			gestionarRegistroPalabrasIface.registrarSinonimosPalabrasCompleta(params);
+		} catch (Exception e) {
+			throw new GeneralErrorException(
+					"Error realizando el registro " + e.getMessage() + " " + e.getLocalizedMessage());
+		}
 		return ResponseEntity.ok(HttpStatus.OK);
 	}
 

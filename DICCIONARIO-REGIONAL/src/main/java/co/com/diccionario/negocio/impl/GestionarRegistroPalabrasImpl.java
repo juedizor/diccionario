@@ -1,22 +1,37 @@
 package co.com.diccionario.negocio.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import co.com.diccionario.document.Sinonimos;
+import co.com.diccionario.dto.ParametrosRegistroTermino;
 import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.mapper.SinonimosMapper;
+import co.com.diccionario.mongodb.iface.CounterImagenesIface;
 import co.com.diccionario.mongodb.repository.iface.SinonimosRepository;
 import co.com.diccionario.negocio.iface.GestionarRegistroPalabrasIface;
+import co.com.diccionario.utilidades.FileUtils;
 
 @Service
 public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasIface {
 
 	@Autowired
 	SinonimosRepository sinonimosRepository;
+	@Autowired
+	Environment env;
+	@Autowired
+	CounterImagenesIface counterImagenesIface;
 
 	@Override
 	public SinonimosDTO actualizarSinonimos(SinonimosDTO sinonimosDTO) {
@@ -63,6 +78,84 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 
 		SinonimosDTO sinonimosResult = SinonimosMapper.INSTANCE.sinonimosToSinonimoDTO(sinonimosInicial);
 		return sinonimosResult;
+	}
+
+	public void registrarSinonimosPalabrasCompleta(ParametrosRegistroTermino params) {
+		byte[] imagen = params.getImagen();
+		SinonimosDTO sinonimosDTO = params.getSinonimosDTO();
+		if (imagen != null) {
+			String rutaMainImagenes = env.getProperty("ruta.cargue.imagenes");
+			String nombrePaisOrigen = params.getSinonimosDTO().getPaisOrigen();
+			String rutaCargue = rutaMainImagenes + File.separatorChar + nombrePaisOrigen;
+			/*
+			 * toma la imagen y la guarda en rutaCargue
+			 */
+
+			boolean isCreo = false;
+			try {
+				isCreo = FileUtils.crearDirectorio(rutaCargue);
+			} catch (Exception e) {
+				Logger.getLogger(e.getLocalizedMessage());
+			}
+
+			if (isCreo) {
+				long cons = counterImagenesIface.getNextSequenceId("imagenes_id");
+				rutaCargue += File.separatorChar + params.getSinonimosDTO().getTermino() + cons + ".jpg";
+				Path path = Paths.get(rutaCargue);
+				try {
+					Files.write(path, imagen);
+				} catch (IOException e) {
+					Logger.getLogger(e.getLocalizedMessage());
+				}
+			}
+
+			sinonimosDTO.setRutasImagenes(Arrays.asList(rutaCargue));
+
+		}
+		Sinonimos sinonimos = SinonimosMapper.INSTANCE.sinonimoDTOToSinonimo(sinonimosDTO);
+		sinonimosRepository.save(sinonimos);
+
+		/**
+		 * agregamos el sinonimo al contrario
+		 */
+		String paisOrigen = sinonimos.getPaisDestino();
+		String paisDestino = sinonimos.getPaisOrigen();
+		String categoria = sinonimos.getCategoria();
+		String termino = sinonimos.getTermino();
+		List<String> valuesSinonimos = sinonimos.getSinonimos();
+		List<String> listTerminos = new ArrayList<>();
+		if (valuesSinonimos != null && !valuesSinonimos.isEmpty()) {
+			for (String values : valuesSinonimos) {
+				listTerminos.add(values);
+			}
+		}
+
+		if (listTerminos != null && !listTerminos.isEmpty()) {
+			for (String value : listTerminos) {
+				List<Sinonimos> listSinonimos = sinonimosRepository
+						.findByPaisOrigenAndPaisDestinoAndTerminoAndCategoria(paisOrigen, paisDestino, value,
+								categoria);
+				if (listSinonimos != null && !listSinonimos.isEmpty()) {
+					List<String> listTerminoComoSinonimo = new ArrayList<>();
+					listTerminoComoSinonimo.add(termino);
+					sinonimos.setTermino(value);
+					sinonimos.setSinonimos(listTerminoComoSinonimo);
+					sinonimosRepository.save(sinonimos);
+				} else {
+					sinonimos.setPaisDestino(paisDestino);
+					sinonimos.setPaisOrigen(paisOrigen);
+					List<String> listTerminoComoSinonimo = new ArrayList<>();
+					listTerminoComoSinonimo.add(termino);
+					sinonimos.setTermino(value);
+					sinonimos.set_id(null);
+					sinonimos.setSinonimos(listTerminoComoSinonimo);
+					sinonimos.setDefiniciones(null);
+					sinonimos.setOraciones(null);
+					sinonimos.setRutasImagenes(null);
+					sinonimosRepository.save(sinonimos);
+				}
+			}
+		}
 	}
 
 }
