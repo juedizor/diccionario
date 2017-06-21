@@ -222,17 +222,20 @@
 						columns="1" emptyMessage="Sin resultados"
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
-							<h:outputText style="font-size:12px;"
-								value="La palabra significa:" />
-							<p />
-							<p:repeat value="#{result.definiciones}" var="definicion">
-								<div class="ui-g">
-									<div class="ui-g-1"></div>
-									<div class="ui-g-8">
-										<h:outputText value="#{definicion}" />
+							<p:outputLabel id="pnlDefinicion">
+								<h:outputText style="font-size:12px;"
+									value="La palabra significa:"
+									rendered="#{busquedaMB.validarMostrarDefinicion(result)}" />
+								<p />
+								<p:repeat value="#{result.definiciones}" var="definicion">
+									<div class="ui-g">
+										<div class="ui-g-1"></div>
+										<div class="ui-g-8">
+											<h:outputText value="#{definicion}" />
+										</div>
 									</div>
-								</div>
-							</p:repeat>
+								</p:repeat>
+							</p:outputLabel>
 
 							<h:outputText style="font-size:12px;" value="Categoria:" />
 							<p />
@@ -254,25 +257,35 @@
 										<h:outputText value="#{sinonimos.palabra}" />
 									</div>
 									<div class="ui-g-2">
-										<p:rating value="#{sinonimos.promedioCalificacion}" readonly="true" />
+										<p:rating value="#{sinonimos.promedioCalificacion}">
+											<f:param name="sinonimosSelected" value="#{result}" />
+											<f:param name="sinonimoPalabraSelected"
+												value="#{sinonimos.palabra}" />
+											<p:ajax event="rate" listener="#{busquedaMB.onrate}"
+												update="busqueda:fieldPnlResultadosPalabras" />
+
+										</p:rating>
 									</div>
 								</div>
 							</p:repeat>
 							<p />
-							<h:outputText style="font-size:12px;"
-								value="Ejemplo de como usar la palabra:" />
-							<p />
-							<p:repeat value="#{result.oraciones}" var="oracion">
-								<div class="ui-g">
-									<div class="ui-g-1"></div>
-									<div class="ui-g-4">
-										<h:outputText value="#{oracion.oracion}" />
+							<p:outputLabel id="pnlOraciones">
+								<h:outputText style="font-size:12px;"
+									value="Ejemplo de como usar la palabra:"
+									rendered="#{busquedaMB.validarMostrarOraciones(result)}" />
+								<p />
+								<p:repeat value="#{result.oraciones}" var="oracion">
+									<div class="ui-g">
+										<div class="ui-g-1"></div>
+										<div class="ui-g-4">
+											<h:outputText value="#{oracion.oracion}" />
+										</div>
+										<div class="ui-g-2">
+											<p:rating value="#{sinonimos.promedioCalificacion}" />
+										</div>
 									</div>
-									<div class="ui-g-2">
-										<p:rating value="#{sinonimos.promedioCalificacion}" readonly="true" />
-									</div>
-								</div>
-							</p:repeat>
+								</p:repeat>
+							</p:outputLabel>
 							<p />
 							<p />
 							<p:panelGrid columns="3">

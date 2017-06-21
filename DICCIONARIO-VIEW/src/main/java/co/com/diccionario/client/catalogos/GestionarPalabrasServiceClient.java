@@ -22,6 +22,8 @@ public class GestionarPalabrasServiceClient {
 	private static final String HOST = "host_end_point";
 	private static final String PALABRAS = "palabras";
 	private static final String BUSQUEDA = "busqueda";
+	private static final String SINONIMO = "sinonimo";
+	private static final String CALIFICACION = "calificacion";
 
 	private GestionarPalabrasServiceClient() {
 		// TODO Auto-generated constructor stub
@@ -154,6 +156,20 @@ public class GestionarPalabrasServiceClient {
 			}
 
 			return false;
+		} catch (HttpClientErrorException e) {
+			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+		}
+	}
+
+	public SinonimosDTO actualizarCalificacion(SinonimosDTO sinonimosDTO) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/" + SINONIMO + "/" + CALIFICACION;
+		try {
+			HttpEntity<SinonimosDTO> httpEntity = new HttpEntity<>(sinonimosDTO);
+			ResponseEntity<SinonimosDTO> response = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity,
+					new ParameterizedTypeReference<SinonimosDTO>() {
+					});
+			return response.getBody();
 		} catch (HttpClientErrorException e) {
 			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
 		}

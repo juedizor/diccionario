@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import co.com.diccionario.document.Palabras;
 import co.com.diccionario.document.Sinonimos;
+import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParametrosRegistroTermino;
 import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.mapper.SinonimosMapper;
@@ -171,5 +173,30 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 			}
 		}
 	}
+
+	public SinonimosDTO actualizarCalificacion(SinonimosDTO sinonimosDTO) {
+		Sinonimos sinonimos = SinonimosMapper.INSTANCE.sinonimoDTOToSinonimo(sinonimosDTO);
+		/**
+		 * actualiza los datos diferentes al sinonimo enviado
+		 */
+		sinonimos = sinonimosRepository.save(sinonimos);
+		sinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimoDTO(sinonimos);
+		List<PalabrasDTO> listPalabra = sinonimosDTO.getSinonimos();
+		Iterator<PalabrasDTO> iter = listPalabra.iterator();
+		while(iter.hasNext()){
+			PalabrasDTO palabrasDTO = iter.next();
+			List<Integer> listCalificaciones = palabrasDTO.getCalificacion();
+			int promedio = 0;
+			if(listCalificaciones != null && !listCalificaciones.isEmpty()){
+				for (Integer cal : listCalificaciones) {
+					promedio += cal;
+				}
+				promedio /= listCalificaciones.size();
+				palabrasDTO.setPromedioCalificacion(promedio);
+			}
+		}
+		return sinonimosDTO;
+	}
+	
 
 }

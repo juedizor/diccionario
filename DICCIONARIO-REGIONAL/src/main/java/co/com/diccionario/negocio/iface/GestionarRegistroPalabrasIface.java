@@ -8,6 +8,7 @@ public interface GestionarRegistroPalabrasIface {
 	
 	
 	public SinonimosDTO actualizarSinonimos (SinonimosDTO sinonimosDTO); 
+	public SinonimosDTO actualizarCalificacion(SinonimosDTO sinonimosDTO);
 	public void registrarSinonimosPalabrasCompleta(ParametrosRegistroTermino params);
 
 }

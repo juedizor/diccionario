@@ -1,6 +1,7 @@
 package co.com.diccionario.mb;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +11,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.RateEvent;
 
 import co.com.diccionario.client.catalogos.CatalogosServiceClient;
 import co.com.diccionario.client.catalogos.GestionarPalabrasServiceClient;
@@ -63,6 +65,7 @@ public class BusquedaTerminosMB {
 	private String nuevoTermino;
 
 	private boolean mostrarAgregarMiPalabra;
+	private boolean mostrarPnlDefinicion;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -103,20 +106,6 @@ public class BusquedaTerminosMB {
 		}
 
 		if (listResultadosBusquedaSinonimos != null && !listResultadosBusquedaSinonimos.isEmpty()) {
-			int i = 0;
-			for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
-				List<OracionesDTO> oraciones = sinonimosDTO.getOraciones();
-				if (oraciones == null || oraciones.isEmpty()) {
-					oraciones = new ArrayList<>();
-					OracionesDTO oracionesDTO = new OracionesDTO();
-					oracionesDTO.setOracion("No hay ejemplos");
-					oraciones.add(oracionesDTO);
-					listResultadosBusquedaSinonimos.get(i).setOraciones(oraciones);
-				}
-				i++;
-			}
-			
-			
 			mensajeResultado = "Su consulta a arrojado los siguientes resultados";
 			requestContext.update("busqueda:fieldMsgResultado");
 			requestContext.update("busqueda:fieldPnlResultadosPalabras");
@@ -134,6 +123,30 @@ public class BusquedaTerminosMB {
 			mostrarAgregarMiPalabra = true;
 		}
 
+	}
+
+	public boolean validarMostrarDefinicion(SinonimosDTO result) {
+		RequestContext request = RequestContext.getCurrentInstance();
+		List<String> definiciones = result.getDefiniciones();
+		if (definiciones == null || definiciones.isEmpty()) {
+			request.update("busqueda:pnlDefinicion");
+			return false;
+		} else {
+			request.update("busqueda:pnlDefinicion");
+			return true;
+		}
+	}
+
+	public boolean validarMostrarOraciones(SinonimosDTO result) {
+		RequestContext request = RequestContext.getCurrentInstance();
+		List<OracionesDTO> oraciones = result.getOraciones();
+		if (oraciones == null || oraciones.isEmpty()) {
+			request.update("busqueda:pnlOraciones");
+			return false;
+		} else {
+			request.update("busqueda:pnlOraciones");
+			return true;
+		}
 	}
 
 	public void regresarPanelPaisDestino() {
@@ -410,6 +423,53 @@ public class BusquedaTerminosMB {
 				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
 		setNuevoTermino("");
 		buscarSinonimos();
+
+	}
+
+	public void onrate(RateEvent rateEvent) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		selectedSinonimosDTO = context.getApplication().evaluateExpressionGet(context, "#{result}", SinonimosDTO.class);
+		String palabra = context.getApplication().evaluateExpressionGet(context, "#{sinonimos.palabra}", String.class);
+		Iterator<PalabrasDTO> iter = selectedSinonimosDTO.getSinonimos().iterator();
+		int value = ((Integer) rateEvent.getRating()).intValue();
+		while (iter.hasNext()) {
+			PalabrasDTO palabraDTO = iter.next();
+			if (palabraDTO.getPalabra().equals(palabra)) {
+				if (palabraDTO.getCalificacion() != null) {
+					palabraDTO.getCalificacion().add(value);
+					break;
+				}else{
+					List<Integer> calificacion = new ArrayList<>();
+					calificacion.add(value);
+					palabraDTO.setCalificacion(calificacion);
+					break;
+				}
+			}
+		}
+
+		/*
+		 * aqui se consume el servicio enviando selectedSinonimosDTO
+		 */
+		SinonimosDTO sinonimosDTO; 
+		try {
+			sinonimosDTO = GestionarPalabrasServiceClient.getInstance().actualizarCalificacion(selectedSinonimosDTO);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+		
+		
+
+		int i = listResultadosBusquedaSinonimos.indexOf(selectedSinonimosDTO);
+		iter = listResultadosBusquedaSinonimos.get(i).getSinonimos().iterator();
+		while (iter.hasNext()) {
+			PalabrasDTO palabraDTO = iter.next();
+			if (palabraDTO.getPalabra().equals(palabra)) {
+				palabraDTO.setPromedioCalificacion(3);
+			}
+		}
 
 	}
 
@@ -919,6 +979,21 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMostrarAgregarMiPalabra(boolean mostrarAgregarMiPalabra) {
 		this.mostrarAgregarMiPalabra = mostrarAgregarMiPalabra;
+	}
+
+	/**
+	 * @return the mostrarPnlDefinicion
+	 */
+	public boolean isMostrarPnlDefinicion() {
+		return mostrarPnlDefinicion;
+	}
+
+	/**
+	 * @param mostrarPnlDefinicion
+	 *            the mostrarPnlDefinicion to set
+	 */
+	public void setMostrarPnlDefinicion(boolean mostrarPnlDefinicion) {
+		this.mostrarPnlDefinicion = mostrarPnlDefinicion;
 	}
 
 }

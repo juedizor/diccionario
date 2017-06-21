@@ -118,4 +118,15 @@ public class GestionarPalabrasService {
 		return ResponseEntity.ok(HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/sinonimo/calificacion", method = RequestMethod.PUT)
+	public SinonimosDTO actualizarCalificacion(@RequestBody SinonimosDTO sinonimosDTO)
+			throws CommonException {
+		try {
+			return gestionarRegistroPalabrasIface.actualizarCalificacion(sinonimosDTO);
+		} catch (Exception e) {
+			throw new GeneralErrorException(
+					"Error realizando la actualizacion " + e.getMessage() + " " + e.getLocalizedMessage());
+		}
+	}
+
 }
