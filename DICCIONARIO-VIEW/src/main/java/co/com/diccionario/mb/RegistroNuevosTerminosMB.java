@@ -15,7 +15,9 @@ import org.primefaces.model.UploadedFile;
 
 import co.com.diccionario.client.catalogos.GestionarPalabrasServiceClient;
 import co.com.diccionario.dto.CategoriaDTO;
+import co.com.diccionario.dto.OracionesDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParametrosRegistroTermino;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
 import co.com.diccionario.dto.SinonimosDTO;
@@ -59,11 +61,11 @@ public class RegistroNuevosTerminosMB implements Serializable {
 	public RegistroNuevosTerminosMB() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public void upload(FileUploadEvent event) {
 		file = event.getFile();
 		bytesImagen = file.getContents();
-		
+
 	}
 
 	public void guardarNuevoTermino() {
@@ -90,8 +92,21 @@ public class RegistroNuevosTerminosMB implements Serializable {
 		if (categorias != null) {
 			sinonimosDTO.setCategoria(categorias.getNombre());
 		}
-		sinonimosDTO.setSinonimos(listSinonimosAdd);
-		sinonimosDTO.setOraciones(ejemplos);
+		List<PalabrasDTO> listPalabraDTO = new ArrayList<>();
+		for (String value : listSinonimosAdd) {
+			PalabrasDTO palabraDTO = new PalabrasDTO();
+			palabraDTO.setPalabra(value);
+			listPalabraDTO.add(palabraDTO);
+		}
+
+		sinonimosDTO.setSinonimos(listPalabraDTO);
+		List<OracionesDTO> listOraciones = new ArrayList<>();
+		for (String value : ejemplos) {
+			OracionesDTO oracionesDTO = new OracionesDTO();
+			oracionesDTO.setOracion(value);
+			listOraciones.add(oracionesDTO);
+		}
+		sinonimosDTO.setOraciones(listOraciones);
 		sinonimosDTO.setTermino(miTermino);
 		sinonimosDTO.setDefiniciones(Arrays.asList(definicion));
 		ParametrosRegistroTermino params = new ParametrosRegistroTermino();

@@ -13,7 +13,7 @@ public class ParamsBusquedaPalabraDTO {
 	private CiudadDTO ciudadOrigen;
 	private String termino;
 	private String categoria;
-	private List<String> sinonimos;
+	private List<PalabrasDTO> sinonimos;
 	private List<String> oraciones;
 	
 	
@@ -64,18 +64,6 @@ public class ParamsBusquedaPalabraDTO {
 	 */
 	public void setCategoria(String categoria) {
 		this.categoria = categoria;
-	}
-	/**
-	 * @return the sinonimos
-	 */
-	public List<String> getSinonimos() {
-		return sinonimos;
-	}
-	/**
-	 * @param sinonimos the sinonimos to set
-	 */
-	public void setSinonimos(List<String> sinonimos) {
-		this.sinonimos = sinonimos;
 	}
 	/**
 	 * @return the oraciones
@@ -137,6 +125,20 @@ public class ParamsBusquedaPalabraDTO {
 	public void setCiudadOrigen(CiudadDTO ciudadOrigen) {
 		this.ciudadOrigen = ciudadOrigen;
 	}
+	/**
+	 * @return the sinonimos
+	 */
+	public List<PalabrasDTO> getSinonimos() {
+		return sinonimos;
+	}
+	/**
+	 * @param sinonimos the sinonimos to set
+	 */
+	public void setSinonimos(List<PalabrasDTO> sinonimos) {
+		this.sinonimos = sinonimos;
+	}
+	
+	
 	
 	
 }

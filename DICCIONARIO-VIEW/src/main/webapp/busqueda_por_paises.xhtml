@@ -250,8 +250,11 @@
 							<p:repeat value="#{result.sinonimos}" var="sinonimos">
 								<div class="ui-g">
 									<div class="ui-g-1"></div>
-									<div class="ui-g-8">
-										<h:outputText value="#{sinonimos}" />
+									<div class="ui-g-4">
+										<h:outputText value="#{sinonimos.palabra}" />
+									</div>
+									<div class="ui-g-2">
+										<p:rating value="#{sinonimos.promedioCalificacion}" readonly="true" />
 									</div>
 								</div>
 							</p:repeat>
@@ -262,8 +265,11 @@
 							<p:repeat value="#{result.oraciones}" var="oracion">
 								<div class="ui-g">
 									<div class="ui-g-1"></div>
-									<div class="ui-g-8">
-										<h:outputText value="#{oracion}" />
+									<div class="ui-g-4">
+										<h:outputText value="#{oracion.oracion}" />
+									</div>
+									<div class="ui-g-2">
+										<p:rating value="#{sinonimos.promedioCalificacion}" readonly="true" />
 									</div>
 								</div>
 							</p:repeat>

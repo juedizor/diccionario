@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import co.com.diccionario.document.Palabras;
 import co.com.diccionario.document.Sinonimos;
 
 public interface SinonimosRepository extends MongoRepository<Sinonimos, String> {
@@ -26,6 +27,6 @@ public interface SinonimosRepository extends MongoRepository<Sinonimos, String> 
 	public List<Sinonimos> findByPaisOrigen(String paisOrigen);
 
 	public List<Sinonimos> findByPaisOrigenAndPaisDestinoAndTerminoAndSinonimosIn(String paisOrigen, String paisDestino,
-			String termino, List<String> sinonimos);
+			String termino, Palabras palabraSinonimo);
 
 }

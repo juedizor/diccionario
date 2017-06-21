@@ -18,10 +18,11 @@ public class SinonimosDTO implements Serializable{
 	private String ciudadDestino;
 	private String termino;
 	private List<String> rutasImagenes;
+	private List<byte[]> imagenesBytes;
 	private List<String> definiciones;
 	private String categoria;
-	private List<String> sinonimos;
-	private List<String> oraciones;
+	private List<PalabrasDTO> sinonimos;
+	private List<OracionesDTO> oraciones;
 
 	/**
 	 * @return the _id
@@ -161,34 +162,6 @@ public class SinonimosDTO implements Serializable{
 	}
 
 	/**
-	 * @return the sinonimos
-	 */
-	public List<String> getSinonimos() {
-		return sinonimos;
-	}
-
-	/**
-	 * @param sinonimos the sinonimos to set
-	 */
-	public void setSinonimos(List<String> sinonimos) {
-		this.sinonimos = sinonimos;
-	}
-
-	/**
-	 * @return the oraciones
-	 */
-	public List<String> getOraciones() {
-		return oraciones;
-	}
-
-	/**
-	 * @param oraciones the oraciones to set
-	 */
-	public void setOraciones(List<String> oraciones) {
-		this.oraciones = oraciones;
-	}
-
-	/**
 	 * @return the definiciones
 	 */
 	public List<String> getDefiniciones() {
@@ -216,6 +189,47 @@ public class SinonimosDTO implements Serializable{
 		this.rutasImagenes = rutasImagenes;
 	}
 
+	/**
+	 * @return the imagenesBytes
+	 */
+	public List<byte[]> getImagenesBytes() {
+		return imagenesBytes;
+	}
+
+	/**
+	 * @param imagenesBytes the imagenesBytes to set
+	 */
+	public void setImagenesBytes(List<byte[]> imagenesBytes) {
+		this.imagenesBytes = imagenesBytes;
+	}
+
+	/**
+	 * @return the sinonimos
+	 */
+	public List<PalabrasDTO> getSinonimos() {
+		return sinonimos;
+	}
+
+	/**
+	 * @param sinonimos the sinonimos to set
+	 */
+	public void setSinonimos(List<PalabrasDTO> sinonimos) {
+		this.sinonimos = sinonimos;
+	}
+
+	/**
+	 * @return the oraciones
+	 */
+	public List<OracionesDTO> getOraciones() {
+		return oraciones;
+	}
+
+	/**
+	 * @param oraciones the oraciones to set
+	 */
+	public void setOraciones(List<OracionesDTO> oraciones) {
+		this.oraciones = oraciones;
+	}
 	
 
 }

@@ -3,6 +3,8 @@ package co.com.diccionario.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SinonimosDTO implements Serializable{
 
 	/**
@@ -21,8 +23,10 @@ public class SinonimosDTO implements Serializable{
 	private List<byte[]> imagenesBytes;
 	private List<String> definiciones;
 	private String categoria;
-	private List<String> sinonimos;
-	private List<String> oraciones;
+	@JsonProperty("sinonimos")
+	private List<PalabrasDTO> sinonimos;
+	@JsonProperty("oraciones")
+	private List<OracionesDTO> oraciones;
 
 	/**
 	 * @return the _id
@@ -162,34 +166,6 @@ public class SinonimosDTO implements Serializable{
 	}
 
 	/**
-	 * @return the sinonimos
-	 */
-	public List<String> getSinonimos() {
-		return sinonimos;
-	}
-
-	/**
-	 * @param sinonimos the sinonimos to set
-	 */
-	public void setSinonimos(List<String> sinonimos) {
-		this.sinonimos = sinonimos;
-	}
-
-	/**
-	 * @return the oraciones
-	 */
-	public List<String> getOraciones() {
-		return oraciones;
-	}
-
-	/**
-	 * @param oraciones the oraciones to set
-	 */
-	public void setOraciones(List<String> oraciones) {
-		this.oraciones = oraciones;
-	}
-
-	/**
 	 * @return the definiciones
 	 */
 	public List<String> getDefiniciones() {
@@ -230,10 +206,34 @@ public class SinonimosDTO implements Serializable{
 	public void setImagenesBytes(List<byte[]> imagenesBytes) {
 		this.imagenesBytes = imagenesBytes;
 	}
-	
-	
-	
 
+	/**
+	 * @return the sinonimos
+	 */
+	public List<PalabrasDTO> getSinonimos() {
+		return sinonimos;
+	}
+
+	/**
+	 * @param sinonimos the sinonimos to set
+	 */
+	public void setSinonimos(List<PalabrasDTO> sinonimos) {
+		this.sinonimos = sinonimos;
+	}
+
+	/**
+	 * @return the oraciones
+	 */
+	public List<OracionesDTO> getOraciones() {
+		return oraciones;
+	}
+
+	/**
+	 * @param oraciones the oraciones to set
+	 */
+	public void setOraciones(List<OracionesDTO> oraciones) {
+		this.oraciones = oraciones;
+	}
 	
 
 }

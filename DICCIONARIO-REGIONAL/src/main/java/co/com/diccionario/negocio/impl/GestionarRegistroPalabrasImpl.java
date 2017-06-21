@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import co.com.diccionario.document.Palabras;
 import co.com.diccionario.document.Sinonimos;
 import co.com.diccionario.dto.ParametrosRegistroTermino;
 import co.com.diccionario.dto.SinonimosDTO;
@@ -48,10 +49,11 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 		String paisOrigen = sinonimos.getPaisDestino();
 		String paisDestino = sinonimos.getPaisOrigen();
 		String categoria = sinonimos.getCategoria();
-		List<String> valuesSinonimos = sinonimos.getSinonimos();
+		List<Palabras> valuesSinonimos = sinonimos.getSinonimos();
 		String termino = "";
 		if (valuesSinonimos != null && !valuesSinonimos.isEmpty()) {
-			termino = valuesSinonimos.get(valuesSinonimos.size() - 1);
+			Palabras palabra = valuesSinonimos.get(valuesSinonimos.size() - 1);
+			termino = palabra.getPalabra();
 		}
 
 		List<Sinonimos> listSinonimos = sinonimosRepository
@@ -59,19 +61,25 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 		if (listSinonimos != null && !listSinonimos.isEmpty()) {
 			sinonimos = listSinonimos.get(0);
 			String sinonimo = sinonimosDTO.getTermino();
-			List<String> listTerminoComoSinonimo = new ArrayList<>();
-			listTerminoComoSinonimo.add(sinonimo);
+			List<Palabras> listTerminoComoSinonimo = new ArrayList<>();
+			Palabras palabra = new Palabras();
+			palabra.setPalabra(sinonimo);
+			listTerminoComoSinonimo.add(palabra);
 			sinonimos.setTermino(termino);
 			sinonimos.setSinonimos(listTerminoComoSinonimo);
 		} else {
 			sinonimos.setPaisDestino(paisDestino);
 			sinonimos.setPaisOrigen(paisOrigen);
 			String sinonimo = sinonimosDTO.getTermino();
-			List<String> listTerminoComoSinonimo = new ArrayList<>();
-			listTerminoComoSinonimo.add(sinonimo);
+			List<Palabras> listTerminoComoSinonimo = new ArrayList<>();
+			Palabras palabra = new Palabras();
+			palabra.setPalabra(sinonimo);
+			listTerminoComoSinonimo.add(palabra);
 			valuesSinonimos = sinonimos.getSinonimos();
 			sinonimos.setTermino(termino);
 			sinonimos.set_id(null);
+			sinonimos.setOraciones(null);
+			sinonimos.setDefiniciones(null);
 			sinonimos.setSinonimos(listTerminoComoSinonimo);
 		}
 		sinonimosRepository.save(sinonimos);
@@ -122,31 +130,37 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 		String paisDestino = sinonimos.getPaisOrigen();
 		String categoria = sinonimos.getCategoria();
 		String termino = sinonimos.getTermino();
-		List<String> valuesSinonimos = sinonimos.getSinonimos();
-		List<String> listTerminos = new ArrayList<>();
+		List<Palabras> valuesSinonimos = sinonimos.getSinonimos();
+		List<Palabras> listTerminos = new ArrayList<>();
 		if (valuesSinonimos != null && !valuesSinonimos.isEmpty()) {
-			for (String values : valuesSinonimos) {
-				listTerminos.add(values);
+			for (Palabras palabra : valuesSinonimos) {
+				listTerminos.add(palabra);
 			}
 		}
 
 		if (listTerminos != null && !listTerminos.isEmpty()) {
-			for (String value : listTerminos) {
+			for (Palabras palabra : listTerminos) {
 				List<Sinonimos> listSinonimos = sinonimosRepository
-						.findByPaisOrigenAndPaisDestinoAndTerminoAndCategoria(paisOrigen, paisDestino, value,
-								categoria);
+						.findByPaisOrigenAndPaisDestinoAndTerminoAndCategoria(paisOrigen, paisDestino,
+								palabra.getPalabra(), categoria);
 				if (listSinonimos != null && !listSinonimos.isEmpty()) {
-					List<String> listTerminoComoSinonimo = new ArrayList<>();
-					listTerminoComoSinonimo.add(termino);
-					sinonimos.setTermino(value);
+					List<Palabras> listTerminoComoSinonimo = new ArrayList<>();
+					Palabras palabras = new Palabras();
+					palabras.setPalabra(termino);
+					listTerminoComoSinonimo.add(palabras);
+					sinonimos.setTermino(palabra.getPalabra());
+
 					sinonimos.setSinonimos(listTerminoComoSinonimo);
 					sinonimosRepository.save(sinonimos);
 				} else {
 					sinonimos.setPaisDestino(paisDestino);
 					sinonimos.setPaisOrigen(paisOrigen);
-					List<String> listTerminoComoSinonimo = new ArrayList<>();
-					listTerminoComoSinonimo.add(termino);
-					sinonimos.setTermino(value);
+					List<Palabras> listTerminoComoSinonimo = new ArrayList<>();
+					Palabras palabras = new Palabras();
+					palabras.setPalabra(termino);
+					listTerminoComoSinonimo.add(palabras);
+					listTerminoComoSinonimo.add(palabras);
+					sinonimos.setTermino(palabra.getPalabra());
 					sinonimos.set_id(null);
 					sinonimos.setSinonimos(listTerminoComoSinonimo);
 					sinonimos.setDefiniciones(null);

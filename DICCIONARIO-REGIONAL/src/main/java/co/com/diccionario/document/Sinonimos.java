@@ -27,8 +27,8 @@ public class Sinonimos {
 	private List<String> definiciones;
 	private List<String> rutasImagenes;
 	private String categoria;
-	private List<String> sinonimos;
-	private List<String> oraciones;
+	private List<Palabras> sinonimos;
+	private List<Oraciones> oraciones;
 
 	/**
 	 * @return the _id
@@ -166,36 +166,6 @@ public class Sinonimos {
 	}
 
 	/**
-	 * @return the sinonimos
-	 */
-	public List<String> getSinonimos() {
-		return sinonimos;
-	}
-
-	/**
-	 * @param sinonimos
-	 *            the sinonimos to set
-	 */
-	public void setSinonimos(List<String> sinonimos) {
-		this.sinonimos = sinonimos;
-	}
-
-	/**
-	 * @return the oraciones
-	 */
-	public List<String> getOraciones() {
-		return oraciones;
-	}
-
-	/**
-	 * @param oraciones
-	 *            the oraciones to set
-	 */
-	public void setOraciones(List<String> oraciones) {
-		this.oraciones = oraciones;
-	}
-
-	/**
 	 * @return the definiciones
 	 */
 	public List<String> getDefiniciones() {
@@ -222,5 +192,35 @@ public class Sinonimos {
 	public void setRutasImagenes(List<String> rutasImagenes) {
 		this.rutasImagenes = rutasImagenes;
 	}
+
+	/**
+	 * @return the sinonimos
+	 */
+	public List<Palabras> getSinonimos() {
+		return sinonimos;
+	}
+
+	/**
+	 * @param sinonimos the sinonimos to set
+	 */
+	public void setSinonimos(List<Palabras> sinonimos) {
+		this.sinonimos = sinonimos;
+	}
+
+	/**
+	 * @return the oraciones
+	 */
+	public List<Oraciones> getOraciones() {
+		return oraciones;
+	}
+
+	/**
+	 * @param oraciones the oraciones to set
+	 */
+	public void setOraciones(List<Oraciones> oraciones) {
+		this.oraciones = oraciones;
+	}
+	
+	
 
 }

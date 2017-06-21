@@ -7,18 +7,21 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.terracotta.modules.ehcache.async.exceptions.BusyProcessingException;
 
+import co.com.diccionario.document.Palabras;
 import co.com.diccionario.document.Sinonimos;
 import co.com.diccionario.dto.DepartamentoDTO;
-import co.com.diccionario.dto.ImagenesPalabraDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
 import co.com.diccionario.dto.SinonimosDTO;
+import co.com.diccionario.mapper.PalabraMapper;
 import co.com.diccionario.mapper.SinonimosMapper;
+import co.com.diccionario.mongodb.iface.SinonimosIface;
 import co.com.diccionario.mongodb.repository.iface.SinonimosRepository;
 import co.com.diccionario.negocio.cacheable.iface.SinonimosCachableIface;
 import co.com.diccionario.negocio.iface.GestionarBusquedaPalabrasIface;
@@ -33,17 +36,31 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 	SinonimosCachableIface sinonimosCachableIface;
 	@Autowired
 	Environment env;
+	@Autowired
+	SinonimosIface sinonimosIface;
 
 	@Override
 	public List<SinonimosDTO> obtenerPalabrasPorTerminoCategoria(ParamsBusquedaPalabraDTO params) {
 
 		List<SinonimosDTO> listSinonimosEncontrados = buscarPorCategoriaTermino(params);
 		if (listSinonimosEncontrados != null) {
+			try {
+				setByteListImagenes(listSinonimosEncontrados);
+			} catch (IOException e) {
+				Logger.getLogger(e.getMessage());
+			}
+			setPromedioCalificacion(listSinonimosEncontrados);
 			return listSinonimosEncontrados;
 		}
 
 		listSinonimosEncontrados = buscarPorTermino(params);
 		if (listSinonimosEncontrados != null) {
+			try {
+				setByteListImagenes(listSinonimosEncontrados);
+			} catch (IOException e) {
+				Logger.getLogger(e.getMessage());
+			}
+			setPromedioCalificacion(listSinonimosEncontrados);
 			return listSinonimosEncontrados;
 		}
 
@@ -62,11 +79,54 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 		if (listSinonimosAll != null && !listSinonimosAll.isEmpty()) {
 			listSinonimosEncontrados = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimosAll);
 			listSinonimosEncontrados = buscarPalabraAproximada(palabra.trim(), listSinonimosEncontrados);
+			try {
+				setByteListImagenes(listSinonimosEncontrados);
+			} catch (IOException e) {
+				Logger.getLogger(e.getMessage());
+			}
+			setPromedioCalificacion(listSinonimosEncontrados);
 			return listSinonimosEncontrados;
 		}
 
 		return listSinonimosEncontrados;
 
+	}
+
+	private void setPromedioCalificacion(List<SinonimosDTO> listSinonimosEncontrados) {
+		if (listSinonimosEncontrados == null || listSinonimosEncontrados.isEmpty()) {
+			return;
+		}
+
+		int i = 0;
+		for (SinonimosDTO sinonimosDTO : listSinonimosEncontrados) {
+			List<PalabrasDTO> listPalabrasDTO = sinonimosDTO.getSinonimos();
+			if (listPalabrasDTO == null || listPalabrasDTO.isEmpty()) {
+				continue;
+			}
+			int j = 0;
+			for (PalabrasDTO palabrasDTO : listPalabrasDTO) {
+				List<Integer> calificaciones = palabrasDTO.getCalificacion();
+				if (calificaciones == null || calificaciones.isEmpty()) {
+					j++;
+					continue;
+				}
+				int promedio = 0;
+				for (Integer calificacion : calificaciones) {
+					promedio += calificacion;
+				}
+				
+				promedio /= calificaciones.size();
+				palabrasDTO.setPromedioCalificacion(promedio);
+				listPalabrasDTO.set(j, palabrasDTO);
+				j++;
+			}
+			sinonimosDTO.setSinonimos(listPalabrasDTO);
+			listSinonimosEncontrados.set(i, sinonimosDTO);
+			i++;
+		}
+	
+
+	
 	}
 
 	private void setByteListImagenes(List<SinonimosDTO> listSinonimosEncontrados) throws IOException {
@@ -86,7 +146,6 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 					sinonimosDTO.setImagenesBytes(listImagenes);
 					listSinonimosEncontrados.set(i, sinonimosDTO);
 				}
-
 				i++;
 
 			}
@@ -101,10 +160,11 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			return null;
 		}
 
-		List<String> sinonimo = params.getSinonimos();
+		List<PalabrasDTO> sinonimo = params.getSinonimos();
+		List<Palabras> palabrasSinonimos = PalabraMapper.INSTANCE.palabrasToPalabrasDTO(sinonimo);
 		String termino = params.getTermino();
-		List<Sinonimos> listSinonimos = sinonimosRepository.findByPaisOrigenAndPaisDestinoAndTerminoAndSinonimosIn(
-				paisOrigenDTO.getNombre(), paisDestinoDTO.getNombre(), termino, sinonimo);
+		List<Sinonimos> listSinonimos = sinonimosIface.findByPaisOrigenAndPaisDestinoAndTerminoAndSinonimosIn(
+				paisOrigenDTO.getNombre(), paisDestinoDTO.getNombre(), termino, palabrasSinonimos.get(0));
 		if (listSinonimos != null && !listSinonimos.isEmpty()) {
 			List<SinonimosDTO> listSinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimosDTOs(listSinonimos);
 			return listSinonimosDTO;

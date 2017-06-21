@@ -14,7 +14,9 @@ import org.primefaces.context.RequestContext;
 import co.com.diccionario.client.catalogos.CatalogosServiceClient;
 import co.com.diccionario.client.catalogos.GestionarPalabrasServiceClient;
 import co.com.diccionario.dto.CategoriaDTO;
+import co.com.diccionario.dto.OracionesDTO;
 import co.com.diccionario.dto.PaisesDTO;
+import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
 import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.utils.ParamsBundle;
@@ -103,14 +105,18 @@ public class BusquedaTerminosMB {
 		if (listResultadosBusquedaSinonimos != null && !listResultadosBusquedaSinonimos.isEmpty()) {
 			int i = 0;
 			for (SinonimosDTO sinonimosDTO : listResultadosBusquedaSinonimos) {
-				List<String> oraciones = sinonimosDTO.getOraciones();
+				List<OracionesDTO> oraciones = sinonimosDTO.getOraciones();
 				if (oraciones == null || oraciones.isEmpty()) {
 					oraciones = new ArrayList<>();
-					oraciones.add("No hay ejemplos");
+					OracionesDTO oracionesDTO = new OracionesDTO();
+					oracionesDTO.setOracion("No hay ejemplos");
+					oraciones.add(oracionesDTO);
 					listResultadosBusquedaSinonimos.get(i).setOraciones(oraciones);
 				}
 				i++;
 			}
+			
+			
 			mensajeResultado = "Su consulta a arrojado los siguientes resultados";
 			requestContext.update("busqueda:fieldMsgResultado");
 			requestContext.update("busqueda:fieldPnlResultadosPalabras");
@@ -355,8 +361,10 @@ public class BusquedaTerminosMB {
 
 		params.setCategoria(categorias.getNombre());
 
-		List<String> listSinonimos = new ArrayList<>();
-		listSinonimos.add(nuevoTermino);
+		List<PalabrasDTO> listSinonimos = new ArrayList<>();
+		PalabrasDTO palabraDTO = new PalabrasDTO();
+		palabraDTO.setPalabra(nuevoTermino);
+		listSinonimos.add(palabraDTO);
 		params.setSinonimos(listSinonimos);
 
 		List<SinonimosDTO> listSinonimosDTO;
@@ -375,12 +383,16 @@ public class BusquedaTerminosMB {
 			return;
 		}
 
-		List<String> sinonimos = selectedSinonimosDTO.getSinonimos();
+		List<PalabrasDTO> sinonimos = selectedSinonimosDTO.getSinonimos();
 		if (sinonimos != null && !sinonimos.isEmpty()) {
-			sinonimos.add(nuevoTermino);
+			palabraDTO = new PalabrasDTO();
+			palabraDTO.setPalabra(nuevoTermino);
+			sinonimos.add(palabraDTO);
 		} else {
 			sinonimos = new ArrayList<>();
-			sinonimos.add(nuevoTermino);
+			palabraDTO = new PalabrasDTO();
+			palabraDTO.setPalabra(nuevoTermino);
+			sinonimos.add(palabraDTO);
 		}
 
 		selectedSinonimosDTO.setSinonimos(sinonimos);
