@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import co.com.diccionario.document.Palabras;
 import co.com.diccionario.document.Sinonimos;
 import co.com.diccionario.dto.DepartamentoDTO;
+import co.com.diccionario.dto.OracionesDTO;
 import co.com.diccionario.dto.PaisesDTO;
 import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
@@ -49,7 +50,8 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			} catch (IOException e) {
 				Logger.getLogger(e.getMessage());
 			}
-			setPromedioCalificacion(listSinonimosEncontrados);
+			setPromedioCalificacionPalabra(listSinonimosEncontrados);
+			setPromedioCalificacionOraciones(listSinonimosEncontrados);
 			return listSinonimosEncontrados;
 		}
 
@@ -60,7 +62,8 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			} catch (IOException e) {
 				Logger.getLogger(e.getMessage());
 			}
-			setPromedioCalificacion(listSinonimosEncontrados);
+			setPromedioCalificacionPalabra(listSinonimosEncontrados);
+			setPromedioCalificacionOraciones(listSinonimosEncontrados);
 			return listSinonimosEncontrados;
 		}
 
@@ -84,15 +87,53 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			} catch (IOException e) {
 				Logger.getLogger(e.getMessage());
 			}
-			setPromedioCalificacion(listSinonimosEncontrados);
+			setPromedioCalificacionPalabra(listSinonimosEncontrados);
+			setPromedioCalificacionOraciones(listSinonimosEncontrados);
 			return listSinonimosEncontrados;
 		}
 
 		return listSinonimosEncontrados;
 
 	}
+	
+	private void setPromedioCalificacionOraciones(List<SinonimosDTO> listSinonimosEncontrados){
+		if (listSinonimosEncontrados == null || listSinonimosEncontrados.isEmpty()) {
+			return;
+		}
 
-	private void setPromedioCalificacion(List<SinonimosDTO> listSinonimosEncontrados) {
+		int i = 0;
+		for (SinonimosDTO sinonimosDTO : listSinonimosEncontrados) {
+			List<OracionesDTO> listOracionesDTO = sinonimosDTO.getOraciones();
+			if (listOracionesDTO == null || listOracionesDTO.isEmpty()) {
+				continue;
+			}
+			int j = 0;
+			for (OracionesDTO oracionesDTO : listOracionesDTO) {
+				List<Integer> calificaciones = oracionesDTO.getCalificacion();
+				if (calificaciones == null || calificaciones.isEmpty()) {
+					j++;
+					continue;
+				}
+				int promedio = 0;
+				for (Integer calificacion : calificaciones) {
+					promedio += calificacion;
+				}
+				
+				int size = calificaciones.size();
+				float promedios = Float.parseFloat(""+promedio);
+				float media = promedios / size;
+				int prod = Math.round(media);
+				oracionesDTO.setPromedioCalificacion(prod);
+				listOracionesDTO.set(j, oracionesDTO);
+				j++;
+			}
+			sinonimosDTO.setOraciones(listOracionesDTO);
+			listSinonimosEncontrados.set(i, sinonimosDTO);
+			i++;
+		}
+	}
+
+	private void setPromedioCalificacionPalabra(List<SinonimosDTO> listSinonimosEncontrados) {
 		if (listSinonimosEncontrados == null || listSinonimosEncontrados.isEmpty()) {
 			return;
 		}
@@ -115,8 +156,11 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 					promedio += calificacion;
 				}
 				
-				promedio /= calificaciones.size();
-				palabrasDTO.setPromedioCalificacion(promedio);
+				int size = calificaciones.size();
+				float promedios = Float.parseFloat(""+promedio);
+				float media = promedios / size;
+				int prod = Math.round(media);
+				palabrasDTO.setPromedioCalificacion(prod);
 				listPalabrasDTO.set(j, palabrasDTO);
 				j++;
 			}

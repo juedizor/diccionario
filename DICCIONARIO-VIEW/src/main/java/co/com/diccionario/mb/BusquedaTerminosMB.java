@@ -426,7 +426,64 @@ public class BusquedaTerminosMB {
 
 	}
 
-	public void onrate(RateEvent rateEvent) {
+	public void changeCalificacionOraciones(RateEvent rateEvent) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		selectedSinonimosDTO = context.getApplication().evaluateExpressionGet(context, "#{result}", SinonimosDTO.class);
+		String oracion = context.getApplication().evaluateExpressionGet(context, "#{oracion.oracion}", String.class);
+		Iterator<OracionesDTO> iter = selectedSinonimosDTO.getOraciones().iterator();
+		int value = ((Integer) rateEvent.getRating()).intValue();
+		while (iter.hasNext()) {
+			OracionesDTO oracionesDTO = iter.next();
+			if (oracionesDTO.getOracion().equals(oracion)) {
+				if (oracionesDTO.getCalificacion() != null) {
+					oracionesDTO.getCalificacion().add(value);
+					break;
+				} else {
+					List<Integer> calificacion = new ArrayList<>();
+					calificacion.add(value);
+					oracionesDTO.setCalificacion(calificacion);
+					break;
+				}
+			}
+		}
+
+		/*
+		 * aqui se consume el servicio enviando selectedSinonimosDTO
+		 */
+		SinonimosDTO sinonimosDTO;
+		try {
+			sinonimosDTO = GestionarPalabrasServiceClient.getInstance()
+					.actualizarCalificacionOraciones(selectedSinonimosDTO);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+		
+		int i = listResultadosBusquedaSinonimos.indexOf(selectedSinonimosDTO);
+		iter = listResultadosBusquedaSinonimos.get(i).getOraciones().iterator();
+		while (iter.hasNext()) {
+			OracionesDTO oracionesDTO = iter.next();
+			List<OracionesDTO> listOracionesDTO = sinonimosDTO.getOraciones();
+			Iterator<OracionesDTO> iterNew = listOracionesDTO.iterator();
+			while (iterNew.hasNext()) {
+				OracionesDTO oracionesNew = iterNew.next();
+				if (oracionesNew.getOracion().equals(oracionesDTO.getOracion())) {
+					oracionesDTO.setCalificacion(oracionesNew.getCalificacion());
+					oracionesDTO.setOracion(oracionesNew.getOracion());
+					oracionesDTO.setPromedioCalificacion(oracionesNew.getPromedioCalificacion());
+				}
+			}
+		}
+
+		Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
+				"Su valoración a sido enviada correctamente",
+				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+
+	}
+
+	public void changeCalificacion(RateEvent rateEvent) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
 		selectedSinonimosDTO = context.getApplication().evaluateExpressionGet(context, "#{result}", SinonimosDTO.class);
@@ -439,7 +496,7 @@ public class BusquedaTerminosMB {
 				if (palabraDTO.getCalificacion() != null) {
 					palabraDTO.getCalificacion().add(value);
 					break;
-				}else{
+				} else {
 					List<Integer> calificacion = new ArrayList<>();
 					calificacion.add(value);
 					palabraDTO.setCalificacion(calificacion);
@@ -451,25 +508,35 @@ public class BusquedaTerminosMB {
 		/*
 		 * aqui se consume el servicio enviando selectedSinonimosDTO
 		 */
-		SinonimosDTO sinonimosDTO; 
+		SinonimosDTO sinonimosDTO;
 		try {
-			sinonimosDTO = GestionarPalabrasServiceClient.getInstance().actualizarCalificacion(selectedSinonimosDTO);
+			sinonimosDTO = GestionarPalabrasServiceClient.getInstance()
+					.actualizarCalificacionSinonimos(selectedSinonimosDTO);
 		} catch (Exception e) {
 			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
 			return;
 		}
-		
-		
 
 		int i = listResultadosBusquedaSinonimos.indexOf(selectedSinonimosDTO);
 		iter = listResultadosBusquedaSinonimos.get(i).getSinonimos().iterator();
 		while (iter.hasNext()) {
 			PalabrasDTO palabraDTO = iter.next();
-			if (palabraDTO.getPalabra().equals(palabra)) {
-				palabraDTO.setPromedioCalificacion(3);
+			List<PalabrasDTO> listPalabraDTO = sinonimosDTO.getSinonimos();
+			Iterator<PalabrasDTO> iterNew = listPalabraDTO.iterator();
+			while (iterNew.hasNext()) {
+				PalabrasDTO palabrasNew = iterNew.next();
+				if (palabrasNew.getPalabra().equals(palabraDTO.getPalabra())) {
+					palabraDTO.setCalificacion(palabrasNew.getCalificacion());
+					palabraDTO.setPalabra(palabrasNew.getPalabra());
+					palabraDTO.setPromedioCalificacion(palabrasNew.getPromedioCalificacion());
+				}
 			}
 		}
+
+		Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
+				"Su valoración a sido enviada correctamente",
+				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
 
 	}
 
@@ -742,7 +809,7 @@ public class BusquedaTerminosMB {
 	}
 
 	/**
-	 * @return the listResultadosBusquedaSinonimos
+	 * @return the listResultados|Sinonimos
 	 */
 	public List<SinonimosDTO> getListResultadosBusquedaSinonimos() {
 		return listResultadosBusquedaSinonimos;

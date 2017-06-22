@@ -261,8 +261,9 @@
 											<f:param name="sinonimosSelected" value="#{result}" />
 											<f:param name="sinonimoPalabraSelected"
 												value="#{sinonimos.palabra}" />
-											<p:ajax event="rate" listener="#{busquedaMB.onrate}"
-												update="busqueda:fieldPnlResultadosPalabras" />
+											<p:ajax event="rate"
+												listener="#{busquedaMB.changeCalificacion}"
+												update="busqueda:fieldPnlResultadosPalabras :msg" />
 
 										</p:rating>
 									</div>
@@ -281,7 +282,14 @@
 											<h:outputText value="#{oracion.oracion}" />
 										</div>
 										<div class="ui-g-2">
-											<p:rating value="#{sinonimos.promedioCalificacion}" />
+											<p:rating value="#{oracion.promedioCalificacion}">
+												<f:param name="sinonimosSelected" value="#{result}" />
+												<f:param name="sinonimoPalabraSelected"
+													value="#{oracion.oracion}" />
+												<p:ajax event="rate"
+													listener="#{busquedaMB.changeCalificacionOraciones}"
+													update="busqueda:fieldPnlResultadosPalabras :msg" />
+											</p:rating>
 										</div>
 									</div>
 								</p:repeat>

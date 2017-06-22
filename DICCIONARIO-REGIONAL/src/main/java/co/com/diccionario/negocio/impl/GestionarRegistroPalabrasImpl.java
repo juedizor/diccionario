@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import co.com.diccionario.document.Palabras;
 import co.com.diccionario.document.Sinonimos;
+import co.com.diccionario.dto.OracionesDTO;
 import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParametrosRegistroTermino;
 import co.com.diccionario.dto.SinonimosDTO;
@@ -161,7 +162,6 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 					Palabras palabras = new Palabras();
 					palabras.setPalabra(termino);
 					listTerminoComoSinonimo.add(palabras);
-					listTerminoComoSinonimo.add(palabras);
 					sinonimos.setTermino(palabra.getPalabra());
 					sinonimos.set_id(null);
 					sinonimos.setSinonimos(listTerminoComoSinonimo);
@@ -174,7 +174,7 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 		}
 	}
 
-	public SinonimosDTO actualizarCalificacion(SinonimosDTO sinonimosDTO) {
+	public SinonimosDTO actualizarCalificacionSinonimos(SinonimosDTO sinonimosDTO) {
 		Sinonimos sinonimos = SinonimosMapper.INSTANCE.sinonimoDTOToSinonimo(sinonimosDTO);
 		/**
 		 * actualiza los datos diferentes al sinonimo enviado
@@ -191,8 +191,39 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 				for (Integer cal : listCalificaciones) {
 					promedio += cal;
 				}
-				promedio /= listCalificaciones.size();
-				palabrasDTO.setPromedioCalificacion(promedio);
+				int size = listCalificaciones.size();
+				float promedios = Float.parseFloat(""+promedio);
+				float media = promedios / size;
+				int prod = Math.round(media);
+				palabrasDTO.setPromedioCalificacion(prod);
+			}
+		}
+		return sinonimosDTO;
+	}
+
+	@Override
+	public SinonimosDTO actualizarCalificacionOraciones(SinonimosDTO sinonimosDTO) {
+		Sinonimos sinonimos = SinonimosMapper.INSTANCE.sinonimoDTOToSinonimo(sinonimosDTO);
+		/**
+		 * actualiza los datos diferentes al sinonimo enviado
+		 */
+		sinonimos = sinonimosRepository.save(sinonimos);
+		sinonimosDTO = SinonimosMapper.INSTANCE.sinonimosToSinonimoDTO(sinonimos);
+		List<OracionesDTO> listOraciones = sinonimosDTO.getOraciones();
+		Iterator<OracionesDTO> iter = listOraciones.iterator();
+		while(iter.hasNext()){
+			OracionesDTO oracionesDTO = iter.next();
+			List<Integer> listCalificaciones = oracionesDTO.getCalificacion();
+			int promedio = 0;
+			if(listCalificaciones != null && !listCalificaciones.isEmpty()){
+				for (Integer cal : listCalificaciones) {
+					promedio += cal;
+				}
+				int size = listCalificaciones.size();
+				float promedios = Float.parseFloat(""+promedio);
+				float media = promedios / size;
+				int prod = Math.round(media);
+				oracionesDTO.setPromedioCalificacion(prod);
 			}
 		}
 		return sinonimosDTO;

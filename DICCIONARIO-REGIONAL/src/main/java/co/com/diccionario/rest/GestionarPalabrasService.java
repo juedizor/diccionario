@@ -119,10 +119,19 @@ public class GestionarPalabrasService {
 	}
 
 	@RequestMapping(value = "/sinonimo/calificacion", method = RequestMethod.PUT)
-	public SinonimosDTO actualizarCalificacion(@RequestBody SinonimosDTO sinonimosDTO)
-			throws CommonException {
+	public SinonimosDTO actualizarCalificacionSinonimos(@RequestBody SinonimosDTO sinonimosDTO) throws CommonException {
 		try {
-			return gestionarRegistroPalabrasIface.actualizarCalificacion(sinonimosDTO);
+			return gestionarRegistroPalabrasIface.actualizarCalificacionSinonimos(sinonimosDTO);
+		} catch (Exception e) {
+			throw new GeneralErrorException(
+					"Error realizando la actualizacion " + e.getMessage() + " " + e.getLocalizedMessage());
+		}
+	}
+
+	@RequestMapping(value = "/sinonimo/oracion/calificacion", method = RequestMethod.PUT)
+	public SinonimosDTO actualizarCalificacionOracion(@RequestBody SinonimosDTO sinonimosDTO) throws CommonException {
+		try {
+			return gestionarRegistroPalabrasIface.actualizarCalificacionOraciones(sinonimosDTO);
 		} catch (Exception e) {
 			throw new GeneralErrorException(
 					"Error realizando la actualizacion " + e.getMessage() + " " + e.getLocalizedMessage());

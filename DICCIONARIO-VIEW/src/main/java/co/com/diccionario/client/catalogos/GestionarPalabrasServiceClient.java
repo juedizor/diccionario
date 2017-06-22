@@ -23,6 +23,7 @@ public class GestionarPalabrasServiceClient {
 	private static final String PALABRAS = "palabras";
 	private static final String BUSQUEDA = "busqueda";
 	private static final String SINONIMO = "sinonimo";
+	private static final String ORACION = "oracion";
 	private static final String CALIFICACION = "calificacion";
 
 	private GestionarPalabrasServiceClient() {
@@ -161,9 +162,23 @@ public class GestionarPalabrasServiceClient {
 		}
 	}
 
-	public SinonimosDTO actualizarCalificacion(SinonimosDTO sinonimosDTO) throws Exception {
+	public SinonimosDTO actualizarCalificacionSinonimos(SinonimosDTO sinonimosDTO) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String uri = HOST_END_POINT + PALABRAS + "/" + SINONIMO + "/" + CALIFICACION;
+		try {
+			HttpEntity<SinonimosDTO> httpEntity = new HttpEntity<>(sinonimosDTO);
+			ResponseEntity<SinonimosDTO> response = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity,
+					new ParameterizedTypeReference<SinonimosDTO>() {
+					});
+			return response.getBody();
+		} catch (HttpClientErrorException e) {
+			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+		}
+	}
+
+	public SinonimosDTO actualizarCalificacionOraciones(SinonimosDTO sinonimosDTO) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/" + SINONIMO + "/" + ORACION + "/" + CALIFICACION;
 		try {
 			HttpEntity<SinonimosDTO> httpEntity = new HttpEntity<>(sinonimosDTO);
 			ResponseEntity<SinonimosDTO> response = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity,
