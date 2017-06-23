@@ -1,5 +1,11 @@
 package co.com.diccionario.mb;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +18,8 @@ import javax.faces.context.FacesContext;
 
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RateEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import co.com.diccionario.client.catalogos.CatalogosServiceClient;
 import co.com.diccionario.client.catalogos.GestionarPalabrasServiceClient;
@@ -66,6 +74,8 @@ public class BusquedaTerminosMB {
 
 	private boolean mostrarAgregarMiPalabra;
 	private boolean mostrarPnlDefinicion;
+	
+	private StreamedContent streamedContent;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -1061,6 +1071,20 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMostrarPnlDefinicion(boolean mostrarPnlDefinicion) {
 		this.mostrarPnlDefinicion = mostrarPnlDefinicion;
+	}
+
+	/**
+	 * @return the streamedContent
+	 */
+	public StreamedContent getStreamedContent() {
+		return streamedContent;
+	}
+
+	/**
+	 * @param streamedContent the streamedContent to set
+	 */
+	public void setStreamedContent(StreamedContent streamedContent) {
+		this.streamedContent = streamedContent;
 	}
 
 }

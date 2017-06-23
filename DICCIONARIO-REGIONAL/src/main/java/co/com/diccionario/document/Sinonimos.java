@@ -25,7 +25,7 @@ public class Sinonimos {
 	private String ciudadDestino;
 	private String termino;
 	private List<String> definiciones;
-	private List<String> rutasImagenes;
+	private List<RutaImagenes> rutasImagenes;
 	private String categoria;
 	private List<Palabras> sinonimos;
 	private List<Oraciones> oraciones;
@@ -180,20 +180,6 @@ public class Sinonimos {
 	}
 
 	/**
-	 * @return the rutasImagenes
-	 */
-	public List<String> getRutasImagenes() {
-		return rutasImagenes;
-	}
-
-	/**
-	 * @param rutasImagenes the rutasImagenes to set
-	 */
-	public void setRutasImagenes(List<String> rutasImagenes) {
-		this.rutasImagenes = rutasImagenes;
-	}
-
-	/**
 	 * @return the sinonimos
 	 */
 	public List<Palabras> getSinonimos() {
@@ -219,6 +205,20 @@ public class Sinonimos {
 	 */
 	public void setOraciones(List<Oraciones> oraciones) {
 		this.oraciones = oraciones;
+	}
+
+	/**
+	 * @return the rutasImagenes
+	 */
+	public List<RutaImagenes> getRutasImagenes() {
+		return rutasImagenes;
+	}
+
+	/**
+	 * @param rutasImagenes the rutasImagenes to set
+	 */
+	public void setRutasImagenes(List<RutaImagenes> rutasImagenes) {
+		this.rutasImagenes = rutasImagenes;
 	}
 	
 	

@@ -7,9 +7,11 @@ import org.mapstruct.factory.Mappers;
 
 import co.com.diccionario.document.Oraciones;
 import co.com.diccionario.document.Palabras;
+import co.com.diccionario.document.RutaImagenes;
 import co.com.diccionario.document.Sinonimos;
 import co.com.diccionario.dto.OracionesDTO;
 import co.com.diccionario.dto.PalabrasDTO;
+import co.com.diccionario.dto.RutaImagenesDTO;
 import co.com.diccionario.dto.SinonimosDTO;
 
 @Mapper
@@ -24,6 +26,10 @@ public interface SinonimosMapper {
 	List<SinonimosDTO> sinonimosToSinonimosDTOs(List<Sinonimos> listSinonimos);
 		
 	Sinonimos sinonimoDTOToSinonimo(SinonimosDTO sinonimosDTO);
+	
+	RutaImagenesDTO rutaImagenesToRutaImagenesDTO(RutaImagenes rutaImagenes);
+	
+	RutaImagenes rutaImagenesDTOToRutaImagenes(RutaImagenesDTO rutaImagenesDTO);
 	
 	Oraciones oracionesDTOToOraciones(OracionesDTO oraciones);
 	

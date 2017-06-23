@@ -19,6 +19,7 @@ import co.com.diccionario.dto.OracionesDTO;
 import co.com.diccionario.dto.PaisesDTO;
 import co.com.diccionario.dto.PalabrasDTO;
 import co.com.diccionario.dto.ParamsBusquedaPalabraDTO;
+import co.com.diccionario.dto.RutaImagenesDTO;
 import co.com.diccionario.dto.SinonimosDTO;
 import co.com.diccionario.mapper.PalabraMapper;
 import co.com.diccionario.mapper.SinonimosMapper;
@@ -95,8 +96,8 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 		return listSinonimosEncontrados;
 
 	}
-	
-	private void setPromedioCalificacionOraciones(List<SinonimosDTO> listSinonimosEncontrados){
+
+	private void setPromedioCalificacionOraciones(List<SinonimosDTO> listSinonimosEncontrados) {
 		if (listSinonimosEncontrados == null || listSinonimosEncontrados.isEmpty()) {
 			return;
 		}
@@ -118,9 +119,9 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 				for (Integer calificacion : calificaciones) {
 					promedio += calificacion;
 				}
-				
+
 				int size = calificaciones.size();
-				float promedios = Float.parseFloat(""+promedio);
+				float promedios = Float.parseFloat("" + promedio);
 				float media = promedios / size;
 				int prod = Math.round(media);
 				oracionesDTO.setPromedioCalificacion(prod);
@@ -155,9 +156,9 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 				for (Integer calificacion : calificaciones) {
 					promedio += calificacion;
 				}
-				
+
 				int size = calificaciones.size();
-				float promedios = Float.parseFloat(""+promedio);
+				float promedios = Float.parseFloat("" + promedio);
 				float media = promedios / size;
 				int prod = Math.round(media);
 				palabrasDTO.setPromedioCalificacion(prod);
@@ -168,20 +169,21 @@ public class GestionarBusquedaPalabrasImpl implements GestionarBusquedaPalabrasI
 			listSinonimosEncontrados.set(i, sinonimosDTO);
 			i++;
 		}
-	
 
-	
 	}
 
 	private void setByteListImagenes(List<SinonimosDTO> listSinonimosEncontrados) throws IOException {
 		if (listSinonimosEncontrados != null && !listSinonimosEncontrados.isEmpty()) {
 			int i = 0;
 			for (SinonimosDTO sinonimosDTO : listSinonimosEncontrados) {
-				List<String> listRutasImagenes = sinonimosDTO.getRutasImagenes();
+				List<RutaImagenesDTO> listRutasImagenes = sinonimosDTO.getRutasImagenes();
 				List<byte[]> listImagenes = new ArrayList<>();
 				if (listRutasImagenes != null && !listRutasImagenes.isEmpty()) {
-					for (String ruta : listRutasImagenes) {
-						Path pathImg = Paths.get(ruta);
+					for (RutaImagenesDTO ruta : listRutasImagenes) {
+						if(!ruta.isAprobada()){
+							continue;
+						}
+						Path pathImg = Paths.get(ruta.getRutaImagen());
 						if (Files.exists(pathImg)) {
 							byte[] byteImg = Files.readAllBytes(pathImg);
 							listImagenes.add(byteImg);

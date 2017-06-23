@@ -222,29 +222,32 @@
 						columns="1" emptyMessage="Sin resultados"
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
-							<p:outputLabel id="pnlDefinicion">
-								<h:outputText style="font-size:12px;"
-									value="La palabra significa:"
-									rendered="#{busquedaMB.validarMostrarDefinicion(result)}" />
-								<p />
-								<p:repeat value="#{result.definiciones}" var="definicion">
-									<div class="ui-g">
-										<div class="ui-g-1"></div>
-										<div class="ui-g-8">
-											<h:outputText value="#{definicion}" />
-										</div>
-									</div>
-								</p:repeat>
-							</p:outputLabel>
+							<p:galleria value="#{result.rutasImagenes}" var="image"
+								panelWidth="500" panelHeight="313" showCaption="true">
+								<p:graphicImage alt="no cargo"
+									value="#{imagenes.streamedContent()}">
+									<f:param name="rutaImagen" value="#{image.rutaImagen}" />
+								</p:graphicImage>
+							</p:galleria>
 
-							<h:outputText style="font-size:12px;" value="Categoria:" />
-							<p />
-							<div class="ui-g">
-								<div class="ui-g-1"></div>
-								<div class="ui-g-8">
-									<h:outputText value="#{result.categoria}" />
-								</div>
-							</div>
+							<p:dialog width="50%" id="dlgImagenes#{result.termino}"
+								widgetVar="dlgImagenes#{result.termino}" modal="true"
+								appendTo="@(body)" resizable="false"
+								header="Imagenes Relacionadas">
+								<p:galleria value="#{result.rutasImagenes}" var="image"
+									panelWidth="500" panelHeight="313" showCaption="true">
+									<p:graphicImage alt="no cargo" value="#{image.rutaImagen}"
+										title="#{image.rutaImagen}">
+
+									</p:graphicImage>
+								</p:galleria>
+							</p:dialog>
+
+							<p:commandLink
+								onclick="PF('dlgImagenes#{result.termino}').show();">
+								<p:graphicImage title="Visualizar Imagen" alt="ver imagen"
+									name="menu/ver_imagenes.png" library="img" />
+							</p:commandLink>
 
 							<p />
 							<h:outputText style="font-size:12px;"
@@ -295,6 +298,31 @@
 								</p:repeat>
 							</p:outputLabel>
 							<p />
+							<p:outputLabel id="pnlDefinicion">
+								<h:outputText style="font-size:12px;"
+									value="La palabra significa:"
+									rendered="#{busquedaMB.validarMostrarDefinicion(result)}" />
+								<p />
+								<p:repeat value="#{result.definiciones}" var="definicion">
+									<div class="ui-g">
+										<div class="ui-g-1"></div>
+										<div class="ui-g-8">
+											<h:outputText value="#{definicion}" />
+										</div>
+									</div>
+								</p:repeat>
+							</p:outputLabel>
+							<p />
+
+							<h:outputText style="font-size:12px;" value="Categoria:" />
+							<p />
+							<div class="ui-g">
+								<div class="ui-g-1"></div>
+								<div class="ui-g-8">
+									<h:outputText value="#{result.categoria}" />
+								</div>
+							</div>
+							<p />
 							<p />
 							<p:panelGrid columns="3">
 								<h:panelGrid style="text-align:center">
@@ -338,6 +366,8 @@
 			<p:growl id="msgGeneral" widgetVar="msgGeneral" showDetail="true"
 				life="3000" globalOnly="true" />
 		</h:form>
+
+
 
 		<p:dialog width="50%" id="dlgNuevosTerminos"
 			widgetVar="dlgNuevosTerminos" modal="true" appendTo="@(body)"

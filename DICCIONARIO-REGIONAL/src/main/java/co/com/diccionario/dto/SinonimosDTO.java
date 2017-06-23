@@ -19,7 +19,7 @@ public class SinonimosDTO implements Serializable{
 	private String ciudadOrigen;
 	private String ciudadDestino;
 	private String termino;
-	private List<String> rutasImagenes;
+	private List<RutaImagenesDTO> rutasImagenes;
 	private List<byte[]> imagenesBytes;
 	private List<String> definiciones;
 	private String categoria;
@@ -178,20 +178,8 @@ public class SinonimosDTO implements Serializable{
 	public void setDefiniciones(List<String> definiciones) {
 		this.definiciones = definiciones;
 	}
-
-	/**
-	 * @return the rutasImagenes
-	 */
-	public List<String> getRutasImagenes() {
-		return rutasImagenes;
-	}
-
-	/**
-	 * @param rutasImagenes the rutasImagenes to set
-	 */
-	public void setRutasImagenes(List<String> rutasImagenes) {
-		this.rutasImagenes = rutasImagenes;
-	}
+	
+	
 
 	/**
 	 * @return the imagenesBytes
@@ -233,6 +221,20 @@ public class SinonimosDTO implements Serializable{
 	 */
 	public void setOraciones(List<OracionesDTO> oraciones) {
 		this.oraciones = oraciones;
+	}
+
+	/**
+	 * @return the rutasImagenes
+	 */
+	public List<RutaImagenesDTO> getRutasImagenes() {
+		return rutasImagenes;
+	}
+
+	/**
+	 * @param rutasImagenes the rutasImagenes to set
+	 */
+	public void setRutasImagenes(List<RutaImagenesDTO> rutasImagenes) {
+		this.rutasImagenes = rutasImagenes;
 	}
 	
 
