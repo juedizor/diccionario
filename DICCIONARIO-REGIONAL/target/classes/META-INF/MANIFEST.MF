@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: DICCIONARIO-REGIONAL
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: jeio
+Built-By: julio.izquierdo
 Implementation-Vendor-Id: co.com.diccionario
-Build-Jdk: 1.8.0_92
+Build-Jdk: 1.8.0_40
 Implementation-URL: http://projects.spring.io/spring-boot/DICCIONARIO-
  REGIONAL/
 Created-By: Maven Integration for Eclipse

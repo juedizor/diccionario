@@ -222,23 +222,15 @@
 						columns="1" emptyMessage="Sin resultados"
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
-							<p:galleria value="#{result.rutasImagenes}" var="image"
-								panelWidth="500" panelHeight="313" showCaption="true">
-								<p:graphicImage alt="no cargo"
-									value="#{imagenes.streamedContent()}">
-									<f:param name="rutaImagen" value="#{image.rutaImagen}" />
-								</p:graphicImage>
-							</p:galleria>
-
 							<p:dialog width="50%" id="dlgImagenes#{result.termino}"
 								widgetVar="dlgImagenes#{result.termino}" modal="true"
-								appendTo="@(body)" resizable="false"
+								appendTo="@(body)" position="top" resizable="false"
 								header="Imagenes Relacionadas">
-								<p:galleria value="#{result.rutasImagenes}" var="image"
-									panelWidth="500" panelHeight="313" showCaption="true">
-									<p:graphicImage alt="no cargo" value="#{image.rutaImagen}"
-										title="#{image.rutaImagen}">
-
+								<p:galleria value="#{result.rutasImagenes}" var="image" showCaption="true">
+									<p:graphicImage width="500" height="313"
+										alt="#{result.definiciones.get(0)}" value="#{imagenes.image}"
+										title="#{result.termino}">
+										<f:param name="id" value="#{image.rutaImagen}" />
 									</p:graphicImage>
 								</p:galleria>
 							</p:dialog>
