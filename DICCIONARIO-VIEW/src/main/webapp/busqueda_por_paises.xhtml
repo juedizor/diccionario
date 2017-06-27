@@ -153,7 +153,7 @@
 
 							<p:commandButton id="btnBuscarPalabra" icon="btnImageBuscar"
 								actionListener="#{busquedaMB.buscarSinonimos()}"
-								update="fieldPnlResultadosPalabras">
+								update="busqueda dataGridSinonimos">
 								<p:tooltip for="btnBuscarPalabra" value="Buscar palabras"
 									showEffect="fade" hideEffect="fade" />
 							</p:commandButton>
@@ -218,6 +218,7 @@
 					</h4>
 				</p:outputPanel>
 
+
 				<p:outputPanel id="fieldPnlResultadosPalabras">
 					<p:dataGrid id="dataGridSinonimos"
 						value="#{busquedaMB.listResultadosBusquedaSinonimos}" var="result"
@@ -225,14 +226,27 @@
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
 
+							<p:dialog width="40%" id="dlgImagenes"
+								widgetVar="dlgImagenes#{result.termino}" modal="true"
+								appendTo="@(body)" position="top" resizable="false"
+								header="Imagenes Relacionadas" dynamic="true">
+								<p:galleria id="galleria" autoPlay="false"
+									value="#{result.rutasImagenes}" var="image" panelWidth="510"
+									panelHeight="300" showCaption="true">
+									<p:graphicImage width="600" height="303" cache="false"
+										alt="#{result.definiciones.get(0)}"
+										value="images/#{image.rutaImagen}">
+									</p:graphicImage>
+								</p:galleria>
+
+							</p:dialog>
 
 
-							<p:commandLink  actionListener="#{busquedaMB.validarSinonimosSeleccionado}">
+							<p:commandLink
+								oncomplete="PF('dlgImagenes#{result.termino}').show();"
+								update="dataGridSinonimos:galleria">
 								<p:graphicImage title="Visualizar Imagen" alt="ver imagen"
 									name="menu/ver_imagenes.png" library="img" />
-								<f:setPropertyActionListener value="#{result}"
-									target="#{busquedaMB.selectedSinonimosDTO}" />
-								
 							</p:commandLink>
 
 							<p />
@@ -391,20 +405,7 @@
 
 		</p:dialog>
 
-		<p:dialog width="40%" id="dlgImagenes" widgetVar="dlgImagenes"
-			modal="true" appendTo="@(body)" position="top" resizable="false"
-			header="Imagenes Relacionadas">
-			<p:galleria id="galleria" autoPlay="false"
-				value="#{busquedaMB.selectedSinonimosDTO.rutasImagenes}" var="image"
-				panelWidth="510" panelHeight="300" showCaption="true">
-				<p:graphicImage width="600" height="303"
-					alt="#{busquedaMB.selectedSinonimosDTO.definiciones.get(0)}"
-					value="#{imagenes.image}">
-					<f:param name="id" value="#{image.rutaImagen}"></f:param>
-				</p:graphicImage>
-			</p:galleria>
 
-		</p:dialog>
 
 
 		<p:dialog id="dlgCategoriaAproximadas"

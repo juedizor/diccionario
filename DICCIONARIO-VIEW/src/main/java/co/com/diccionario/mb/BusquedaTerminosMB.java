@@ -9,14 +9,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ComponentSystemEvent;
 
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.galleria.Galleria;
-import org.primefaces.component.graphicimage.GraphicImage;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RateEvent;
 
@@ -132,22 +129,19 @@ public class BusquedaTerminosMB {
 
 	}
 
-	
 	public void validarSinonimosSeleccionado() {
 		RequestContext context = RequestContext.getCurrentInstance();
-		int i = 0;
-		while (i <= 1) {
-			if (i == 0) {
-				context.update("dlgImagenes");
-			} else {
-				context.update("dlgImagenes");
-				context.execute("PF('dlgImagenes').show();");
-			}
-			i++;
-		}
+		context.update("dlgImagenes");
+		context.execute("PF('dlgImagenes').show();");
 
 	}
-
+	
+//	public void cerrarDialogImgDynamic(){
+//		selectedSinonimosDTO = null;
+//		RequestContext context = RequestContext.getCurrentInstance();
+//		context.update("dlgImagenes");
+//	}
+	
 	public void validarGalleria(ComponentSystemEvent event) {
 
 		// <p:graphicImage width="600" height="303"
@@ -160,7 +154,7 @@ public class BusquedaTerminosMB {
 		Galleria galleria = (Galleria) dialogComponent.getChildren().get(0);
 		FacesContext context = FacesContext.getCurrentInstance();
 		galleria.getValue();
-		selectedSinonimosDTO;
+		// selectedSinonimosDTO;
 		// galleria.getValue()
 		System.out.println();
 	}
