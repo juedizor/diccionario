@@ -8,11 +8,17 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
+import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
 
+import org.primefaces.component.dialog.Dialog;
+import org.primefaces.component.galleria.Galleria;
+import org.primefaces.component.graphicimage.GraphicImage;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RateEvent;
-import org.primefaces.model.StreamedContent;
 
 import co.com.diccionario.client.catalogos.CatalogosServiceClient;
 import co.com.diccionario.client.catalogos.GestionarPalabrasServiceClient;
@@ -67,8 +73,6 @@ public class BusquedaTerminosMB {
 
 	private boolean mostrarAgregarMiPalabra;
 	private boolean mostrarPnlDefinicion;
-	
-	private StreamedContent streamedContent;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -126,6 +130,39 @@ public class BusquedaTerminosMB {
 			mostrarAgregarMiPalabra = true;
 		}
 
+	}
+
+	
+	public void validarSinonimosSeleccionado() {
+		RequestContext context = RequestContext.getCurrentInstance();
+		int i = 0;
+		while (i <= 1) {
+			if (i == 0) {
+				context.update("dlgImagenes");
+			} else {
+				context.update("dlgImagenes");
+				context.execute("PF('dlgImagenes').show();");
+			}
+			i++;
+		}
+
+	}
+
+	public void validarGalleria(ComponentSystemEvent event) {
+
+		// <p:graphicImage width="600" height="303"
+		// alt="#{busquedaMB.selectedSinonimosDTO.definiciones.get(0)}"
+		// value="#{imagenes.image}">
+		//
+		// </p:graphicImage>
+		UIComponent source = event.getComponent();
+		Dialog dialogComponent = (Dialog) source.findComponent("dlgImagenes");
+		Galleria galleria = (Galleria) dialogComponent.getChildren().get(0);
+		FacesContext context = FacesContext.getCurrentInstance();
+		galleria.getValue();
+		selectedSinonimosDTO;
+		// galleria.getValue()
+		System.out.println();
 	}
 
 	public boolean validarMostrarDefinicion(SinonimosDTO result) {
@@ -463,7 +500,7 @@ public class BusquedaTerminosMB {
 					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
 			return;
 		}
-		
+
 		int i = listResultadosBusquedaSinonimos.indexOf(selectedSinonimosDTO);
 		iter = listResultadosBusquedaSinonimos.get(i).getOraciones().iterator();
 		while (iter.hasNext()) {
@@ -1064,20 +1101,6 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMostrarPnlDefinicion(boolean mostrarPnlDefinicion) {
 		this.mostrarPnlDefinicion = mostrarPnlDefinicion;
-	}
-
-	/**
-	 * @return the streamedContent
-	 */
-	public StreamedContent getStreamedContent() {
-		return streamedContent;
-	}
-
-	/**
-	 * @param streamedContent the streamedContent to set
-	 */
-	public void setStreamedContent(StreamedContent streamedContent) {
-		this.streamedContent = streamedContent;
 	}
 
 }
