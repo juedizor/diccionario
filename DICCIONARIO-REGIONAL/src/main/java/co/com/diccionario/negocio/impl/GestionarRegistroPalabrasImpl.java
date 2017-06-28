@@ -234,4 +234,15 @@ public class GestionarRegistroPalabrasImpl implements GestionarRegistroPalabrasI
 		return sinonimosDTO;
 	}
 
+	public SinonimosDTO actualizarOraciones(SinonimosDTO sinonimosDTO) {
+		Sinonimos sinonimos = SinonimosMapper.INSTANCE.sinonimoDTOToSinonimo(sinonimosDTO);
+
+		/**
+		 * agrega las oraciones
+		 */
+		sinonimos = sinonimosRepository.save(sinonimos);
+		SinonimosDTO sinonimosResult = SinonimosMapper.INSTANCE.sinonimosToSinonimoDTO(sinonimos);
+		return sinonimosResult;
+	}
+
 }

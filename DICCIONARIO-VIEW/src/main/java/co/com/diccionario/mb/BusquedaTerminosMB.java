@@ -8,12 +8,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ComponentSystemEvent;
 
-import org.primefaces.component.dialog.Dialog;
-import org.primefaces.component.galleria.Galleria;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RateEvent;
 
@@ -67,6 +63,8 @@ public class BusquedaTerminosMB {
 	private SinonimosDTO selectedSinonimosDTO;
 	private List<SinonimosDTO> listResultadosBusquedaSinonimos;
 	private String nuevoTermino;
+
+	private String nuevoEjemplo;
 
 	private boolean mostrarAgregarMiPalabra;
 	private boolean mostrarPnlDefinicion;
@@ -134,29 +132,6 @@ public class BusquedaTerminosMB {
 		context.update("dlgImagenes");
 		context.execute("PF('dlgImagenes').show();");
 
-	}
-	
-//	public void cerrarDialogImgDynamic(){
-//		selectedSinonimosDTO = null;
-//		RequestContext context = RequestContext.getCurrentInstance();
-//		context.update("dlgImagenes");
-//	}
-	
-	public void validarGalleria(ComponentSystemEvent event) {
-
-		// <p:graphicImage width="600" height="303"
-		// alt="#{busquedaMB.selectedSinonimosDTO.definiciones.get(0)}"
-		// value="#{imagenes.image}">
-		//
-		// </p:graphicImage>
-		UIComponent source = event.getComponent();
-		Dialog dialogComponent = (Dialog) source.findComponent("dlgImagenes");
-		Galleria galleria = (Galleria) dialogComponent.getChildren().get(0);
-		FacesContext context = FacesContext.getCurrentInstance();
-		galleria.getValue();
-		// selectedSinonimosDTO;
-		// galleria.getValue()
-		System.out.println();
 	}
 
 	public boolean validarMostrarDefinicion(SinonimosDTO result) {
@@ -387,6 +362,51 @@ public class BusquedaTerminosMB {
 		setNuevoTermino("");
 	}
 
+	public void cerrarDialogAddNuevoEjemplo() {
+		setNuevoEjemplo("");
+	}
+
+	public void addNuevoEjemplo() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+
+		if (nuevoEjemplo == null || nuevoEjemplo.trim().isEmpty()) {
+			String msg = "Debes agregar un ejemplo";
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_WARN, null, msg,
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_warn"));
+			return;
+		}
+
+		List<OracionesDTO> listOraciones = selectedSinonimosDTO.getOraciones();
+		if (listOraciones != null && !listOraciones.isEmpty()) {
+			OracionesDTO oracionesDTO = new OracionesDTO();
+			oracionesDTO.setOracion(nuevoEjemplo);
+			listOraciones.add(oracionesDTO);
+		} else {
+			listOraciones = new ArrayList<>();
+			OracionesDTO oracionesDTO = new OracionesDTO();
+			oracionesDTO.setOracion(nuevoEjemplo);
+			listOraciones.add(oracionesDTO);
+		}
+
+		selectedSinonimosDTO.setOraciones(listOraciones);
+		try {
+			selectedSinonimosDTO = GestionarPalabrasServiceClient.getInstance()
+					.actualizarOraciones(selectedSinonimosDTO);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		String msg = "Ejemplo agregado correctamente";
+		Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null, msg,
+				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+		setNuevoEjemplo("");
+		buscarSinonimos();
+
+	}
+
 	public void addNuevoTermino() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
@@ -460,6 +480,62 @@ public class BusquedaTerminosMB {
 
 	}
 
+	public void onChangeCalificacionOraciones() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		selectedSinonimosDTO = context.getApplication().evaluateExpressionGet(context, "#{result}", SinonimosDTO.class);
+		String oracion = context.getApplication().evaluateExpressionGet(context, "#{oracion.oracion}", String.class);
+		Iterator<OracionesDTO> iter = selectedSinonimosDTO.getOraciones().iterator();
+		int value = 0;
+		while (iter.hasNext()) {
+			OracionesDTO oracionesDTO = iter.next();
+			if (oracionesDTO.getOracion().equals(oracion)) {
+				if (oracionesDTO.getCalificacion() != null) {
+					oracionesDTO.getCalificacion().add(value);
+					break;
+				} else {
+					List<Integer> calificacion = new ArrayList<>();
+					calificacion.add(value);
+					oracionesDTO.setCalificacion(calificacion);
+					break;
+				}
+			}
+		}
+
+		/*
+		 * aqui se consume el servicio enviando selectedSinonimosDTO
+		 */
+		SinonimosDTO sinonimosDTO;
+		try {
+			sinonimosDTO = GestionarPalabrasServiceClient.getInstance()
+					.actualizarCalificacionOraciones(selectedSinonimosDTO);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		int i = listResultadosBusquedaSinonimos.indexOf(selectedSinonimosDTO);
+		iter = listResultadosBusquedaSinonimos.get(i).getOraciones().iterator();
+		while (iter.hasNext()) {
+			OracionesDTO oracionesDTO = iter.next();
+			List<OracionesDTO> listOracionesDTO = sinonimosDTO.getOraciones();
+			Iterator<OracionesDTO> iterNew = listOracionesDTO.iterator();
+			while (iterNew.hasNext()) {
+				OracionesDTO oracionesNew = iterNew.next();
+				if (oracionesNew.getOracion().equals(oracionesDTO.getOracion())) {
+					oracionesDTO.setCalificacion(oracionesNew.getCalificacion());
+					oracionesDTO.setOracion(oracionesNew.getOracion());
+					oracionesDTO.setPromedioCalificacion(oracionesNew.getPromedioCalificacion());
+				}
+			}
+		}
+
+		Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
+				"Su valoración a sido enviada correctamente",
+				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
+	}
+
 	public void changeCalificacionOraciones(RateEvent rateEvent) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		FacesMessage message = new FacesMessage();
@@ -515,6 +591,62 @@ public class BusquedaTerminosMB {
 				"Su valoración a sido enviada correctamente",
 				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
 
+	}
+
+	public void onChangeCalificacion() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		FacesMessage message = new FacesMessage();
+		selectedSinonimosDTO = context.getApplication().evaluateExpressionGet(context, "#{result}", SinonimosDTO.class);
+		String palabra = context.getApplication().evaluateExpressionGet(context, "#{sinonimos.palabra}", String.class);
+		Iterator<PalabrasDTO> iter = selectedSinonimosDTO.getSinonimos().iterator();
+		int value = 0;
+		while (iter.hasNext()) {
+			PalabrasDTO palabraDTO = iter.next();
+			if (palabraDTO.getPalabra().equals(palabra)) {
+				if (palabraDTO.getCalificacion() != null) {
+					palabraDTO.getCalificacion().add(value);
+					break;
+				} else {
+					List<Integer> calificacion = new ArrayList<>();
+					calificacion.add(value);
+					palabraDTO.setCalificacion(calificacion);
+					break;
+				}
+			}
+		}
+
+		/*
+		 * aqui se consume el servicio enviando selectedSinonimosDTO
+		 */
+		SinonimosDTO sinonimosDTO;
+		try {
+			sinonimosDTO = GestionarPalabrasServiceClient.getInstance()
+					.actualizarCalificacionSinonimos(selectedSinonimosDTO);
+		} catch (Exception e) {
+			Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_ERROR, null, e.getMessage(),
+					ParamsBundle.getInstance().getMapMensajes().get("cabecera_error"));
+			return;
+		}
+
+		int i = listResultadosBusquedaSinonimos.indexOf(selectedSinonimosDTO);
+		iter = listResultadosBusquedaSinonimos.get(i).getSinonimos().iterator();
+		while (iter.hasNext()) {
+			PalabrasDTO palabraDTO = iter.next();
+			List<PalabrasDTO> listPalabraDTO = sinonimosDTO.getSinonimos();
+			Iterator<PalabrasDTO> iterNew = listPalabraDTO.iterator();
+			while (iterNew.hasNext()) {
+				PalabrasDTO palabrasNew = iterNew.next();
+				if (palabrasNew.getPalabra().equals(palabraDTO.getPalabra())) {
+					palabraDTO.setCalificacion(palabrasNew.getCalificacion());
+					palabraDTO.setPalabra(palabrasNew.getPalabra());
+					palabraDTO.setPromedioCalificacion(palabrasNew.getPromedioCalificacion());
+				}
+			}
+		}
+
+		Utils.enviarMensajeVista(context, message, FacesMessage.SEVERITY_INFO, null,
+				"Su valoración a sido enviada correctamente",
+				ParamsBundle.getInstance().getMapMensajes().get("cabecera_info"));
 	}
 
 	public void changeCalificacion(RateEvent rateEvent) {
@@ -1095,6 +1227,21 @@ public class BusquedaTerminosMB {
 	 */
 	public void setMostrarPnlDefinicion(boolean mostrarPnlDefinicion) {
 		this.mostrarPnlDefinicion = mostrarPnlDefinicion;
+	}
+
+	/**
+	 * @return the nuevoEjemplo
+	 */
+	public String getNuevoEjemplo() {
+		return nuevoEjemplo;
+	}
+
+	/**
+	 * @param nuevoEjemplo
+	 *            the nuevoEjemplo to set
+	 */
+	public void setNuevoEjemplo(String nuevoEjemplo) {
+		this.nuevoEjemplo = nuevoEjemplo;
 	}
 
 }

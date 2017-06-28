@@ -226,15 +226,14 @@
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
 
-							<p:dialog width="40%" id="dlgImagenes"
+							<p:dialog width="47%" id="dlgImagenes"
 								widgetVar="dlgImagenes#{result.termino}" modal="true"
 								appendTo="@(body)" position="top" resizable="false"
 								header="Imagenes Relacionadas" dynamic="true">
 								<p:galleria id="galleria" autoPlay="false"
-									value="#{result.rutasImagenes}" var="image" panelWidth="510"
-									panelHeight="300" showCaption="true">
-									<p:graphicImage width="600" height="303" cache="false"
-										alt="#{result.definiciones.get(0)}"
+									value="#{result.rutasImagenes}" var="image" showCaption="true">
+									<p:graphicImage style="width:100%; height:100%" cache="false"
+										title="#{result.termino}" alt="#{result.definiciones.get(0)}"
 										value="images/#{image.rutaImagen}">
 									</p:graphicImage>
 								</p:galleria>
@@ -244,7 +243,7 @@
 
 							<p:commandLink
 								oncomplete="PF('dlgImagenes#{result.termino}').show();"
-								update="dataGridSinonimos:galleria">
+								update="busqueda:fieldPnlResultadosPalabras">
 								<p:graphicImage title="Visualizar Imagen" alt="ver imagen"
 									name="menu/ver_imagenes.png" library="img" />
 							</p:commandLink>
@@ -266,6 +265,9 @@
 												value="#{sinonimos.palabra}" />
 											<p:ajax event="rate"
 												listener="#{busquedaMB.changeCalificacion}"
+												update="busqueda:fieldPnlResultadosPalabras :msg" />
+											<p:ajax event="cancel"
+												listener="#{busquedaMB.onChangeCalificacion()}"
 												update="busqueda:fieldPnlResultadosPalabras :msg" />
 
 										</p:rating>
@@ -291,6 +293,9 @@
 													value="#{oracion.oracion}" />
 												<p:ajax event="rate"
 													listener="#{busquedaMB.changeCalificacionOraciones}"
+													update="busqueda:fieldPnlResultadosPalabras :msg" />
+												<p:ajax event="cancel"
+													listener="#{busquedaMB.onChangeCalificacionOraciones()}"
 													update="busqueda:fieldPnlResultadosPalabras :msg" />
 											</p:rating>
 										</div>
@@ -324,7 +329,7 @@
 							</div>
 							<p />
 							<p />
-							<p:panelGrid columns="3">
+							<p:panelGrid columns="4">
 								<h:panelGrid style="text-align:center">
 									<p:commandLink>
 										<p:graphicImage alt="" library="iconos" width="32" height="32"
@@ -346,11 +351,27 @@
 								</h:panelGrid>
 
 								<h:panelGrid style="text-align:center">
-									<h:commandLink>
+									<p:commandLink
+										update=":formAddNuevoEjemplo :dlgAddNuevoEjemplo"
+										oncomplete="PF('dlgAddNuevoEjemplo').show();">
 										<p:graphicImage alt="" library="iconos" width="32" height="32"
 											name="example.png" />
-									</h:commandLink>
+										<f:setPropertyActionListener value="#{result}"
+											target="#{busquedaMB.selectedSinonimosDTO}" />
+									</p:commandLink>
 									<p:outputLabel value="Nuevo ejemplo" />
+								</h:panelGrid>
+
+								<h:panelGrid style="text-align:center">
+									<p:commandLink
+										update=":formAddNuevoEjemplo :dlgAddNuevoEjemplo"
+										oncomplete="PF('dlgAddNuevoEjemplo').show();">
+										<p:graphicImage alt="" library="iconos" width="32" height="32"
+											name="addImagen.png" />
+										<f:setPropertyActionListener value="#{result}"
+											target="#{busquedaMB.selectedSinonimosDTO}" />
+									</p:commandLink>
+									<p:outputLabel value="Agregar otra Imagen" />
 								</h:panelGrid>
 							</p:panelGrid>
 
@@ -367,14 +388,37 @@
 				life="3000" globalOnly="true" />
 		</h:form>
 
+		<p:dialog id="dlgAddNuevoEjemplo" widgetVar="dlgAddNuevoEjemplo"
+			modal="true" appendTo="@(body)" resizable="false"
+			header="#{busquedaMB.selectedSinonimosDTO.termino}">
+			<p:ajax event="close" update="formAddNuevoEjemplo"
+				listener="#{busquedaMB.cerrarDialogAddNuevoEjemplo()}" />
+			<h:form id="formAddNuevoEjemplo">
+				<h:panelGrid columns="2">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="obligatorio" />
+						<p:outputLabel value="Nuevo Ejemplo: " />
+					</h:panelGrid>
+					<h:panelGroup>
+						<h:inputText id="txtNuevoEjemplo" size="50"
+							value="#{busquedaMB.nuevoEjemplo}">
+						</h:inputText>
+						<p:commandButton id="btnAddNuevoEjemplo" icon="btnImageGuardar"
+							actionListener="#{busquedaMB.addNuevoEjemplo()}"
+							update=":busqueda:dataGridSinonimos :msg">
+						</p:commandButton>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:form>
+
+		</p:dialog>
 
 
 		<p:dialog width="50%" id="dlgNuevosTerminos"
 			widgetVar="dlgNuevosTerminos" modal="true" appendTo="@(body)"
 			resizable="false" header="AGREGANDO MIS PALABRAS">
 			<ui:include src="/agregar_terminos.xhtml" />
-			<p:ajax event="close" listener="#{registroTermino.eliminarBean()}"></p:ajax>
-
+			<p:ajax event="close" listener="#{registroTermino.eliminarBean()}" />
 		</p:dialog>
 
 		<p:dialog id="dlgAddNuevoTermino" widgetVar="dlgAddNuevoTermino"

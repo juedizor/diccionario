@@ -138,4 +138,14 @@ public class GestionarPalabrasService {
 		}
 	}
 
+	@RequestMapping(value = "/sinonimo/oracion", method = RequestMethod.POST)
+	public SinonimosDTO addOraciones(@RequestBody SinonimosDTO sinonimosDTO) throws CommonException {
+		try {
+			return gestionarRegistroPalabrasIface.actualizarOraciones(sinonimosDTO);
+		} catch (Exception e) {
+			throw new GeneralErrorException(
+					"Error realizando la actualizacion " + e.getMessage() + " " + e.getLocalizedMessage());
+		}
+	}
+
 }

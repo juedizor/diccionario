@@ -190,4 +190,18 @@ public class GestionarPalabrasServiceClient {
 		}
 	}
 
+	public SinonimosDTO actualizarOraciones(SinonimosDTO sinonimosDTO) throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String uri = HOST_END_POINT + PALABRAS + "/" + SINONIMO + "/" + ORACION;
+		try {
+			HttpEntity<SinonimosDTO> httpEntity = new HttpEntity<>(sinonimosDTO);
+			ResponseEntity<SinonimosDTO> response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity,
+					new ParameterizedTypeReference<SinonimosDTO>() {
+					});
+			return response.getBody();
+		} catch (HttpClientErrorException e) {
+			throw new Exception(e.getResponseBodyAsString() + " " + e.getMessage());
+		}
+	}
+
 }
