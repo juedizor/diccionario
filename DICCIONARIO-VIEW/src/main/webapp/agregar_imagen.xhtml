@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+
+<h:form enctype="multipart/form-data" id="registrarNuevaImagen">
+
+	<p:panel style="float:left;overflow-y: auto;height:500px;"
+		id="pnlGeneral" styleClass="pnlForm">
+
+		<p:outputPanel id="fieldImagen">
+			<p:fieldset styleClass="fieForm">
+				<h:panelGrid id="pnltermino" columns="2">
+					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+						<div class="noObligatorio" />
+						<p:outputLabel value=" " />
+					</h:panelGrid>
+					<p:outputLabel
+						value="#{registroImagen.selectedSinonimosDTO.termino}"></p:outputLabel>
+				</h:panelGrid>
+			</p:fieldset>
+
+			<p:fieldset>
+				<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
+					<div class="obligatorio" />
+					<p:outputLabel value="Agregando nueva imagen" />
+				</h:panelGrid>
+				<p:fileUpload fileUploadListener="#{registroImagen.file}"
+					label="Cargar" uploadLabel="subir" cancelLabel="cancelar"
+					mode="advanced" skinSimple="true" />
+			</p:fieldset>
+
+			<p />
+
+			<p:commandButton id="btnGuardar" icon="btnImageGuardar"
+				onclick="PF('statusDialog').show();"
+				oncomplete="PF('statusDialog').hide();"
+				actionListener="#{registroImagen.guardarNuevoImagen()}"
+				value="Guardar" update="registrarNuevaImagen :msg"></p:commandButton>
+		</p:outputPanel>
+
+	</p:panel>
+
+</h:form>
+
+</html>

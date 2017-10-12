@@ -7,8 +7,10 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ComponentSystemEvent;
 
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RateEvent;
@@ -25,7 +27,7 @@ import co.com.diccionario.utils.ParamsBundle;
 import co.com.diccionario.utils.Utils;
 
 @ManagedBean(name = "busquedaMB")
-@SessionScoped
+@ViewScoped	
 public class BusquedaTerminosMB {
 
 	private PaisesDTO paisOrigen;
@@ -68,6 +70,8 @@ public class BusquedaTerminosMB {
 
 	private boolean mostrarAgregarMiPalabra;
 	private boolean mostrarPnlDefinicion;
+
+	private UIComponent component;
 
 	public BusquedaTerminosMB() throws Exception {
 		// TODO Auto-generated constructor stub
@@ -124,24 +128,22 @@ public class BusquedaTerminosMB {
 			isMostrarResultado = false;
 			mostrarAgregarMiPalabra = true;
 		}
-
 	}
 
 	public void validarSinonimosSeleccionado() {
 		RequestContext context = RequestContext.getCurrentInstance();
 		context.update("dlgImagenes");
 		context.execute("PF('dlgImagenes').show();");
-
 	}
 
 	public boolean validarMostrarDefinicion(SinonimosDTO result) {
 		RequestContext request = RequestContext.getCurrentInstance();
 		List<String> definiciones = result.getDefiniciones();
+		UIComponent component = findComponent("pnlDefinicion");
+		request.update(component.getClientId());
 		if (definiciones == null || definiciones.isEmpty()) {
-			request.update("busqueda:pnlDefinicion");
 			return false;
 		} else {
-			request.update("busqueda:pnlDefinicion");
 			return true;
 		}
 	}
@@ -149,13 +151,41 @@ public class BusquedaTerminosMB {
 	public boolean validarMostrarOraciones(SinonimosDTO result) {
 		RequestContext request = RequestContext.getCurrentInstance();
 		List<OracionesDTO> oraciones = result.getOraciones();
+		UIComponent component = findComponent("pnlOraciones");
 		if (oraciones == null || oraciones.isEmpty()) {
-			request.update("busqueda:pnlOraciones");
+			request.update(component.getClientId());
 			return false;
 		} else {
-			request.update("busqueda:pnlOraciones");
+			request.update(component.getClientId());
 			return true;
 		}
+	}
+
+	public UIComponent findComponent(String id) {
+		UIComponent result = null;
+		UIComponent root = FacesContext.getCurrentInstance().getViewRoot();
+		if (root != null) {
+			result = findComponent(root, id);
+		}
+		return result;
+
+	}
+
+	private UIComponent findComponent(UIComponent root, String id) {
+		UIComponent result = null;
+		if (root.getId().equals(id))
+			return root;
+
+		for (UIComponent child : root.getChildren()) {
+			if (child.getId().equals(id)) {
+				result = child;
+				break;
+			}
+			result = findComponent(child, id);
+			if (result != null)
+				break;
+		}
+		return result;
 	}
 
 	public void regresarPanelPaisDestino() {
@@ -178,7 +208,6 @@ public class BusquedaTerminosMB {
 		mostrarAgregarMiPalabra = false;
 		isMostrarDestino = true;
 		isMostrarBotonesDestino = true;
-
 	}
 
 	public void continuarPanelCategoria() {
@@ -1242,6 +1271,25 @@ public class BusquedaTerminosMB {
 	 */
 	public void setNuevoEjemplo(String nuevoEjemplo) {
 		this.nuevoEjemplo = nuevoEjemplo;
+	}
+
+	/**
+	 * @return the component
+	 */
+	public UIComponent getComponent() {
+		return component;
+	}
+
+	/**
+	 * @param component
+	 *            the component to set
+	 */
+	public void setComponent(UIComponent component) {
+		this.component = component;
+	}
+
+	public void setIdComponent(ComponentSystemEvent event) {
+		setComponent(event.getComponent());
 	}
 
 }

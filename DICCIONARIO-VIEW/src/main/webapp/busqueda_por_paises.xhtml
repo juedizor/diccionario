@@ -16,7 +16,9 @@
 
 
 	<ui:define name="contenido">
+	
 		<h:form id="busqueda">
+		
 			<p:panel id="pnlGeneral" styleClass="pnlForm"
 				header="BUSQUEDA PRINCIPAL">
 
@@ -46,6 +48,7 @@
 						</h:panelGrid>
 					</p:fieldset>
 				</p:outputPanel>
+				
 
 
 				<h:panelGrid id="btnContinuarDestino">
@@ -364,8 +367,8 @@
 
 								<h:panelGrid style="text-align:center">
 									<p:commandLink
-										update=":formAddNuevoEjemplo :dlgAddNuevoEjemplo"
-										oncomplete="PF('dlgAddNuevoEjemplo').show();">
+										update=":registrarNuevaImagen :dlgAddNuevaImagen"
+										oncomplete="PF('dlgAddNuevaImagen').show();">
 										<p:graphicImage alt="" library="iconos" width="32" height="32"
 											name="addImagen.png" />
 										<f:setPropertyActionListener value="#{result}"
@@ -387,6 +390,15 @@
 			<p:growl id="msgGeneral" widgetVar="msgGeneral" showDetail="true"
 				life="3000" globalOnly="true" />
 		</h:form>
+
+
+		<p:dialog id="dlgAddNuevaImagen" widgetVar="dlgAddNuevaImagen"
+			modal="true" appendTo="@(body)" resizable="false"
+			header="#{busquedaMB.selectedSinonimosDTO.termino}">
+			<ui:include src="/agregar_imagen.xhtml" />
+			<p:ajax event="close" listener="#{registroImagen.eliminarBean()}" />
+		</p:dialog>
+
 
 		<p:dialog id="dlgAddNuevoEjemplo" widgetVar="dlgAddNuevoEjemplo"
 			modal="true" appendTo="@(body)" resizable="false"
