@@ -9,41 +9,14 @@
 
 <h:form enctype="multipart/form-data" id="registrarNuevaImagen">
 
-	<p:panel style="float:left;overflow-y: auto;height:500px;"
-		id="pnlGeneral" styleClass="pnlForm">
 
-		<p:outputPanel id="fieldImagen">
-			<p:fieldset styleClass="fieForm">
-				<h:panelGrid id="pnltermino" columns="2">
-					<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
-						<div class="noObligatorio" />
-						<p:outputLabel value=" " />
-					</h:panelGrid>
-					<p:outputLabel
-						value="#{registroImagen.selectedSinonimosDTO.termino}"></p:outputLabel>
-				</h:panelGrid>
-			</p:fieldset>
-
-			<p:fieldset>
-				<h:panelGrid columns="2" styleClass="pnlLabObligatorio">
-					<div class="obligatorio" />
-					<p:outputLabel value="Agregando nueva imagen" />
-				</h:panelGrid>
-				<p:fileUpload fileUploadListener="#{registroImagen.file}"
-					label="Cargar" uploadLabel="subir" cancelLabel="cancelar"
-					mode="advanced" skinSimple="true" />
-			</p:fieldset>
-
-			<p />
-
-			<p:commandButton id="btnGuardar" icon="btnImageGuardar"
-				onclick="PF('statusDialog').show();"
-				oncomplete="PF('statusDialog').hide();"
-				actionListener="#{registroImagen.guardarNuevoImagen()}"
-				value="Guardar" update="registrarNuevaImagen :msg"></p:commandButton>
-		</p:outputPanel>
-
-	</p:panel>
+	<p:outputPanel id="fieldImagen">
+		<p:fileUpload fileUploadListener="#{registroImagen.upload}"
+			label="Cargar" uploadLabel="subir" cancelLabel="cancelar"
+			mode="advanced" fileLimit="1" fileLimitMessage="Solo una imagen"
+			skinSimple="true" update="@this" />
+		<p />
+	</p:outputPanel>
 
 </h:form>
 

@@ -16,9 +16,9 @@
 
 
 	<ui:define name="contenido">
-	
+
 		<h:form id="busqueda">
-		
+
 			<p:panel id="pnlGeneral" styleClass="pnlForm"
 				header="BUSQUEDA PRINCIPAL">
 
@@ -48,7 +48,7 @@
 						</h:panelGrid>
 					</p:fieldset>
 				</p:outputPanel>
-				
+
 
 
 				<h:panelGrid id="btnContinuarDestino">
@@ -113,12 +113,9 @@
 
 						<p:graphicImage width="24" height="24" library="banderas"
 							name="#{busquedaMB.nombreBanderaPaisDestino}">
-
 						</p:graphicImage>
 
 					</p:panelGrid>
-
-
 				</p:outputPanel>
 
 				<p:outputPanel id="fieldPnlTerminos">
@@ -229,7 +226,7 @@
 						rendered="#{busquedaMB.mostrarResultado}">
 						<p:panel header="#{result.termino}" style="font-size:14px;">
 
-							<p:dialog width="47%" id="dlgImagenes"
+							<p:dialog width="50%" id="dlgImagenes"
 								widgetVar="dlgImagenes#{result.termino}" modal="true"
 								appendTo="@(body)" position="top" resizable="false"
 								header="Imagenes Relacionadas" dynamic="true">
@@ -372,7 +369,7 @@
 										<p:graphicImage alt="" library="iconos" width="32" height="32"
 											name="addImagen.png" />
 										<f:setPropertyActionListener value="#{result}"
-											target="#{busquedaMB.selectedSinonimosDTO}" />
+											target="#{registroImagen.selectedSinonimosDTO}" />
 									</p:commandLink>
 									<p:outputLabel value="Agregar otra Imagen" />
 								</h:panelGrid>
@@ -392,9 +389,10 @@
 		</h:form>
 
 
-		<p:dialog id="dlgAddNuevaImagen" widgetVar="dlgAddNuevaImagen"
-			modal="true" appendTo="@(body)" resizable="false"
-			header="#{busquedaMB.selectedSinonimosDTO.termino}">
+		<p:dialog id="dlgAddNuevaImagen" width="600" height="200"
+			widgetVar="dlgAddNuevaImagen" modal="true" appendTo="@(body)"
+			resizable="false"
+			header="#{registroImagen.selectedSinonimosDTO.termino}">
 			<ui:include src="/agregar_imagen.xhtml" />
 			<p:ajax event="close" listener="#{registroImagen.eliminarBean()}" />
 		</p:dialog>
