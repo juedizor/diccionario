@@ -1,9 +1,11 @@
 package co.com.diccionario.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,12 +47,15 @@ public class GestionarPalabrasService {
 		return listPalabras;
 	}
 
-	@RequestMapping(value = "/busqueda/validarSinonimoPalabra", method = RequestMethod.POST)
+	@RequestMapping(value = "/busqueda/validarSinonimoPalabra", method = RequestMethod.POST, produces = {
+			MediaType.APPLICATION_JSON_VALUE }, consumes = { MediaType.APPLICATION_JSON_VALUE })
 	public List<SinonimosDTO> validarSinonimoPorAgregar(@RequestBody ParamsBusquedaPalabraDTO params)
 			throws CommonException {
 		List<SinonimosDTO> listPalabras;
 		try {
-			listPalabras = gestionarBusquedaPalabrasIface.obtenerSinonimosPorSinonimo(params);
+			listPalabras = new ArrayList<>();
+			listPalabras.add(new SinonimosDTO());
+			// gestionarBusquedaPalabrasIface.obtenerSinonimosPorSinonimo(params);
 		} catch (Exception e) {
 			throw new GeneralErrorException("Error consultando palabras " + e.getMessage());
 		}
